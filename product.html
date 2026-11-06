@@ -184,7 +184,7 @@
   }
 
   document.title = p.name + ' — NORDA';
-  document.querySelector('meta[name="description"]').setAttribute('content', esc(p.tagline));
+  document.querySelector('meta[name="description"]').setAttribute('content', p.tagline);
 
   const catNames = window.NORDA_CATEGORIES || {};
   const backHref = p.type === 'template' ? 'templates.html' : 'digital.html';
