@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NORDA — Web templates & digital tools for studios</title>
+<meta name="description" content="Premium HTML templates and digital tools for design studios. One-time purchases, no sign-up.">
+<meta name="theme-color" content="#ecebf2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/chat.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+<script src="assets/products.js" defer></script>
+<script src="assets/config.js" defer></script>
+<script src="assets/main.js" defer></script>
+<script src="assets/script.js" defer></script>
+</head>
+<body class="js">
+
+<!-- Splash -->
+<div class="splash" aria-hidden="true">
+  <div class="splash__inner">
+    <div class="splash__logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg>
+    </div>
+    <div class="splash__word">NORDA<small>Studio</small></div>
+    <div class="splash__bar"><i></i></div>
+  </div>
+</div>
+
+<!-- Nav -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="index.html" aria-label="NORDA home">
+      <span class="brand__mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg>
+      </span>
+      NORDA
+    </a>
+
+    <!-- Desktop Nav (hidden on mobile) -->
+    <nav class="nav__links nav__links--desktop" aria-label="Main">
+      <a class="nav__link" href="index.html" aria-current="page">Home</a>
+      <a class="nav__link" href="templates.html">Templates</a>
+      <a class="nav__link" href="digital.html">Digital</a>
+      <a class="nav__link" href="faq.html">FAQ</a>
+      <a class="nav__link" href="contact.html">Contact</a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang">
+        <button class="lang__btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3Z"/></svg>
+          <span>EN</span>
+        </button>
+        <div class="lang__menu" role="listbox">
+          <button class="lang__item" data-lang="ar" role="option" aria-checked="false">العربية <small>AR</small></button>
+          <button class="lang__item" data-lang="en" role="option" aria-checked="true">English <small>EN</small></button>
+          <button class="lang__item" data-lang="fr" role="option" aria-checked="false">Français <small>FR</small></button>
+        </div>
+      </div>
+      <button class="cart-btn" data-bag data-cart-open aria-label="Open bag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        Bag
+        <span class="cart-btn__count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Bottom Nav (hidden on desktop) -->
+<nav class="nav__links--mobile" aria-label="Mobile">
+  <a class="nav__link" href="index.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+  <a class="nav__link" href="templates.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Templates</span>
+  </a>
+  <a class="nav__link" href="digital.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <span>Digital</span>
+  </a>
+  <a class="nav__link" href="faq.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>FAQ</span>
+  </a>
+  <a class="nav__link" href="contact.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    <span>Contact</span>
+  </a>
+</nav>
+
+<main>
+  <!-- Hero -->
+  <section class="page hero">
+    <p class="eyebrow">Web templates & digital tools</p>
+    <h1 class="hero__title">Design <em>better</em> websites, faster.</h1>
+    <p class="hero__lead">NORDA builds premium HTML templates and digital tools for design studios. One-time purchases. No sign-up. Instant download after payment.</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="templates.html">
+        Browse templates
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a class="btn btn--ghost" href="digital.html">Digital products</a>
+    </div>
+    <div class="hero__meta">
+      <div><b>8</b> products</div>
+      <div><b>400+</b> icons shipped</div>
+      <div><b>3</b> languages</div>
+      <div><b>USD</b> pricing</div>
+    </div>
+  </section>
+
+  <!-- Featured templates -->
+  <section class="page section">
+    <div class="section-head">
+      <div class="section-head__text">
+        <p class="eyebrow">Featured</p>
+        <h2>Templates worth shipping</h2>
+        <p>Clean, fast, accessible. Every template is hand-built with vanilla HTML, CSS and GSAP.</p>
+      </div>
+      <a class="btn btn--ghost btn--sm" href="templates.html">See all</a>
+    </div>
+    <div class="grid-products" id="featured-templates"></div>
+  </section>
+
+  <!-- Featured digital -->
+  <section class="page section">
+    <div class="section-head">
+      <div class="section-head__text">
+        <p class="eyebrow">Digital</p>
+        <h2>Tools for the studio</h2>
+        <p>Icon sets, presets, and subscriptions. Pay once, or subscribe for everything.</p>
+      </div>
+      <a class="btn btn--ghost btn--sm" href="digital.html">See all</a>
+    </div>
+    <div class="grid-products" id="featured-digital"></div>
+  </section>
+
+  <!-- CTA -->
+  <section class="page section--tight">
+    <div class="hair"></div>
+    <div class="section-head" style="margin-top:clamp(32px,5vw,56px);margin-bottom:0">
+      <div class="section-head__text">
+        <h2>Need something custom?</h2>
+        <p>We design & build websites for studios. Tell us about your project.</p>
+      </div>
+      <a class="btn btn--primary" href="contact.html">Get in touch</a>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="page">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="brand" href="index.html">
+          <span class="brand__mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg></span>
+          NORDA
+        </a>
+        <p>Web templates and digital tools for independent studios. Made with care, shipped in USD.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Website links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="templates.html">Templates</a></li>
+          <li><a href="digital.html">Digital</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Help &amp; policies</h4>
+        <ul>
+          <li><a href="faq.html">Frequently asked questions</a></li>
+          <li><a href="faq.html#terms">Terms of use</a></li>
+          <li><a href="faq.html#privacy">Privacy policy</a></li>
+          <li><a href="faq.html#refunds">Payment &amp; refund policy</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:norda@duck.com">norda@duck.com</a></li>
+          <li><a data-social="telegram" href="https://t.me/nour_04x" target="_blank" rel="noopener">Telegram</a></li>
+          <li><a data-social="instagram" href="https://instagram.com/nour_04x" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span id="year"></span> NORDA Studio</span>
+      <span>Made for the web</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart" aria-label="Shopping bag">
+  <div class="cart__head">
+    <h2 class="cart__title">Your bag</h2>
+    <button class="cart__close" data-cart-close aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="cart__items"></div>
+  <div class="cart__foot">
+    <div class="cart__row"><span>Total</span><strong>$0</strong></div>
+    <div class="paypal-slot"><b>Online checkout</b><p>Online checkout is not available yet. Please <a href="contact.html">contact us</a> to confirm availability, delivery and payment details before paying.</p></div>
+    <p class="cart__note">No payment is processed on this website at the moment.</p>
+  </div>
+</aside>
+
+<!-- ====== CHAT SYSTEM ====== -->
+<button id="chatFab" aria-label="فتح الدردشة" aria-expanded="false" aria-controls="chatPanel">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-12.3 6.7L3 20l1.4-5.7A8 8 0 1 1 21 12Z"/></svg>
+  <span id="fabBadge" class="fab-badge"></span>
+</button>
+
+<div id="chatPanel" role="dialog" aria-labelledby="chatTitle" aria-hidden="true">
+  <div class="tk-head">
+    <div>
+      <b id="chatTitle">NORDA Support</b><br>
+      <small>نرد عادة في غضون دقائق</small>
+    </div>
+    <button id="soundToggle" class="tk-ib" aria-pressed="true" aria-label="كتم صوت تنبيه الدردشة">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+    </button>
+    <button id="chatX" class="tk-ib" aria-label="إغلاق">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+
+  <div class="tk-tabs" role="tablist">
+    <button id="tabNew" class="tk-tab on" role="tab" aria-selected="true" data-tab="new">
+      محادثة جديدة
+    </button>
+    <button id="tabChat" class="tk-tab" role="tab" aria-selected="false" data-tab="chat" aria-disabled="true">
+      المحادثة
+    </button>
+    <button id="tabClosed" class="tk-tab" role="tab" aria-selected="false" data-tab="closed">
+      المغلقة <span id="closedCount" class="tab-count" data-n="0"></span>
+    </button>
+  </div>
+
+  <div class="tk-v on" data-view="new">
+    <div class="tk-empty">
+      <p>لنبدأ محادثة جديدة وسنرد في أقرب وقت</p>
+      <input id="ch-name" class="tk-in" type="text" placeholder="الاسم (اختياري)" autocomplete="name">
+      <button id="btnNewTicket" class="btn">ابدأ محادثة</button>
+    </div>
+  </div>
+
+  <div class="tk-v" data-view="chat">
+    <div class="tk-info">
+      <b id="ticketIdLabel">#</b>
+      <button id="btnCloseTicket" class="tk-link">إغلاق التذكرة</button>
+    </div>
+    <div id="chatLog" class="tk-log" role="log" aria-live="polite"></div>
+    <div id="filePreview" class="tk-file" style="display:none">
+      <span id="fileNamePreview"></span>
+      <span id="fileSizePreview"></span>
+      <button id="fileRemove" class="tk-ib" aria-label="إزالة الملف">✕</button>
+    </div>
+    <form id="chatForm" class="tk-form">
+      <div class="tk-row">
+        <button type="button" id="btnAttach" class="tk-ib" aria-label="إرفاق ملف">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <textarea id="ch-msg" placeholder="اكتب رسالتك..." rows="1"></textarea>
+        <button type="submit" id="chBtn" class="tk-send" aria-label="إرسال">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+      <input id="fileInput" type="file" accept="image/*,application/pdf" hidden>
+    </form>
+  </div>
+
+  <div class="tk-v" data-view="closed">
+    <div class="tk-empty" style="justify-content:flex-start;text-align:start">
+      <p style="font-weight:700;color:var(--text)">التذاكر المغلقة</p>
+      <div id="closedList" style="width:100%;display:grid;gap:8px"></div>
+    </div>
+  </div>
+
+  <div class="tk-v" data-view="detail">
+    <div class="tk-info">
+      <button id="btnBack" class="tk-ib" aria-label="رجوع">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
+      <b id="detailTicketId">#</b>
+    </div>
+    <div id="detailLog" class="tk-log"></div>
+  </div>
+
+  <div id="chatToast" class="tk-toast"></div>
+</div>
+
+<!-- (زر العودة للأعلى يأتي من script.js عبر #toTop) -->
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  
+  window.addEventListener('load', () => {
+    const P = window.NORDA_PRODUCTS || [];
+    const fmt = window.NORDA_FMT;
+    const esc = (v) => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const card = (p) => `
+      <article class="prod" data-id="${p.id}">
+        <a class="prod__img" href="product.html?id=${esc(p.id)}">
+          <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">
+          ${p.subscription ? '<span class="prod__badge">Subscription</span>' : ''}
+        </a>
+        <div class="prod__body">
+          <div class="prod__head">
+            <a class="prod__name" href="product.html?id=${esc(p.id)}">${esc(p.name)}</a>
+            <span class="prod__price">${fmt(p.price)}</span>
+          </div>
+          <p class="prod__tagline">${esc(p.tagline)}</p>
+          <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
+          <div class="prod__actions">
+            <button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>
+          </div>
+        </div>
+      </article>`;
+    
+    const tEl = document.getElementById('featured-templates');
+    const dEl = document.getElementById('featured-digital');
+    if (tEl) tEl.innerHTML = P.filter(p=>p.type==='template'&&p.featured).map(card).join('');
+    if (dEl) dEl.innerHTML = P.filter(p=>p.type==='digital'&&p.featured).map(card).join('');
+  });
+</script>
+</body>
+</html><script async data-explicit-opt-in="true" data-deployment-id="dpl_6gL9wDpryeUhkZCPoxcikCPHfEhC" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
