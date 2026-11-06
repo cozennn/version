@@ -97,8 +97,10 @@ function runEntrances() {
   const wrap = document.querySelector('.lang');
   if (!wrap) return;
   const btn = wrap.querySelector('.lang__btn');
+  const label = btn.querySelector('.lang__label') || btn.querySelector('span');
   const items = wrap.querySelectorAll('.lang__item');
   const current = store.get('norda_lang') || document.documentElement.lang || 'ar';
+  if (label) label.textContent = current.toUpperCase();
   items.forEach(i => i.setAttribute('aria-checked', String(i.dataset.lang === current)));
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -110,6 +112,7 @@ function runEntrances() {
     i.addEventListener('click', () => {
       const l = i.dataset.lang;
       store.set('norda_lang', l);
+      if (label) label.textContent = l.toUpperCase();
       if (typeof window.NORDA_SET_LANGUAGE === 'function') {
         window.NORDA_SET_LANGUAGE(l);
       } else {
