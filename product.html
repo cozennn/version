@@ -164,6 +164,7 @@
 <script>
 (function(){
   const root = document.getElementById('productRoot');
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const id = new URLSearchParams(location.search).get('id');
   const products = window.NORDA_PRODUCTS || [];
   const p = products.find(x => x.id === id);
@@ -183,12 +184,12 @@
   }
 
   document.title = p.name + ' — NORDA';
-  document.querySelector('meta[name="description"]').setAttribute('content', p.tagline);
+  document.querySelector('meta[name="description"]').setAttribute('content', esc(p.tagline));
 
   const catNames = window.NORDA_CATEGORIES || {};
   const backHref = p.type === 'template' ? 'templates.html' : 'digital.html';
   const backLabel = p.type === 'template' ? 'Templates' : 'Digital goods';
-  const priceSuffix = p.subscription ? `<small>per ${p.interval || 'month'}</small>` : '';
+  const priceSuffix = p.subscription ? `<small>per ${esc(p.interval || 'month')}</small>` : '';
 
   root.innerHTML = `
     <nav style="padding:24px 0;font-size:.875rem;color:var(--muted)" aria-label="Breadcrumb">
@@ -196,25 +197,25 @@
       <span aria-hidden="true"> / </span>
       <a href="${backHref}" style="text-decoration:underline">${backLabel}</a>
       <span aria-hidden="true"> / </span>
-      <span>${p.name}</span>
+      <span>${esc(p.name)}</span>
     </nav>
 
     <section class="prod-page">
       <div class="prod-page__img">
-        <img src="${p.image}" alt="${p.name}">
+        <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
       </div>
       <div class="prod-page__info">
-        <span class="prod-page__badge">${catNames[p.category] || p.category}</span>
-        <h1 class="prod-page__name">${p.name}</h1>
-        <p class="prod-page__tagline">${p.tagline}</p>
+        <span class="prod-page__badge">${esc(catNames[p.category] || p.category)}</span>
+        <h1 class="prod-page__name">${esc(p.name)}</h1>
+        <p class="prod-page__tagline">${esc(p.tagline)}</p>
         <div class="prod-page__price">${window.NORDA_FMT(p.price)}${priceSuffix}</div>
-        <p class="prod-page__desc">${p.description}</p>
+        <p class="prod-page__desc">${esc(p.description)}</p>
         <div class="prod-page__includes">
           <h3>Includes</h3>
-          <ul>${(p.includes || []).map(i => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${i}</li>`).join('')}</ul>
+          <ul>${(p.includes || []).map(i => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${esc(i)}</li>`).join('')}</ul>
         </div>
         <div class="prod-page__actions">
-          <button class="btn btn--primary btn--lg" data-add-to-cart="${p.id}">
+          <button class="btn btn--primary btn--lg" data-add-to-cart="${esc(p.id)}">
             Add to bag — ${window.NORDA_FMT(p.price)}
           </button>
           <a class="btn btn--ghost btn--lg" href="contact.html">Ask a question</a>
