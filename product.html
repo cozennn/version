@@ -145,11 +145,13 @@
   const card = root.querySelector('.prod-page');
   card?.classList.add('prod');
 
-  // Animate in
-  if (window.gsap && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    gsap.from('.prod-page__img', { opacity: 0, scale: .96, duration: .8, ease: 'power3.out' });
-    gsap.from('.prod-page__info > *', { opacity: 0, y: 16, duration: .6, ease: 'power3.out', stagger: .06 });
-  }
+  // Animate after deferred CDN scripts have loaded.
+  window.addEventListener('load', () => {
+    if (window.gsap && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.gsap.from('.prod-page__img', { opacity: 0, scale: .96, duration: .8, ease: 'power3.out' });
+      window.gsap.from('.prod-page__info > *', { opacity: 0, y: 16, duration: .6, ease: 'power3.out', stagger: .06 });
+    }
+  }, { once: true });
 
   document.getElementById('year').textContent = new Date().getFullYear();
 })();
