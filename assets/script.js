@@ -325,13 +325,34 @@ if(tabs.chat)tabs.chat.addEventListener('click',function(){if(hasOpen())setView(
 if(tabs.closed)tabs.closed.addEventListener('click',function(){setView('closed');loadClosed()});
 var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',startNew);
 var chn=$1('#ch-name');if(chn)chn.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();startNew()}});
+var chatPreviousOverflow='';
 function chatOpen(o){
-  cp.classList.toggle('open',o);fab.setAttribute('aria-expanded',o?'true':'false');fab.classList.toggle('hidden',o);
-  if(o){unread=0;setBadge();var nm=$1('#ch-name');if(!nm.value)nm.value=sget('norda_name')||'';if(hasOpen()){loadMessages();if(view==='new')setView('chat')}setTimeout(function(){if(view==='chat')ta.focus();else if(view==='new')nm.focus()},150)}
+  if(!cp||!fab)return;
+  cp.classList.toggle('open',o);
+  cp.setAttribute('aria-hidden',o?'false':'true');
+  fab.setAttribute('aria-expanded',o?'true':'false');
+  fab.classList.toggle('hidden',o);
+  if(o){
+    if(window.innerWidth<=520){chatPreviousOverflow=d.body.style.overflow;d.body.style.overflow='hidden'}
+    unread=0;setBadge();var nm=$1('#ch-name');if(!nm.value)nm.value=sget('norda_name')||'';
+    if(hasOpen()){loadMessages();if(view==='new')setView('chat')}
+    setTimeout(function(){if(view==='chat'&&ta)ta.focus();else if(view==='new'&&nm)nm.focus()},150);
+  }else{
+    d.body.style.overflow=chatPreviousOverflow;
+  }
 }
 if(fab)fab.addEventListener('click',function(){chatOpen(!cp.classList.contains('open'))});
 var cx=$1('#chatX');if(cx)cx.addEventListener('click',function(){chatOpen(false);fab.focus()});
-d.addEventListener('keydown',function(e){if(e.key==='Escape'&&cp&&cp.classList.contains('open')){chatOpen(false);fab.focus()}});
+d.addEventListener('keydown',function(e){
+  if(!cp||!cp.classList.contains('open'))return;
+  if(e.key==='Escape'){chatOpen(false);fab.focus();return}
+  if(e.key!=='Tab')return;
+  var focusable=Array.prototype.slice.call(cp.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.getAttribute('aria-hidden')!=='true'&&el.getClientRects().length>0});
+  if(!focusable.length){e.preventDefault();return}
+  var first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&(d.activeElement===first||!cp.contains(d.activeElement))){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&d.activeElement===last){e.preventDefault();first.focus()}
+});
 /* نموذج التواصل المستقل عن نظام التذاكر */
 var cform=$1('#contactForm');
 if(cform)cform.addEventListener('submit',async function(e){
