@@ -66,36 +66,31 @@
       <div class="form-row">
         <div class="field">
           <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" required autocomplete="name">
+          <input id="cf-name" name="name" type="text" maxlength="80" required autocomplete="name">
         </div>
         <div class="field">
           <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" required autocomplete="email">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label for="cf-country">Country</label>
-          <input id="cf-country" name="country" type="text" autocomplete="country-name">
-        </div>
-        <div class="field">
-          <label for="cf-address">Address</label>
-          <input id="cf-address" name="address" type="text" autocomplete="street-address">
+          <input id="cf-email" name="email" type="email" maxlength="120" required autocomplete="email">
         </div>
       </div>
       <div class="field">
         <label for="cf-subject">Subject</label>
-        <input id="cf-subject" name="subject" type="text" required>
+        <input id="cf-subject" name="subject" type="text" maxlength="120" required>
       </div>
       <div class="field">
-        <label for="cf-message">Message</label>
-        <textarea id="cf-message" name="message" required></textarea>
+        <label for="cf-msg">Message</label>
+        <textarea id="cf-msg" name="message" maxlength="1500" required></textarea>
       </div>
-      <button class="btn btn--primary btn--block" type="submit">
+      <input id="cf-site" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px" >
+      <label class="contact-consent" for="cf-consent" style="display:flex;align-items:flex-start;gap:10px;font-size:.8125rem;color:var(--muted)">
+        <input id="cf-consent" name="privacyConsent" type="checkbox" required style="margin-top:4px">
+        <span>I agree to the <a href="faq.html#privacy">Privacy Policy</a> and consent to the use of my information to respond to this message.</span>
+      </label>
+      <button class="btn btn--primary btn--block" id="cfBtn" type="submit">
         Send message
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/></svg>
       </button>
-      <p style="font-size:.8125rem;color:var(--muted);text-align:center">This opens your email app with the message pre-filled.</p>
+      <p id="cfMsg" class="fmsg" role="status" aria-live="polite" style="font-size:.8125rem;color:var(--muted);text-align:center"></p>
     </form>
   </section>
 </main>
@@ -134,42 +129,46 @@
 <script src="assets/main.js"></script>
 <script>
 (function(){
-  const form = document.getElementById('contactForm');
-  form.addEventListener('submit', (e) => {
+  var form=document.getElementById('contactForm');
+  if(!form)return;
+  var cfg=window.NORDA_CONFIG||{};
+  var api=String(cfg.TELEGRAM_API||'').replace(/\/$/,'');
+  var btn=document.getElementById('cfBtn');
+  var out=document.getElementById('cfMsg');
+  var consent=document.getElementById('cf-consent');
+  function status(message,type){
+    out.textContent=message;
+    out.className='fmsg'+(type?' '+type:'');
+  }
+  form.addEventListener('submit',async function(e){
     e.preventDefault();
-    const data = new FormData(form);
-    const name = (data.get('name') || '').toString().trim();
-    const email = (data.get('email') || '').toString().trim();
-    const country = (data.get('country') || '').toString().trim();
-    const address = (data.get('address') || '').toString().trim();
-    const subject = (data.get('subject') || '').toString().trim();
-    const message = (data.get('message') || '').toString().trim();
-
-    if (!name || !email || !subject || !message) {
-      window.toast?.('Please fill in all required fields');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      window.toast?.('Please enter a valid email');
-      return;
-    }
-
-    const body = [
-      'Name: ' + name,
-      'Email: ' + email,
-      country ? 'Country: ' + country : '',
-      address ? 'Address: ' + address : '',
-      '',
-      message
-    ].filter(Boolean).join('\n');
-
-    const url = 'mailto:norda@duck.com?subject=' + encodeURIComponent('[NORDA] ' + subject) + '&body=' + encodeURIComponent(body);
-    window.location.href = url;
-    window.toast?.('Opening your email app…');
+    var name=document.getElementById('cf-name').value.trim();
+    var email=document.getElementById('cf-email').value.trim();
+    var subject=document.getElementById('cf-subject').value.trim();
+    var message=document.getElementById('cf-msg').value.trim();
+    if(document.getElementById('cf-site').value)return;
+    if(!name||!email||!subject||!message){status('Please fill in all required fields.','err');return}
+    if(!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)){status('Please enter a valid email address.','err');return}
+    if(!consent.checked){status('Please agree to the Privacy Policy before sending.','err');consent.focus();return}
+    if(!api){status('The contact service is not configured. Please try again later.','err');return}
+    btn.disabled=true;
+    status('Sending your message…','');
+    try{
+      var response=await fetch(api+'/contact',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:name,email:email,subject:subject,message:message,privacyConsent:consent.checked,website:document.getElementById('cf-site').value})
+      });
+      var result=await response.json();
+      if(!response.ok||!result||!result.ok)throw new Error('send_failed');
+      status('Your message has been sent successfully.','ok');
+      form.reset();
+    }catch(error){
+      status('We could not send your message. Please try again later.','err');
+    }finally{btn.disabled=false}
   });
-
-  document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('year').textContent=new Date().getFullYear();
 })();
-</script>
+</script>>
 </body>
 </html><script async data-explicit-opt-in="true" data-deployment-id="dpl_6gL9wDpryeUhkZCPoxcikCPHfEhC" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
