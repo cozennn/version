@@ -183,7 +183,7 @@ function persist(){if(!currentTicket)return;var c=JSON.parse(JSON.stringify(curr
 function updateTabs(){if(tabs.chat)tabs.chat.setAttribute('aria-disabled',hasOpen()?'false':'true')}
 function setView(v){
   if(v==='chat'&&!hasOpen())v='new';view=v;
-  $('.tk-v').forEach(function(el){el.classList.toggle('on',el.getAttribute('data-view')===v)});
+  $('.tk-v').forEach(function(el){var active=el.getAttribute('data-view')===v;el.classList.toggle('on',active);el.setAttribute('aria-hidden',active?'false':'true')});
   var k=v==='detail'?'closed':v;Object.keys(tabs).forEach(function(x){tabs[x].classList.toggle('on',x===k)});
   if(v==='chat'){unread=0;setBadge();scrollLog()}
 }
@@ -242,7 +242,7 @@ function onClosedRemote(){
   loadClosed();
   toast('ticket_closed_msg');
 }
-function poll(){if(!d.hidden&&hasOpen()&&!sending)loadMessages();setTimeout(poll,cp.classList.contains('open')?1500:8000)}
+function poll(){if(!cp)return;if(!d.hidden&&hasOpen()&&!sending)loadMessages();setTimeout(poll,cp.classList.contains('open')?1500:8000)}
 function grow(){if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,110)+'px'}
 function clearFile(){var p=$1('#filePreview');if(p){p.style.display='none';$1('#fileNamePreview').textContent='';$1('#fileSizePreview').textContent='';fileInput.value=''}}
 if(cf)cf.addEventListener('submit',async function(e){
