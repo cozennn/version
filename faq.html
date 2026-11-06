@@ -7,10 +7,10 @@
 <meta name="description" content="Frequently asked questions, terms of use, privacy policy and refund policy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/chat.css">
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script>(function(){var d=document.documentElement,t='light',l='en';try{var raw=localStorage.getItem('norda:theme');t=raw?JSON.parse(raw):'light';if(t!=='light'&&t!=='dark'&&t!=='system')t='light';}catch(e){}try{l=localStorage.getItem('norda_lang')||'en';}catch(e){}if(t==='system')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('js');})();</script>
 </head>
 <body>
@@ -27,7 +27,7 @@
     </nav>
     <div class="nav__tools">
       <div class="lang">
-        <button class="lang__btn" aria-haspopup="listbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9s-1.2 6.6-3.6 9c-2.4-2.4-3.6-5.4-3.6-9s1.2-6.6 3.6-9Z"/></svg> EN</button>
+        <button class="lang__btn" aria-haspopup="listbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9s-1.2 6.6-3.6 9c-2.4-2.4-3.6-5.4-3.6-9s1.2-6.6 3.6-9Z"/></svg><span class="lang__label">EN</span></button>
         <div class="lang__menu" role="listbox" aria-label="Language">
           <button class="lang__item" data-lang="ar" role="option">العربية <small>AR</small></button>
           <button class="lang__item" data-lang="en" role="option">English <small>EN</small></button>
