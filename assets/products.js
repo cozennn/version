@@ -133,4 +133,4 @@ window.NORDA_CATEGORIES = {
 };
 
 // Format price with currency
-window.NORDA_FMT = (n) => "$" + Number(n).toFixed(0);
+window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
