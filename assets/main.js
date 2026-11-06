@@ -285,17 +285,30 @@ function renderCart() {
   });
 }
 
+// ─── Shared page scroll lock (cart + ticket chat) ────────
+const pageScrollLocks = new Set();
+let previousPageOverflow = '';
+window.NORDA_SCROLL_LOCK = (name, locked) => {
+  if (locked) {
+    if (pageScrollLocks.size === 0) previousPageOverflow = document.body.style.overflow;
+    pageScrollLocks.add(name);
+  } else {
+    pageScrollLocks.delete(name);
+  }
+  document.body.style.overflow = pageScrollLocks.size ? 'hidden' : previousPageOverflow;
+};
+
 // ─── Cart open/close ─────────────────────────────────────
 function openCart() {
   document.querySelector('.cart')?.classList.add('is-open');
   document.querySelector('.cart-backdrop')?.classList.add('is-open');
-  document.body.style.overflow = 'hidden';
+  window.NORDA_SCROLL_LOCK('cart', true);
   renderCart();
 }
 function closeCart() {
   document.querySelector('.cart')?.classList.remove('is-open');
   document.querySelector('.cart-backdrop')?.classList.remove('is-open');
-  document.body.style.overflow = '';
+  window.NORDA_SCROLL_LOCK('cart', false);
 }
 window.openCart = openCart;
 window.closeCart = closeCart;
