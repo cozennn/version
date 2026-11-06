@@ -62,13 +62,13 @@ function runEntrances() {
     return;
   }
   gsap.utils.toArray('.nav').forEach(n =>
-    gsap.to(n, { opacity: 1, y: 0, duration: .7, ease: 'power3.out', clearProps: 'transform' })
+    gsap.from(n, { opacity: 0, y: -12, duration: .7, ease: 'power3.out', clearProps: 'transform' })
   );
   gsap.utils.toArray('.hero > *').forEach((n, i) => {
-    gsap.to(n, { opacity: 1, y: 0, duration: .9, ease: 'power3.out', delay: .1 + i * .07 });
+    gsap.from(n, { opacity: 0, y: 24, duration: .9, ease: 'power3.out', delay: .1 + i * .07 });
   });
   gsap.utils.toArray('.section-head > *').forEach((n, i) => {
-    gsap.to(n, { opacity: 1, y: 0, duration: .8, ease: 'power3.out', delay: .1 + i * .06 });
+    gsap.from(n, { opacity: 0, y: 20, duration: .8, ease: 'power3.out', delay: .1 + i * .06 });
   });
   // card reveals
   gsap.utils.toArray('.prod, .store-head > *, .faq-item, .contact-list a, .contact-form').forEach((n, i) => {
@@ -308,18 +308,6 @@ document.addEventListener('click', (e) => {
 });
 
 // ─── Back-to-top FAB ─────────────────────────────────────
-(function backToTop() {
-  const btn = document.querySelector('.fab--top');
-  if (!btn) return;
-  const onScroll = () => btn.classList.toggle('is-visible', window.scrollY > 400);
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-  });
-})();
-
-
 // ─── Init ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
