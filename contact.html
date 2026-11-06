@@ -139,6 +139,7 @@
   function status(message,type){
     out.textContent=message;
     out.className='fmsg'+(type?' '+type:'');
+    out.style.color=type==='err'?'#c33a52':type==='ok'?'#16845b':'var(--muted)';
   }
   form.addEventListener('submit',async function(e){
     e.preventDefault();
@@ -169,6 +170,6 @@
   });
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
-</script>>
+</script>
 </body>
 </html><script async data-explicit-opt-in="true" data-deployment-id="dpl_6gL9wDpryeUhkZCPoxcikCPHfEhC" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
