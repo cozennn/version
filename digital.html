@@ -210,7 +210,7 @@
           <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
           <div class="prod__actions">
             <a class="btn btn--ghost btn--sm" href="product.html?id=${p.id}">Details</a>
-            <button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>
+            ${p.status === "inquiry" ? `<a class="btn btn--primary btn--sm" href="contact.html?product=${encodeURIComponent(p.id)}">Request access</a>` : `<button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>`}
           </div>
         </div>
       </article>`).join('');
