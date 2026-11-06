@@ -173,6 +173,7 @@
 <script src="assets/main.js"></script>
 <script>
 (function(){
+  const esc = window.NORDA_ESC || (v => { const el = document.createElement('span'); el.textContent = String(v ?? ''); return el.innerHTML; });
   const grid = document.getElementById('grid');
   const filtersEl = document.getElementById('filters');
   const params = new URLSearchParams(location.search);
@@ -186,7 +187,7 @@
 
   filtersEl.innerHTML =
     `<button class="chip" data-cat="all" aria-pressed="${current==='all'}">All <small>${all.length}</small></button>` +
-    cats.map(c => `<button class="chip" data-cat="${c}" aria-pressed="${current===c}">${catNames[c]||c} <small>${counts[c]}</small></button>`).join('');
+    cats.map(c => `<button class="chip" data-cat="${esc(c)}" aria-pressed="${current===c}">${esc(catNames[c]||c)} <small>${counts[c]}</small></button>`).join('');
 
   function render() {
     const list = current === 'all' ? all : all.filter(p => p.category === current);
@@ -196,20 +197,20 @@
     }
     grid.innerHTML = list.map(p => `
       <article class="prod">
-        <a href="product.html?id=${p.id}" class="prod__img">
-          <img src="${p.image}" alt="${p.name}" loading="lazy">
-          <span class="prod__badge">${catNames[p.category]||p.category}</span>
+        <a href="product.html?id=${encodeURIComponent(p.id)}" class="prod__img">
+          <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+          <span class="prod__badge">${esc(catNames[p.category]||p.category)}</span>
         </a>
         <div class="prod__body">
           <div class="prod__head">
-            <h3 class="prod__name"><a href="product.html?id=${p.id}">${p.name}</a></h3>
+            <h3 class="prod__name"><a href="product.html?id=${p.id}">${esc(p.name)}</a></h3>
             <span class="prod__price">${window.NORDA_FMT(p.price)}${p.subscription ? '<small style="color:var(--muted);font-size:.75rem;font-weight:600">/' + (p.interval === 'year' ? 'yr' : 'mo') + '</small>' : ''}</span>
           </div>
-          <p class="prod__tagline">${p.tagline}</p>
-          <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${t}</span>`).join('')}</div>
+          <p class="prod__tagline">${esc(p.tagline)}</p>
+          <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
           <div class="prod__actions">
             <a class="btn btn--ghost btn--sm" href="product.html?id=${p.id}">Details</a>
-            <button class="btn btn--primary btn--sm" data-add-to-cart="${p.id}">Add to bag</button>
+            <button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>
           </div>
         </div>
       </article>`).join('');
