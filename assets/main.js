@@ -5,7 +5,6 @@
    ========================================================= */
 
 // ─── GSAP (CDN loaded in HTML <head>) ────────────────────
-const gsap = window.gsap;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ─── Toast ───────────────────────────────────────────────
@@ -55,6 +54,7 @@ const store = {
 
 // ─── GSAP entrances ──────────────────────────────────────
 function runEntrances() {
+  const gsap = window.gsap;
   if (!gsap || reduceMotion) {
     document.querySelectorAll('.nav, .hero > *, .section-head > *').forEach(n => {
       n.style.opacity = 1; n.style.transform = 'none';
