@@ -194,7 +194,7 @@ function setView(v){
 function scrollLog(){if(clog)setTimeout(function(){clog.scrollTop=clog.scrollHeight},40)}
 function buildBub(m){
   var b=d.createElement('div');b.className='bub '+(m.from==='user'?'me':'bot');
-  if(m.text){var p=d.createElement('div');p.textContent=esc(m.text).replace(/\n/g,'<br>');b.appendChild(p)}
+  if(m.text){var p=d.createElement('div');p.textContent=String(m.text);p.style.whiteSpace='pre-wrap';b.appendChild(p)}
   var f=m.file;
   if(f&&(f.name||f.data)){
     var mime=String(f.type||'').toLowerCase();
