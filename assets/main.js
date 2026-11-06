@@ -243,10 +243,12 @@ function addToCart(id, btn, card) {
 
 // ─── Render cart drawer ──────────────────────────────────
 function formatPrice(value) {
-  return typeof window.NORDA_FMT === 'function'
-    ? window.NORDA_FMT(value)
-    : '
-  const items = getCart();
+  if (typeof window.NORDA_FMT === 'function') return window.NORDA_FMT(value);
+  return String(Number(value || 0).toFixed(2));
+}
+
+function renderCart() {
+
   const wrap = document.querySelector('.cart__items');
   const foot = document.querySelector('.cart__foot');
   if (!wrap) return;
