@@ -123,7 +123,7 @@ function applyLang(l){
   var lt=$1('#langTxt');if(lt)lt.textContent=l==='ar'?'EN':l==='en'?'FR':'عربي';
   paintSound();if(clog)refreshChatLang();
 }
-var lb=$1('#langBtn');if(lb)lb.addEventListener('click',function(){var n=LANGS[(LANGS.indexOf(lang)+1)%LANGS.length];sset('norda_lang',n);applyLang(n)});
+// Language selection is handled by the shared dropdown in main.js.
 /* أسعار الجزائر بالدينار وأسعار العملاء خارج الجزائر بالدولار، كلٌّ ثابت بشكل مستقل. */
 /* ===== أدوات ===== */
 function setBusy(b,on){if(b)b.disabled=on}
@@ -188,7 +188,7 @@ function updateTabs(){if(tabs.chat)tabs.chat.setAttribute('aria-disabled',hasOpe
 function setView(v){
   if(v==='chat'&&!hasOpen())v='new';view=v;
   $('.tk-v').forEach(function(el){var active=el.getAttribute('data-view')===v;el.classList.toggle('on',active);el.setAttribute('aria-hidden',active?'false':'true')});
-  var k=v==='detail'?'closed':v;Object.keys(tabs).forEach(function(x){tabs[x].classList.toggle('on',x===k)});
+  var k=v==='detail'?'closed':v;Object.keys(tabs).forEach(function(x){var active=x===k;tabs[x].classList.toggle('on',active);tabs[x].setAttribute('aria-selected',String(active))});
   if(v==='chat'||v==='closed'||v==='detail'){unread=0;setBadge()}if(v==='chat')scrollLog();
 }
 function scrollLog(){if(clog)setTimeout(function(){clog.scrollTop=clog.scrollHeight},40)}
@@ -412,6 +412,6 @@ applyLang(lang);
 var csj=$1('#cf-subject');
 if(csj){var pl=new URLSearchParams(location.search).get('plan'),PN={basic:'الأساسية',standard:'القياسية',premium:'البريميوم',custom:'المخصصة'};if(PN[pl]&&!csj.value)csj.value=t('plan_req')+': '+tr(PN[pl],lang)}
 var last=sget('norda_last_ticket');
-if(last){try{var tk=JSON.parse(last);if(tk&&typeof tk==='object'&&tk.status==='open'&&/^[A-Za-z0-9_-]{1,64}$/.test(String(tk.ticketId||''))){tk.messages=Array.isArray(tk.messages)?tk.messages.slice(-200).filter(function(m){return m&&typeof m==='object'&&(typeof m.text==='string'||(m.file&&typeof m.file==='object'))&&typeof m.time==='number'}):[];currentTicket=tk;lastCount=tk.messages.length;remoteReady=lastCount>0;updateTabs();renderChat();setView('chat');loadMessages()}else{sdel('norda_last_ticket')}}catch(e){sdel('norda_last_ticket')}}
-loadClosed();poll();
+if(cp&&last){try{var tk=JSON.parse(last);if(tk&&typeof tk==='object'&&tk.status==='open'&&/^[A-Za-z0-9_-]{1,64}$/.test(String(tk.ticketId||''))){tk.messages=Array.isArray(tk.messages)?tk.messages.slice(-200).filter(function(m){return m&&typeof m==='object'&&(typeof m.text==='string'||(m.file&&typeof m.file==='object'))&&typeof m.time==='number'}):[];currentTicket=tk;lastCount=tk.messages.length;remoteReady=lastCount>0;updateTabs();renderChat();setView('chat');loadMessages()}else{sdel('norda_last_ticket')}}catch(e){sdel('norda_last_ticket')}}
+if(cp){loadClosed();poll()}
 })();
