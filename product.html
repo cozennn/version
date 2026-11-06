@@ -7,7 +7,7 @@
 <meta name="description" content="Product details, includes and checkout.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.documentElement.lang=localStorage.getItem('norda:lang')||'en';}catch(e){}document.documentElement.classList.add('js');})();</script>
@@ -17,7 +17,7 @@
 <header class="nav">
   <div class="nav__inner">
     <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg></span>NORDA</a>
-    <nav class="nav__links" aria-label="Main">
+    <nav class="nav__links nav__links--desktop" aria-label="Main">
       <a class="nav__link" href="index.html">Home</a>
       <a class="nav__link" href="templates.html">Templates</a>
       <a class="nav__link" href="digital.html">Digital goods</a>
@@ -38,6 +38,10 @@
     </div>
   </div>
 </header>
+
+<nav class="nav__links--mobile" aria-label="Mobile">
+<a class="nav__link" href="index.html"><span>Home</span></a><a class="nav__link" href="templates.html"><span>Templates</span></a><a class="nav__link" href="digital.html"><span>Digital</span></a><a class="nav__link" href="faq.html"><span>FAQ</span></a><a class="nav__link" href="contact.html"><span>Contact</span></a>
+</nav>
 
 <main class="page">
   <div id="productRoot"></div>
@@ -125,7 +129,7 @@
         <p class="prod-page__desc">${p.description}</p>
         <div class="prod-page__includes">
           <h3>Includes</h3>
-          <ul>${p.includes.map(i => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${i}</li>`).join('')}</ul>
+          <ul>${(p.includes || []).map(i => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${i}</li>`).join('')}</ul>
         </div>
         <div class="prod-page__actions">
           <button class="btn btn--primary btn--lg" data-add-to-cart="${p.id}">
