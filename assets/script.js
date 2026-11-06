@@ -106,7 +106,7 @@ Object.assign(DICT,{"نفهم فكرتك، وهدف مشروعك، والجمه�
 /* ===== اللغة ===== */
 Object.assign(DICT,{"آخر تحديث: 22 أكتوبر 2026":["Last updated: October 22, 2026","Dernière mise à jour : 22 octobre 2026"],"تعديلان":["2 revisions","2 révisions"],"4 تعديلات":["4 revisions","4 révisions"],"6 تعديلات":["6 revisions","6 révisions"],"موقع متعدد الصفحات":["Multi-page website","Site multipage"],"موقع متعدد الصفحات (حتى 3 صفحات)":["Multi-page website (up to 3 pages)","Site multipage (jusqu’à 3 pages)"],"موقع متعدد الصفحات: 8 صفحات رئيسية وحتى 16 قسمًا فرعيًا":["Multi-page website: 8 main pages and up to 16 sub-sections","Site multipage : 8 pages principales et jusqu’à 16 sous-sections"],"تحسين SEO أساسي (عناوين وأوصاف)":["Basic SEO (titles and descriptions)","SEO de base (titres et descriptions)"],"تصميم متجاوب مع الأجهزة المحمولة":["Responsive design for mobile devices","Design adaptatif pour les appareils mobiles"],"ربط أداة تحليلات (Analytics)":["Analytics tool integration","Intégration d’un outil d’analyse"],"نسخة احتياطية من ملفات المشروع خلال فترة الدعم":["Backup copy of project files during the support period","Copie de sauvegarde des fichiers du projet pendant la période d’assistance"],"دليل مختصر للنشر وربط الدومين":["Brief guide to publishing and connecting the domain","Guide succinct pour publier le site et connecter le domaine"],"تبدأ من 35$ (7000 دج) ولا يوجد حد أقصى":["Starting at $35 (7,000 DZD), with no upper limit","À partir de 35 $ (7 000 DZD), sans plafond"],"التسليم السريع متاح عند الطلب بسعر يُتفق عليه قبل بدء العمل.":["Rush delivery is available on request at a price agreed before work begins.","La livraison express est possible sur demande, à un prix convenu avant le début du travail."],"العربون 35% يُدفع عند بدء العمل، والباقي 65% عند الرضا عن المعاينة. التفاصيل في سياسة الدفع والاسترداد.":["A 35% deposit is paid when work begins, and the remaining 65% after you approve the preview. See the Payment & Refund Policy for details.","Un acompte de 35 % est versé au début du travail, puis les 65 % restants après validation de l’aperçu. Consultez la politique de paiement et de remboursement."],"تُسلَّم الباقات خلال يومين (الأساسية) و3 أيام (القياسية) و4 أيام (البريميوم). تبدأ المدة بعد دفع العربون واستلام كل المحتوى والمعلومات اللازمة. وأي تأخير من العميل في إرسال المحتوى يمدّ مدة التسليم بقدره.":["Delivery takes 2 days for Basic, 3 days for Standard and 4 days for Premium. The timeline starts after the deposit is paid and all required content and information are received. Any delay by the client in providing content extends the delivery time accordingly.","La livraison prend 2 jours pour Essentielle, 3 jours pour Standard et 4 jours pour Premium. Le délai commence après le paiement de l’acompte et la réception de tous les contenus et renseignements nécessaires. Tout retard du client dans l’envoi des contenus prolonge le délai d’autant."],"تشمل الأساسية تعديلين، والقياسية 4 تعديلات، والبريميوم 6 تعديلات، وكل رسالة واحدة تضم طلباتك تُحسب تعديلًا واحدًا. التعديل الإضافي بعد استنفاد الباقة بسعر 1$. وفي الباقة المخصصة يُحدَّد عدد التعديلات مع كل عميل حسب السعر والنطاق.":["Basic includes 2 revisions, Standard 4 and Premium 6. One message containing your requested changes counts as one revision. Additional revisions cost $1 each. For custom packages, the revision count is agreed with each client according to price and scope.","L’offre Essentielle comprend 2 révisions, Standard 4 et Premium 6. Un message regroupant vos demandes compte comme une révision. Chaque révision supplémentaire coûte 1 $. Pour une offre sur mesure, le nombre de révisions est convenu selon le prix et le périmètre."],"عبر بريدي موب أو محفظة إلكترونية أو Binance أو Grey، ونتفق على الطريقة قبل البدء. عربون 35% عند البدء، ثم 65% بعد معاينة الموقع وقبل تسليمه. التفاصيل في سياسة الدفع والاسترداد.":["Payment is accepted via BaridiMob, an e-wallet, Binance or Grey; we agree on the method before work begins. A 35% deposit is due at the start, and the remaining 65% after previewing the site and before delivery. See the Payment & Refund Policy for details.","Le paiement est possible via BaridiMob, un portefeuille électronique, Binance ou Grey ; le mode est convenu avant le début. Un acompte de 35 % est versé au démarrage, puis les 65 % restants après l’aperçu du site et avant la livraison. Consultez la politique de paiement et de remboursement."],"بالتأكيد. الباقة المخصصة لمن لم يجد في الباقات الخصائص التي يحتاجها، وليست للمشاريع الكبيرة فقط. تبدأ من 35$ (7000 دج) ولا يوجد حد أقصى.":["Absolutely. The custom package is for anyone who cannot find the required features in the listed packages, not only for large projects. It starts at $35 (7,000 DZD), with no upper limit.","Bien sûr. L’offre sur mesure s’adresse à toute personne qui ne trouve pas les fonctionnalités nécessaires dans les offres proposées, et pas uniquement aux grands projets. Elle commence à 35 $ (7 000 DZD), sans plafond."],"خدمتنا هي تصميم الموقع وتسليمه كملفات جاهزة. النشر والاستضافة والدومين مسؤولية العميل، ويمكننا إرشاده إلى طريقة النشر حسب باقته. لا نضمن نتائج بعد الإطلاق كعدد الزيارات أو المبيعات أو ترتيب الموقع في محركات البحث.":["Our service is to design the website and deliver it as ready-to-use files. Publishing, hosting and the domain are the client's responsibility; we can provide publishing guidance according to the package. We do not guarantee post-launch results such as traffic, sales or search-engine rankings.","Notre service consiste à concevoir le site et à le livrer sous forme de fichiers prêts à l’emploi. La publication, l’hébergement et le domaine relèvent du client ; nous pouvons le guider selon son offre. Nous ne garantissons pas les résultats après lancement, tels que le trafic, les ventes ou le classement dans les moteurs de recherche."],"تمر البيانات التي ترسلها عبر Cloudflare ثم تصل إلينا لمعالجة طلبك. تُحمى البيانات أثناء النقل وفق وسائل الحماية المتاحة لدى الخدمة، وقد نستخدم تطبيق مراسلة لإيصال الرسائل ومتابعتها.":["The data you send passes through Cloudflare and then reaches us so we can process your request. It is protected in transit using the security measures available from the service; we may also use a messaging app to deliver and follow up on messages.","Les données que vous envoyez passent par Cloudflare avant de nous parvenir pour traiter votre demande. Elles sont protégées pendant le transfert selon les mesures de sécurité proposées par le service ; nous pouvons également utiliser une application de messagerie pour recevoir et suivre les messages."],"الدفعة الأولى (العربون 35%)":["First payment (35% deposit)","Premier paiement (acompte de 35 %)"],"الدفعة الثانية (65%)":["Second payment (65%)","Deuxième paiement (65 %)"],"إذا لم يرد العميل خلال 7 أيام، يُوقف المشروع مؤقتًا. يمكن استئنافه خلال 30 يومًا برسوم إعادة جدولة 5$. بعد ذلك يُلغى المشروع ولا يُسترد العربون.":["If the client does not respond within 7 days, the project is paused. It can be resumed within 30 days for a $5 rescheduling fee. After that, the project is cancelled and the deposit is not refunded.","Sans réponse du client dans les 7 jours, le projet est suspendu. Il peut reprendre dans les 30 jours moyennant des frais de replanification de 5 $. Passé ce délai, le projet est annulé et l’acompte n’est pas remboursé."],});
 var LANGS=['ar','en','fr'],LI={en:0,fr:1};
-function detect(){var u=new URLSearchParams(location.search).get('lang');if(u&&LANGS.indexOf(u)>-1)return u;var s=sget('norda_lang');if(s&&LANGS.indexOf(s)>-1)return s;var n=String((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();if(n.indexOf('ar')===0)return 'ar';if(n.indexOf('fr')===0)return 'fr';if(n.indexOf('en')===0)return 'en';return 'ar'}
+function detect(){var u=new URLSearchParams(location.search).get('lang');if(u&&LANGS.indexOf(u)>-1){sset('norda_lang',u);return u;}var s=sget('norda_lang');if(s&&LANGS.indexOf(s)>-1)return s;var n=String((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();if(n.indexOf('ar')===0)return 'ar';if(n.indexOf('fr')===0)return 'fr';if(n.indexOf('en')===0)return 'en';return 'ar'}
 var lang=detect();
 function t(k){return (D[lang]&&D[lang][k])||D.ar[k]||k}
 function tr(s,l){var e=DICT[s];if(e)return l==='ar'?s:e[LI[l]];for(var k in DICT){if(DICT[k]&&DICT[k][0]===s)return l==='ar'?k:DICT[k][LI[l]]}return s}
@@ -217,6 +217,7 @@ function renderMessages(msgs,force){
 function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=setTimeout(function(){typing=false;var tp=clog.querySelector('.typing');if(tp)tp.remove()},12000)}
 function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+currentTicket.ticketId;renderMessages(currentTicket.messages||[],true)}
 async function createTicket(name){
+  if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
   try{var r=await fetch(API+'/ticket/new',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:userId,userName:name})});var j=await r.json();
     if(j.ok&&j.ticket){currentTicket=j.ticket;persist();lastCount=(currentTicket.messages||[]).length;updateTabs();renderChat();return j}}catch(e){}
   return null;
@@ -226,12 +227,21 @@ async function startNew(){
   setBusy(btn,true);var j=await createTicket(custom||t('guest'));setBusy(btn,false);
   if(j){setView('chat');if(!j.existing)toast('ticket_new_msg');setTimeout(function(){ta.focus()},120)}else toast('msg_err');
 }
-async function apiSend(p){var r=await fetch(API+'/ticket/'+currentTicket.ticketId+'/message?userId='+encodeURIComponent(userId),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}
+async function apiSend(p,ticket,tid){
+  if(!API)throw new Error('NORDA API endpoint is not configured');
+  var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/message?userId='+encodeURIComponent(userId),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+  return r.json();
+}
 async function loadMessages(){
   if(!hasOpen()||sending)return;
-  try{var r=await fetch(API+'/ticket/'+currentTicket.ticketId+'/messages?userId='+encodeURIComponent(userId));var j=await r.json();if(!j.ok||sending)return;
+  if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return}
+  var ticket=currentTicket,tid=String(ticket.ticketId);
+  try{
+    var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/messages?userId='+encodeURIComponent(userId));
+    var j=await r.json();
+    if(currentTicket!==ticket||String(ticket.ticketId)!==tid||!j.ok||sending)return;
     var was=remoteReady;
-    if(j.ticketId&&j.ticketId!==currentTicket.ticketId){currentTicket.ticketId=j.ticketId;$1('#ticketIdLabel').textContent='#'+j.ticketId}
+    if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId;$1('#ticketIdLabel').textContent='#'+j.ticketId}
     if(j.status==='closed'){onClosedRemote();return}
     var ms=j.messages||[];
     if(ms.length!==lastCount){var added=ms.length-lastCount,last=ms[ms.length-1];lastCount=ms.length;currentTicket.messages=ms;if(last&&last.from!=='user')typing=false;renderMessages(ms);persist();
@@ -256,23 +266,32 @@ function clearFile(){var p=$1('#filePreview');if(p){p.style.display='none';$1('#
 if(cf)cf.addEventListener('submit',async function(e){
   e.preventDefault();
   if(!hasOpen()||sending){if(!hasOpen())toast('ticket_closed_msg');return}
-  var btn=$1('#chBtn'),msg=ta.value.trim(),file=pendingFile;if(!msg&&!file)return;
+  var btn=$1('#chBtn'),msg=ta.value.trim(),file=pendingFile,ticket=currentTicket,tid=String(ticket.ticketId);if(!msg&&!file)return;
   var payload={text:msg,file:file?file.data:null,fileName:file?file.name:null,fileType:file?file.type:null};
   ta.value='';grow();pendingFile=null;clearFile();
   currentTicket.messages=currentTicket.messages||[];
   currentTicket.messages.push({from:'user',text:msg,time:Date.now(),file:file?{name:file.name,type:file.type,data:file.data}:null});
   typing=false;renderMessages(currentTicket.messages);sending=true;setBusy(btn,true);
-  try{var j=await apiSend(payload);if(j&&j.ok){currentTicket.messages=j.messages||currentTicket.messages;lastCount=currentTicket.messages.length;setTyping(true);renderMessages(currentTicket.messages);persist()}else toast('msg_err')}catch(err){toast('msg_err')}
-  sending=false;setBusy(btn,false);ta.focus();
+  try{
+    var j=await apiSend(payload,ticket,tid);
+    if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
+    if(j&&j.ok){ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(true);renderMessages(ticket.messages);persist()}else toast('msg_err');
+  }catch(err){if(currentTicket===ticket)toast('msg_err')}
+  finally{sending=false;setBusy(btn,false);if(currentTicket===ticket&&ta)ta.focus()}
 });
 if(ta){ta.addEventListener('input',grow);ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(cf.requestSubmit)cf.requestSubmit();else cf.dispatchEvent(new Event('submit',{cancelable:true}))}})}
 var bc=$1('#btnCloseTicket');
 if(bc)bc.addEventListener('click',async function(){
-  if(!hasOpen())return;if(!confirm(t('ticket_close_confirm')))return;
-  try{var r=await fetch(API+'/ticket/'+currentTicket.ticketId+'/close?userId='+encodeURIComponent(userId),{method:'POST'});var j=await r.json();
-    
-if(j.ok){
-  archiveClosed(currentTicket);
+  if(!hasOpen())return;
+  if(!confirm(t('ticket_close_confirm')))return;
+  var ticket=currentTicket,tid=String(ticket.ticketId);
+  if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');toast('msg_err');return}
+  try{
+    var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/close?userId='+encodeURIComponent(userId),{method:'POST'});
+    var j=await r.json();
+    if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
+    if(j.ok){
+  archiveClosed(ticket);
   currentTicket=null;
   sdel('norda_last_ticket');
   setTyping(false);
@@ -332,7 +351,7 @@ if(tabs.chat)tabs.chat.addEventListener('click',function(){if(hasOpen())setView(
 if(tabs.closed)tabs.closed.addEventListener('click',function(){setView('closed');loadClosed()});
 var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',startNew);
 var chn=$1('#ch-name');if(chn)chn.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();startNew()}});
-var chatPreviousOverflow='';
+var chatPreviousOverflow='',chatSavedScrollY=0;
 function chatOpen(o){
   if(!cp||!fab)return;
   cp.classList.toggle('open',o);
@@ -341,6 +360,7 @@ function chatOpen(o){
   fab.classList.toggle('hidden',o);
   if(o){
     if(window.innerWidth<=520){
+      chatSavedScrollY=window.pageYOffset||d.documentElement.scrollTop||0;
       if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',true);
       else{chatPreviousOverflow=d.body.style.overflow;d.body.style.overflow='hidden'}
     }
@@ -350,6 +370,7 @@ function chatOpen(o){
   }else{
     if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',false);
     else d.body.style.overflow=chatPreviousOverflow;
+    if(window.innerWidth<=520)window.requestAnimationFrame(function(){window.scrollTo(0,chatSavedScrollY)});
   }
 }
 if(fab)fab.addEventListener('click',function(){chatOpen(!cp.classList.contains('open'))});
