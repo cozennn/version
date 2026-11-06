@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.documentElement.lang=localStorage.getItem('norda:lang')||'en';}catch(e){}document.documentElement.classList.add('js');})();</script>
+<script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;var l=localStorage.getItem('norda_lang')||'en';document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';}catch(e){}document.documentElement.classList.add('js');})();</script>
 </head>
 <body>
 
