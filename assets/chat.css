@@ -62,7 +62,29 @@
   align-items: center;
   justify-content: center;
   border: 2px solid var(--bg);
+  pointer-events: none;
 }
+
+.tk-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 88px;
+  transform: translate(-50%, 20px);
+  background: var(--text);
+  color: var(--surface);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 650;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s var(--ease);
+  z-index: 5;
+  white-space: nowrap;
+  max-width: calc(100% - 24px);
+}
+.tk-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
 .fab-badge.show { display: flex; }
 
 /* نافذة الدردشة */
