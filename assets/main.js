@@ -49,7 +49,7 @@ const store = {
     el.classList.add('is-gone');
     setTimeout(() => el.remove(), 700);
     start();
-  }, reduceMotion ? 300 : 3000);
+  }, reduceMotion ? 300 : 700);
 })();
 
 // ─── GSAP entrances ──────────────────────────────────────
