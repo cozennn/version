@@ -348,7 +348,7 @@ img { height: auto; }
 .store-head p { max-width: 60ch; }
 
 /* ============ CART DRAWER ============ */
-.cart-backdrop { position: fixed; inset: 0; z-index: 1100; background: #1d193452; opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; }
+.cart-backdrop { position: fixed; inset: 0; z-index: 1100; background: #1d193452; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s, backdrop-filter .35s; }
 .cart-backdrop.is-open { opacity: 1; visibility: visible; }
 .cart { position: fixed; top: 0; right: 0; bottom: 0; z-index: 1110; width: min(440px, 100vw); background: var(--raised); border-left: 1px solid var(--line); box-shadow: -24px 0 60px -20px #0006; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .45s var(--ease); }
 [dir="rtl"] .cart {
