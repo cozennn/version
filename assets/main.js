@@ -247,7 +247,7 @@ function addToCart(id, btn, card) {
 // ─── Render cart drawer ──────────────────────────────────
 function formatPrice(value) {
   if (typeof window.NORDA_FMT === 'function') return window.NORDA_FMT(value);
-  return String(Number(value || 0).toFixed(2));
+  return '$' + Number(value || 0).toFixed(2);
 }
 
 function renderCart() {
@@ -302,9 +302,11 @@ window.NORDA_SCROLL_LOCK = (name, locked) => {
 };
 
 // ─── Cart open/close ─────────────────────────────────────
+let cartSavedScrollY = 0;
 function openCart() {
   document.querySelector('.cart')?.classList.add('is-open');
   document.querySelector('.cart-backdrop')?.classList.add('is-open');
+  if (window.innerWidth <= 520) cartSavedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
   window.NORDA_SCROLL_LOCK('cart', true);
   renderCart();
 }
@@ -312,6 +314,7 @@ function closeCart() {
   document.querySelector('.cart')?.classList.remove('is-open');
   document.querySelector('.cart-backdrop')?.classList.remove('is-open');
   window.NORDA_SCROLL_LOCK('cart', false);
+  if (window.innerWidth <= 520) requestAnimationFrame(() => window.scrollTo(0, cartSavedScrollY));
 }
 window.openCart = openCart;
 window.closeCart = closeCart;
