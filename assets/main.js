@@ -242,6 +242,108 @@ function addToCart(id, btn, card) {
 }
 
 // ─── Render cart drawer ──────────────────────────────────
+function formatPrice(value) {
+  return typeof window.NORDA_FMT === 'function'
+    ? window.NORDA_FMT(value)
+    : '
+  const items = getCart();
+  const wrap = document.querySelector('.cart__items');
+  const foot = document.querySelector('.cart__foot');
+  if (!wrap) return;
+  if (!items.length) {
+    wrap.innerHTML = `
+      <div class="cart__empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        <p>Your bag is empty</p>
+        <a href="templates.html" class="btn btn--ghost btn--sm">Browse templates</a>
+      </div>`;
+    if (foot) foot.hidden = true;
+    return;
+  }
+  if (foot) foot.hidden = false;
+  wrap.innerHTML = items.map(it => `
+    <div class="cart-item" data-id="${esc(it.id)}">
+      <div class="cart-item__img">${it.image ? `<img src="${esc(it.image)}" alt="">` : ''}</div>
+      <div>
+        <div class="cart-item__name">${esc(it.name)}</div>
+        <div class="cart-item__meta">${it.subscription ? (it.interval === 'year' ? 'Yearly subscription' : 'Monthly subscription') : 'One-time · Qty ' + it.qty}</div>
+        <button class="cart-item__remove" data-remove="${esc(it.id)}" aria-label="Remove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="cart-item__price">${formatPrice(it.price * it.qty)}${it.subscription ? '<small>/' + (it.interval === 'year' ? 'yr' : 'mo') + '</small>' : ''}</div>
+    </div>
+  `).join('');
+  if (foot) foot.querySelector('strong').textContent = formatPrice(cartTotal());
+  wrap.querySelectorAll('[data-remove]').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.remove;
+      setCart(getCart().filter(x => x.id !== id));
+    });
+  });
+}
+
+// ─── Cart open/close ─────────────────────────────────────
+function openCart() {
+  document.querySelector('.cart')?.classList.add('is-open');
+  document.querySelector('.cart-backdrop')?.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+  renderCart();
+}
+function closeCart() {
+  document.querySelector('.cart')?.classList.remove('is-open');
+  document.querySelector('.cart-backdrop')?.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+window.openCart = openCart;
+window.closeCart = closeCart;
+
+// ─── Global click handlers ───────────────────────────────
+document.addEventListener('click', (e) => {
+  const addBtn = e.target.closest('[data-add-to-cart]');
+  if (addBtn) {
+    e.preventDefault();
+    addToCart(addBtn.dataset.addToCart, addBtn, addBtn.closest('.prod, .prod-page'));
+    return;
+  }
+  if (e.target.closest('[data-cart-open]')) { e.preventDefault(); openCart(); return; }
+  if (e.target.closest('[data-cart-close]') || e.target.closest('.cart-backdrop')) { closeCart(); return; }
+});
+
+// ─── Back-to-top FAB ─────────────────────────────────────
+// ─── Init ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  renderCart();
+  // ESC closes cart
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+  });
+});
+// ─── Social links: driven by config.js ───────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const cfg = window.NORDA_CONFIG;
+  if (!cfg) return; // config.js not loaded on this page → leave links as authored
+  const socials = cfg.SOCIAL || {};
+  const base = { instagram: 'https://instagram.com/', telegram: 'https://t.me/' };
+  const clean = (v) => String(v || '').trim().replace(/^@/, '');
+
+  document.querySelectorAll('a[data-social], a[href*="instagram"], a[href*="t.me"]').forEach(link => {
+    const net = link.dataset.social || (link.getAttribute('href').includes('instagram') ? 'instagram' : 'telegram');
+    const handle = clean(socials[net]);
+    const host = link.closest('li') || link;
+    if (!handle) { host.style.display = 'none'; return; }
+    link.href = base[net] + encodeURIComponent(handle);
+  });
+
+  document.querySelectorAll('[data-social-handle]').forEach(el => {
+    const handle = clean(socials[el.dataset.socialHandle]);
+    if (handle) el.textContent = '@' + handle;
+  });
+});
+ + Number(value || 0).toFixed(2);
+}
+
 function renderCart() {
   const items = getCart();
   const wrap = document.querySelector('.cart__items');
@@ -268,10 +370,10 @@ function renderCart() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
-      <div class="cart-item__price">${window.NORDA_FMT(it.price * it.qty)}${it.subscription ? '<small>/' + (it.interval === 'year' ? 'yr' : 'mo') + '</small>' : ''}</div>
+      <div class="cart-item__price">${formatPrice(it.price * it.qty)}${it.subscription ? '<small>/' + (it.interval === 'year' ? 'yr' : 'mo') + '</small>' : ''}</div>
     </div>
   `).join('');
-  if (foot) foot.querySelector('strong').textContent = window.NORDA_FMT(cartTotal());
+  if (foot) foot.querySelector('strong').textContent = formatPrice(cartTotal());
   wrap.querySelectorAll('[data-remove]').forEach(b => {
     b.addEventListener('click', () => {
       const id = b.dataset.remove;
