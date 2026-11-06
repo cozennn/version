@@ -391,7 +391,7 @@ window.NORDA_SET_LANGUAGE=function(l){if(LANGS.indexOf(l)===-1)return;sset('nord
 applyLang(lang);
 /* تعبئة موضوع نموذج التواصل عند القدوم من صفحة الباقات */
 var csj=$1('#cf-subject');
-if(csj){var pl=new URLSearchParams(location.search).get('plan'),PN={basic:'الأساسية',standard:'القياسية',premium:'البريميوم',custom:'المخصصة'};if(PN[pl]&&!csj.value)csj.value=t('plan_req')+': '+tr(PN[pl],lang)}
+if(csj){var params=new URLSearchParams(location.search),pl=params.get('plan'),productId=params.get('product'),PN={basic:'الأساسية',standard:'القياسية',premium:'البريميوم',custom:'المخصصة'};if(PN[pl]&&!csj.value)csj.value=t('plan_req')+': '+tr(PN[pl],lang);if(productId&&!csj.value){var product=(window.NORDA_PRODUCTS||[]).find(function(p){return p.id===productId});if(product)csj.value='Product access request: '+product.name}}
 var last=sget('norda_last_ticket');
 if(cp&&last){try{var tk=JSON.parse(last);if(tk&&typeof tk==='object'&&tk.status==='open'&&/^[A-Za-z0-9_-]{1,64}$/.test(String(tk.ticketId||''))){tk.messages=Array.isArray(tk.messages)?tk.messages.slice(-200).filter(function(m){return m&&typeof m==='object'&&(typeof m.text==='string'||(m.file&&typeof m.file==='object'))&&typeof m.time==='number'}):[];currentTicket=tk;lastCount=tk.messages.length;remoteReady=lastCount>0;updateTabs();renderChat();setView('chat');loadMessages()}else{sdel('norda_last_ticket')}}catch(e){sdel('norda_last_ticket')}}
 if(cp){renderClosed();poll()}
