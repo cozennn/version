@@ -340,12 +340,16 @@ function chatOpen(o){
   fab.setAttribute('aria-expanded',o?'true':'false');
   fab.classList.toggle('hidden',o);
   if(o){
-    if(window.innerWidth<=520){chatPreviousOverflow=d.body.style.overflow;d.body.style.overflow='hidden'}
+    if(window.innerWidth<=520){
+      if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',true);
+      else{chatPreviousOverflow=d.body.style.overflow;d.body.style.overflow='hidden'}
+    }
     unread=0;setBadge();var nm=$1('#ch-name');if(!nm.value)nm.value=sget('norda_name')||'';
     if(hasOpen()){loadMessages();if(view==='new')setView('chat')}
     setTimeout(function(){if(view==='chat'&&ta)ta.focus();else if(view==='new'&&nm)nm.focus()},150);
   }else{
-    d.body.style.overflow=chatPreviousOverflow;
+    if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',false);
+    else d.body.style.overflow=chatPreviousOverflow;
   }
 }
 if(fab)fab.addEventListener('click',function(){chatOpen(!cp.classList.contains('open'))});
