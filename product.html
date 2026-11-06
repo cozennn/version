@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
-<script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;var l=localStorage.getItem('norda_lang')||'en';document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';}catch(e){}document.documentElement.classList.add('js');})();</script>
+<script>(function(){var d=document.documentElement,t='light',l='en';try{var raw=localStorage.getItem('norda:theme');t=raw?JSON.parse(raw):'light';if(t!=='light'&&t!=='dark'&&t!=='system')t='light';}catch(e){}try{l=localStorage.getItem('norda_lang')||'en';}catch(e){}if(t==='system')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('js');})();</script>
 </head>
 <body>
 
@@ -136,14 +136,12 @@
           </button>
           <a class="btn btn--ghost btn--lg" href="contact.html">Ask a question</a>
         </div>
-        <p style="font-size:.8125rem;color:var(--muted)">Instant delivery after payment. No account needed.</p>
+        <p style="font-size:.8125rem;color:var(--muted)">Delivery is arranged after your order is confirmed. No account needed.</p>
       </div>
     </section>
   `;
 
-  // Wrap prod-page in a .prod so fly-to-bag can find the image
-  const card = root.querySelector('.prod-page');
-  card?.classList.add('prod');
+  // The fly-to-bag handler also supports .prod-page directly.
 
   // Animate after deferred CDN scripts have loaded.
   window.addEventListener('load', () => {
@@ -158,4 +156,4 @@
 </script>
 <script src="assets/script.js"></script>
 </body>
-</html><script async data-explicit-opt-in="true" data-deployment-id="dpl_6gL9wDpryeUhkZCPoxcikCPHfEhC" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
+</html>
