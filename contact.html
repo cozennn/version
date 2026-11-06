@@ -7,7 +7,7 @@
 <meta name="description" content="Get in touch with NORDA. Email, Telegram, Instagram — or send a message.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.documentElement.lang=localStorage.getItem('norda:lang')||'en';}catch(e){}document.documentElement.classList.add('js');})();</script>
@@ -17,7 +17,7 @@
 <header class="nav">
   <div class="nav__inner">
     <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg></span>NORDA</a>
-    <nav class="nav__links" aria-label="Main">
+    <nav class="nav__links nav__links--desktop" aria-label="Main">
       <a class="nav__link" href="index.html">Home</a>
       <a class="nav__link" href="templates.html">Templates</a>
       <a class="nav__link" href="digital.html">Digital goods</a>
@@ -38,6 +38,14 @@
     </div>
   </div>
 </header>
+
+<nav class="nav__links--mobile" aria-label="Mobile">
+  <a class="nav__link" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
+  <a class="nav__link" href="templates.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Templates</span></a>
+  <a class="nav__link" href="digital.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Digital</span></a>
+  <a class="nav__link" href="faq.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3m.1 4h.01"/></svg><span>FAQ</span></a>
+  <a class="nav__link" href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg><span>Contact</span></a>
+</nav>
 
 <main class="page">
   <section class="contact-grid">
@@ -149,24 +157,27 @@
     var message=document.getElementById('cf-msg').value.trim();
     if(document.getElementById('cf-site').value)return;
     if(!name||!email||!subject||!message){status('Please fill in all required fields.','err');return}
-    if(!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)){status('Please enter a valid email address.','err');return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){status('Please enter a valid email address.','err');return}
     if(!consent.checked){status('Please agree to the Privacy Policy before sending.','err');consent.focus();return}
     if(!api){status('The contact service is not configured. Please try again later.','err');return}
     btn.disabled=true;
     status('Sending your message…','');
+    var controller=new AbortController();
+    var timeout=setTimeout(function(){controller.abort()},15000);
     try{
       var response=await fetch(api+'/contact',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:name,email:email,subject:subject,message:message,privacyConsent:consent.checked,website:document.getElementById('cf-site').value})
+        body:JSON.stringify({name:name,email:email,subject:subject,message:message,privacyConsent:consent.checked,website:document.getElementById('cf-site').value}),
+        signal:controller.signal
       });
       var result=await response.json();
       if(!response.ok||!result||!result.ok)throw new Error('send_failed');
       status('Your message has been sent successfully.','ok');
       form.reset();
     }catch(error){
-      status('We could not send your message. Please try again later.','err');
-    }finally{btn.disabled=false}
+      status(error.name==='AbortError'?'The request timed out. Please check your connection and try again.':'We could not send your message. Please try again later.','err');
+    }finally{clearTimeout(timeout);btn.disabled=false}
   });
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
