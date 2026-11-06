@@ -310,7 +310,7 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   
-  window.addEventListener('load', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const P = window.NORDA_PRODUCTS || [];
     const fmt = window.NORDA_FMT;
     const esc = (v) => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
