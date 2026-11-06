@@ -4,7 +4,7 @@
    ========================================================= */
 
 :root {
-  --font: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font: "Manrope", "Tajawal", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   
   --fs-2xs: .75rem; --fs-xs: .8125rem; --fs-sm: .875rem; --fs-md: .9375rem;
@@ -57,6 +57,8 @@
   --shadow: 0 1px 0 #ffffff0a inset, 0 18px 40px -26px #000c;
   --shadow-pop: 0 24px 60px -18px #000000bf, 0 0 0 1px #ffffff14;
 }
+
+html[dir="rtl"] { --font: "Tajawal", "Manrope", ui-sans-serif, system-ui, sans-serif; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
