@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script>(function(){try{var t=JSON.parse(localStorage.getItem('norda:theme')||'"light"');if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;var l=localStorage.getItem('norda_lang')||'en';document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';}catch(e){}document.documentElement.classList.add('js');})();</script>
+<script>(function(){var d=document.documentElement,t='light',l='en';try{var raw=localStorage.getItem('norda:theme');t=raw?JSON.parse(raw):'light';if(t!=='light'&&t!=='dark'&&t!=='system')t='light';}catch(e){}try{l=localStorage.getItem('norda_lang')||'en';}catch(e){}if(t==='system')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('js');})();</script>
 </head>
 <body>
 
@@ -113,8 +113,10 @@
   <section class="section section--tight" id="privacy">
     <h2 class="h2" style="margin-bottom:16px">Privacy Policy</h2>
     <div style="max-width:70ch;color:var(--muted);font-size:.9375rem;line-height:1.75;display:grid;gap:14px">
-<p><strong style="color:var(--text)">What we collect.</strong> When you use the contact form, the details you enter (name, email, country, address, subject and message) are included in an email draft on your device. We do not currently process payments or collect payment details through this website.</p>      <p><strong style="color:var(--text)">What we don't do.</strong> We don't run ads, we don't sell your data, and we don't use third-party analytics that track you across sites.</p>
-      <p><strong style="color:var(--text)">Cookies.</strong> The site uses a single localStorage entry for your preferred theme (light/dark) and language. Nothing else.</p>
+<p><strong style="color:var(--text)">What we collect.</strong> When you submit the contact form, we receive the name, email address, subject and message you provide. When you use support chat, we receive your chat identifier, ticket details, messages and any files you choose to attach. Do not send sensitive payment information through the website.</p>
+      <p><strong style="color:var(--text)">How information is processed.</strong> Contact form submissions and support chat requests are sent to our Cloudflare Worker for processing and support handling. Support messages may be forwarded to Telegram so NORDA can respond. Cloudflare and Telegram process data under their own privacy terms. We do not sell your personal information or use it for advertising.</p>
+      <p><strong style="color:var(--text)">Browser storage.</strong> The website stores preferences and cart contents in localStorage. Support chat also stores a random chat identifier, your name if provided, the current or last ticket, notification preferences and a local archive of closed tickets. A session marker may be stored in sessionStorage to control the intro screen. You can clear this information through your browser settings; doing so may remove your locally stored chat history and cart.</p>
+      <p><strong style="color:var(--text)">External services.</strong> The site loads fonts from Google Fonts and the GSAP animation library from jsDelivr. These services may receive technical information such as your IP address when your browser requests their resources. We do not currently use third-party analytics or advertising trackers.</p>
       <p><strong style="color:var(--text)">Your rights.</strong> You can ask us to delete your email from our records at any time by writing to <a href="mailto:norda@duck.com" style="text-decoration:underline">norda@duck.com</a>.</p>
     </div>
   </section>
@@ -123,7 +125,7 @@
     <h2 class="h2" style="margin-bottom:16px">Payment &amp; Refund Policy</h2>
     <div style="max-width:70ch;color:var(--muted);font-size:.9375rem;line-height:1.75;display:grid;gap:14px">
       <p><strong style="color:var(--text)">Payment.</strong> Online payment processing is not currently enabled on this website. Do not submit payment through the site. Contact <a href="mailto:norda@duck.com" style="text-decoration:underline">norda@duck.com</a> to agree on an order and payment method before paying.</p>
-      <p><strong style="color:var(--text)">Refunds.</strong> Because digital products are delivered instantly and can't be "returned," all sales are final. We do offer refunds in these cases:</p>
+      <p><strong style="color:var(--text)">Refunds.</strong> Digital delivery is arranged after an order is confirmed. Refund eligibility is assessed based on whether delivery has taken place and whether the delivered files match the description. We do offer refunds in these cases:</p>
       <ul style="list-style:disc;padding-left:20px;display:grid;gap:6px">
         <li>The file is broken or doesn't match the description.</li>
         <li>You were charged twice by mistake.</li>
@@ -169,4 +171,4 @@
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="assets/script.js"></script>
 </body>
-</html><script async data-explicit-opt-in="true" data-deployment-id="dpl_6gL9wDpryeUhkZCPoxcikCPHfEhC" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
+</html>
