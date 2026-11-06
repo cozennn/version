@@ -89,6 +89,7 @@ window.NORDA_PRODUCTS = [
   },
   {
     id: "dig-norda-plus",
+    status: "inquiry",
     type: "digital",
     name: "NORDA Plus",
     tagline: "Monthly access to all templates",
@@ -104,6 +105,7 @@ window.NORDA_PRODUCTS = [
   },
   {
     id: "dig-norda-pro",
+    status: "inquiry",
     type: "digital",
     name: "NORDA Pro",
     tagline: "Yearly access + 1:1 review",
