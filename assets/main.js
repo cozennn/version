@@ -217,8 +217,8 @@ const animateProduct = (button, card) => {
   );
   motion.onfinish = () => fly.remove();
   motion.oncancel = () => fly.remove();
-  button.classList.add('is-added');
-  setTimeout(() => button.classList.remove('is-added'), 1400);
+  button?.classList.add('is-added');
+  setTimeout(() => button?.classList.remove('is-added'), 1400);
   bag.animate(
     [
       { transform: 'scale(1)' },
@@ -317,6 +317,7 @@ function closeCart() {
   if (window.innerWidth <= 520) requestAnimationFrame(() => window.scrollTo(0, cartSavedScrollY));
 }
 window.openCart = openCart;
+window.NORDA_ESC = esc;
 window.closeCart = closeCart;
 
 // ─── Global click handlers ───────────────────────────────
