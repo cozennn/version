@@ -57,13 +57,7 @@
   </div>
 
   <div class="page">
-    <div class="filters" id="filters">
-      <button class="chip" data-filter="all" aria-pressed="true">All <small>0</small></button>
-      <button class="chip" data-filter="animation" aria-pressed="false">Animation</button>
-      <button class="chip" data-filter="navigation" aria-pressed="false">Navigation</button>
-      <button class="chip" data-filter="layout" aria-pressed="false">Layout</button>
-      <button class="chip" data-filter="form" aria-pressed="false">Form</button>
-    </div>
+    <div class="filters" id="filters" role="toolbar" aria-label="Filter templates"></div>
 
     <div class="grid-products" id="products"></div>
   </div>
@@ -176,29 +170,53 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 document.addEventListener('DOMContentLoaded', () => {
   const P = (window.NORDA_PRODUCTS || []).filter(p => p.type === 'template');
-  const fmt = window.NORDA_FMT;
+  const fmt = window.NORDA_FMT || (n => '$' + Number(n).toFixed(0));
+  const names = window.NORDA_CATEGORIES || {};
+  const filters = document.getElementById('filters');
+  const grid = document.getElementById('products');
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const categories = [...new Set(P.map(p => p.category).filter(Boolean))];
+  const counts = categories.reduce((out, category) => {
+    out[category] = P.filter(p => p.category === category).length;
+    return out;
+  }, {});
   let filter = 'all';
+
+  filters.innerHTML =
+    `<button class="chip" data-filter="all" aria-pressed="true">All <small>${P.length}</small></button>` +
+    categories.map(category =>
+      `<button class="chip" data-filter="${esc(category)}" aria-pressed="false">${esc(names[category] || category)} <small>${counts[category]}</small></button>`
+    ).join('');
 
   const render = () => {
     const list = filter === 'all' ? P : P.filter(p => p.category === filter);
-    document.getElementById('products').innerHTML = list.map(p => `
-      <article class="prod" data-id="${p.id}">
-        <a class="prod__img" href="product.html?id=${p.id}"><img src="${p.image}" alt="${p.name}" loading="lazy"></a>
+    grid.innerHTML = list.map(p => `
+      <article class="prod" data-id="${esc(p.id)}">
+        <a class="prod__img" href="product.html?id=${encodeURIComponent(p.id)}">
+          <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">
+        </a>
         <div class="prod__body">
-          <div class="prod__head"><a class="prod__name" href="product.html?id=${p.id}">${p.name}</a><span class="prod__price">${fmt(p.price)}</span></div>
-          <p class="prod__tagline">${p.tagline}</p>
-          <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${t}</span>`).join('')}</div>
-          <div class="prod__actions"><button class="btn btn--primary btn--sm" data-add-to-cart="${p.id}">Add to bag</button></div>
+          <div class="prod__head">
+            <a class="prod__name" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
+            <span class="prod__price">${fmt(p.price)}</span>
+          </div>
+          <p class="prod__tagline">${esc(p.tagline)}</p>
+          <div class="prod__tags">${(p.tags || []).map(tag => `<span class="prod__tag">${esc(tag)}</span>`).join('')}</div>
+          <div class="prod__actions"><button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button></div>
         </div>
       </article>`).join('');
-    document.querySelectorAll('.filters [data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+    filters.querySelectorAll('[data-filter]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+    });
   };
 
-  document.querySelectorAll('.filters [data-filter]').forEach(b => {
-    b.addEventListener('click', () => { filter = b.dataset.filter; render(); });
+  filters.addEventListener('click', event => {
+    const button = event.target.closest('[data-filter]');
+    if (!button) return;
+    filter = button.dataset.filter;
+    render();
   });
-  const allChip = document.querySelector('[data-filter="all"] small');
-  if (allChip) allChip.textContent = P.length;
+
   render();
 });
 </script>
