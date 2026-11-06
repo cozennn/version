@@ -169,6 +169,11 @@ const animateProduct = (button, card) => {
   const img = card?.querySelector('.prod__img img, .prod-page__img img');
   const bag = document.querySelector('[data-bag]');
   if (!img || !bag) return;
+  if (reduceMotion) {
+    button?.classList.add('is-added');
+    setTimeout(() => button?.classList.remove('is-added'), 1400);
+    return;
+  }
   const from = img.getBoundingClientRect();
   const to = bag.getBoundingClientRect();
   if (!from.width || !from.height || !to.width || !to.height) return;
