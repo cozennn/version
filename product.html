@@ -189,6 +189,58 @@
   const catNames = window.NORDA_CATEGORIES || {};
   const backHref = p.type === 'template' ? 'templates.html' : 'digital.html';
   const backLabel = p.type === 'template' ? 'Templates' : 'Digital goods';
+  const fmt = window.NORDA_FMT || (n => '
+
+  root.innerHTML = `
+    <nav style="padding:24px 0;font-size:.875rem;color:var(--muted)" aria-label="Breadcrumb">
+      <a href="index.html" style="text-decoration:underline">Home</a>
+      <span aria-hidden="true"> / </span>
+      <a href="${backHref}" style="text-decoration:underline">${backLabel}</a>
+      <span aria-hidden="true"> / </span>
+      <span>${esc(p.name)}</span>
+    </nav>
+
+    <section class="prod-page">
+      <div class="prod-page__img">
+        <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+      </div>
+      <div class="prod-page__info">
+        <span class="prod-page__badge">${esc(catNames[p.category] || p.category)}</span>
+        <h1 class="prod-page__name">${esc(p.name)}</h1>
+        <p class="prod-page__tagline">${esc(p.tagline)}</p>
+        <div class="prod-page__price">${fmt(p.price)}${priceSuffix}</div>
+        <p class="prod-page__desc">${esc(p.description)}</p>
+        <div class="prod-page__includes">
+          <h3>Includes</h3>
+          <ul>${(p.includes || []).map(i => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${esc(i)}</li>`).join('')}</ul>
+        </div>
+        <div class="prod-page__actions">
+          <button class="btn btn--primary btn--lg" data-add-to-cart="${esc(p.id)}">
+            Add to bag — ${window.NORDA_FMT(p.price)}
+          </button>
+          <a class="btn btn--ghost btn--lg" href="contact.html">Ask a question</a>
+        </div>
+        <p style="font-size:.8125rem;color:var(--muted)">Delivery is arranged after your order is confirmed. No account needed.</p>
+      </div>
+    </section>
+  `;
+
+  // The fly-to-bag handler also supports .prod-page directly.
+
+  // Animate after deferred CDN scripts have loaded.
+  window.addEventListener('load', () => {
+    if (window.gsap && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.gsap.from('.prod-page__img', { opacity: 0, scale: .96, duration: .8, ease: 'power3.out' });
+      window.gsap.from('.prod-page__info > *', { opacity: 0, y: 16, duration: .6, ease: 'power3.out', stagger: .06 });
+    }
+  }, { once: true });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+<script src="assets/script.js"></script>
+</body>
+</html> + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 }));
   const priceSuffix = p.subscription ? `<small>per ${esc(p.interval || 'month')}</small>` : '';
 
   root.innerHTML = `
