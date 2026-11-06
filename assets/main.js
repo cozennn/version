@@ -102,9 +102,10 @@ function runEntrances() {
   items.forEach(i => i.setAttribute('aria-checked', String(i.dataset.lang === current)));
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    wrap.classList.toggle('is-open');
+    const open = wrap.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(open));
   });
-  document.addEventListener('click', () => wrap.classList.remove('is-open'));
+  document.addEventListener('click', () => { wrap.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); });
   items.forEach(i => {
     i.addEventListener('click', () => {
       const l = i.dataset.lang;
@@ -139,8 +140,10 @@ function getCart() {
     const p = catalog.find(x => x.id === it?.id);
     if (!p || seen.has(p.id)) continue;
     seen.add(p.id);
+    const price = Number(p.price);
+    if (!Number.isFinite(price) || price < 0) continue;
     const qty = p.subscription ? 1 : Math.min(Math.max(parseInt(it.qty, 10) || 1, 1), 99);
-    out.push({ id: p.id, name: p.name, price: p.price, image: p.image, qty, subscription: !!p.subscription, interval: p.interval || 'month' });
+    out.push({ id: p.id, name: String(p.name || ''), price, image: String(p.image || ''), qty, subscription: p.subscription === true, interval: p.interval || 'month' });
   }
   return out;
 }
