@@ -3,7 +3,7 @@
 This Worker is deployed independently from the static website. It uses the existing Cloudflare resources:
 
 - D1 binding: `DB` -> `norda-db`
-- KV binding: `REPLIES` (reserved for future reply/cache workflows)
+- KV binding: `REPLIES` (Telegram webhook update deduplication)
 - Durable Object binding: `TICKETS` -> `TicketsDurableObject` (SQLite-backed)
 
 ## Deploy from Windows CMD
@@ -25,7 +25,7 @@ npx wrangler secret put TELEGRAM_CHAT_ID
 npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
 ```
 
-Telegram secrets are required for notifications and contact delivery. `TELEGRAM_WEBHOOK_SECRET` must be a random 32-64 character value containing only letters and numbers; use the exact same value when registering the Telegram webhook.
+Telegram secrets are required for notifications and contact delivery. `TELEGRAM_WEBHOOK_SECRET` must be a random 32-64 character value using only letters, numbers, underscores, or hyphens; use the exact same value when registering the Telegram webhook.
 
 ## Configure the website origin
 
