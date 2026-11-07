@@ -92,8 +92,13 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const update = parseBody(await request.json().catch(() => ({})));
   console.log("[telegram] webhook update received", { hasMessage: Boolean(update.message), hasEditedMessage: Boolean(update.edited_message) });
-  const updateId = typeof update.update_id === "number" ? update.update_id : null;
-  if (updateId === null) { console.warn("[telegram] ignored: missing update_id"); return json({ ok: true, ignored: true }); }
+  const updateId = typeof update.update_id === "number" && Number.isSafeInteger(update.update_id) && update.update_id >= 0
+    ? update.update_id
+    : null;
+  if (updateId === null) {
+    console.warn("[telegram] ignored: missing or invalid update_id");
+    return json({ ok: true, ignored: true });
+  }
   const seenKey = `telegram:update:${updateId}`;
   if (await env.REPLIES.get(seenKey)) return json({ ok: true, duplicate: true });
 
@@ -306,6 +311,9 @@ export class TicketsDurableObject extends DurableObject<Env> {
       }
     }
 
+    if (url.pathname === "/ticket/new" && request.method === "POST") {
+      return this.ctx.blockConcurrencyWhile(() => handleApi(request, this.env));
+    }
     return handleApi(request, this.env);
   }
 
