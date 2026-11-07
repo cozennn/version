@@ -5,7 +5,6 @@ interface Env {
   REPLIES: KVNamespace;
   TICKETS: DurableObjectNamespace<TicketsDurableObject>;
   ALLOWED_ORIGINS?: string;
-  ADMIN_TOKEN?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
 }
