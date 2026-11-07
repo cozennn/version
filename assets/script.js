@@ -216,7 +216,7 @@ function onClosedRemote(){
   loadClosed();
   toast('ticket_closed_msg');
 }
-var pollBusy=false;async function poll(){if(!cp)return;if(!d.hidden&&hasOpen()&&!sending&&!pollBusy){pollBusy=true;try{await loadMessages()}finally{pollBusy=false}}setTimeout(poll,cp.classList.contains('open')?1500:8000)}
+var pollBusy=false;async function poll(){if(!cp)return;if(!d.hidden&&hasOpen()&&!sending&&!pollBusy){pollBusy=true;try{await loadMessages()}finally{pollBusy=false}}setTimeout(poll,cp.classList.contains('open')?1000:3000)}
 function grow(){if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,110)+'px'}
 function clearFile(){var p=$1('#filePreview');if(p){p.style.display='none';$1('#fileNamePreview').textContent='';$1('#fileSizePreview').textContent='';fileInput.value=''}}
 if(cf)cf.addEventListener('submit',async function(e){
