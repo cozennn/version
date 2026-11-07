@@ -11,7 +11,8 @@
     {
       "binding": "DB",
       "database_name": "norda-db",
-      "database_id": "e78b1da3-8341-4639-865d-e62825e4b7ca"
+      "database_id": "e78b1da3-8341-4639-865d-e62825e4b7ca",
+      "migrations_dir": "migrations"
     }
   ],
   "kv_namespaces": [
