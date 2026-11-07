@@ -36,12 +36,16 @@ function messageRow(row: Record<string, unknown>) {
 
 async function notifyTelegram(env: Env, message: string): Promise<boolean> {
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return false;
-  const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true })
-  });
-  return response.ok;
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true })
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 async function notifyTicketMessage(env: Env, ticketId: string, userName: string, message: string): Promise<boolean> {
