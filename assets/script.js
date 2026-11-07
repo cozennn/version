@@ -137,6 +137,7 @@ if(soundToggle)soundToggle.addEventListener('click',function(){soundOn=!soundOn;
 d.addEventListener('pointerdown',unlock,{capture:true,once:true});d.addEventListener('keydown',unlock,{capture:true,once:true});
 function hasOpen(){return !!(currentTicket&&currentTicket.status!=='closed')}
 function toast(k){var el=$1('#chatToast');if(!el)return;el.textContent=t(k);el.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){el.classList.remove('show')},2800)}
+function toastRaw(message){var el=$1('#chatToast');if(!el)return;el.textContent=message;el.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){el.classList.remove('show')},4200)}
 function setBadge(){if(!badge)return;badge.textContent=unread>9?'9+':unread;badge.classList.toggle('show',unread>0)}
 function persist(){if(!currentTicket)return;var c=JSON.parse(JSON.stringify(currentTicket));c.messages=(c.messages||[]).slice(-200);c.messages.forEach(function(m){if(m.file)m.file={name:m.file.name||'',type:m.file.type||''}});sset('norda_last_ticket',JSON.stringify(c))}
 function updateTabs(){if(tabs.chat)tabs.chat.setAttribute('aria-disabled',hasOpen()?'false':'true')}
@@ -230,7 +231,7 @@ if(cf)cf.addEventListener('submit',async function(e){
   try{
     var j=await apiSend(payload,ticket,tid);
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
-    if(j&&j.ok){ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(true);renderMessages(ticket.messages);persist()}else toast('msg_err');
+    if(j&&j.ok){ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(true);renderMessages(ticket.messages);persist();if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else toast('msg_err');
   }catch(err){if(currentTicket===ticket)toast('msg_err')}
   finally{sending=false;setBusy(btn,false);if(currentTicket===ticket&&ta)ta.focus()}
 });
