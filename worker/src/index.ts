@@ -69,12 +69,24 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const message = parseBody(update.message);
   const chat = parseBody(message.chat);
-  if (String(chat.id ?? "") !== String(env.TELEGRAM_CHAT_ID)) {
+  const sender = parseBody(message.from);
+  // Support replies are accepted only from the configured private Telegram account.
+  // This deliberately rejects group chats, where other members could reply to tickets.
+  if (
+    String(chat.id ?? "") !== String(env.TELEGRAM_CHAT_ID) ||
+    chat.type !== "private" ||
+    String(sender.id ?? "") !== String(env.TELEGRAM_CHAT_ID)
+  ) {
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true });
   }
 
   const replyTo = parseBody(message.reply_to_message);
+  const replySender = parseBody(replyTo.from);
+  if (replySender.is_bot !== true) {
+    await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
+    return json({ ok: true, ignored: true, reason: "reply_must_target_bot_notification" });
+  }
   const repliedText = text(replyTo.text, 5000);
   const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f-]{20,64})/i);
   const replyText = text(message.text, 4000);
@@ -171,8 +183,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     await env.DB.prepare(
       "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'visitor', ?, ?)"
     ).bind(ticket.id, message, new Date().toISOString()).run();
-    await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
-    return json({ ok: true });
+    const notificationSent = await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
+    return json({ ok: true, notificationSent });
   }
 
   const messagesMatch = path.match(/^\/ticket\/([^/]+)\/messages$/);
