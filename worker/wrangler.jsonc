@@ -1,0 +1,37 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "norda-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-07",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://norda-site.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "norda-db",
+      "database_id": "e78b1da3-8341-4639-865d-e62825e4b7ca"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "REPLIES",
+      "id": "b2f2b4acd42348b7bb207ed69851e175"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TICKETS",
+        "class_name": "TicketsDurableObject"
+      }
+    ]
+  },
+  "exports": {
+    "TicketsDurableObject": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}
