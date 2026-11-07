@@ -45,7 +45,7 @@ async function notifyTelegram(env: Env, message: string): Promise<boolean> {
 }
 
 async function notifyTicketMessage(env: Env, ticketId: string, userName: string, message: string): Promise<boolean> {
-  return notifyTelegram(env, `NORDA Support Ticket\\nTicket ID: ${ticketId}\\nVisitor: ${userName}\\n\\n${message}\\n\\n↩ Reply directly to this message to answer the visitor.`);
+  return notifyTelegram(env, `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${userName}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
 }
 
 async function handleTelegramWebhook(request: Request, env: Env): Promise<Response> {
@@ -72,7 +72,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const replyTo = parseBody(message.reply_to_message);
   const repliedText = text(replyTo.text, 5000);
-  const ticketMatch = repliedText.match(/Ticket ID:\\s*([0-9a-f-]{20,64})/i);
+  const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f-]{20,64})/i);
   const replyText = text(message.text, 4000);
   if (!ticketMatch || !replyText) {
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
@@ -167,7 +167,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     await env.DB.prepare(
       "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'visitor', ?, ?)"
     ).bind(ticket.id, message, new Date().toISOString()).run();
-    await notifyTelegram(env, `NORDA ticket ${ticketId}\n${String(ticket.user_name ?? "Visitor")}:\n${message}`);
+    await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
     return json({ ok: true });
   }
 
