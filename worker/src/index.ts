@@ -232,8 +232,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const ticketId = decodeURIComponent(messageMatch[1]);
     const userId = text(url.searchParams.get("userId"), 128);
     const body = parseBody(await request.json().catch(() => ({})));
-    const message = text(body.text, 4000);
+    const message = typeof body.text === "string" ? body.text.trim() : "";
     if (!userId || !message) return json({ ok: false, error: "userId_and_text_required" }, 400);
+    if (message.length > 3500) return json({ ok: false, error: "message_too_long", maxLength: 3500 }, 413);
     if (body.file || body.fileName) return json({ ok: false, error: "attachments_not_enabled_until_R2_is_configured" }, 501);
 
     const ticket = await ticketOwner(env, ticketId, userId);
