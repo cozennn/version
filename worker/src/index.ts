@@ -27,7 +27,7 @@ function parseBody(value: unknown): JsonObject {
 
 function messageRow(row: Record<string, unknown>) {
   return {
-    from: row.sender_type === "visitor" ? "user" : "admin",
+    from: row.sender_type === "visitor" ? "user" : row.sender_type === "admin" ? "admin" : "unknown",
     text: String(row.message_text ?? ""),
     time: String(row.created_at ?? ""),
     file: null
@@ -42,8 +42,17 @@ async function notifyTelegram(env: Env, message: string): Promise<boolean> {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true })
     });
-    return response.ok;
-  } catch {
+    const result = parseBody(await response.json().catch(() => ({})));
+    if (!response.ok || result.ok !== true) {
+      console.error("[telegram] sendMessage failed", {
+        status: response.status,
+        description: text(result.description, 300) || "Telegram API returned an unsuccessful response"
+      });
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("[telegram] sendMessage request failed", error instanceof Error ? error.message : "unknown error");
     return false;
   }
 }
@@ -134,10 +143,24 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     return json({ ok: true, ignored: true, reason: "ticket_not_found" });
   }
 
-  await env.DB.prepare(
-    "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'admin', ?, ?)"
-  ).bind(ticket.id, replyText, new Date().toISOString()).run();
-  await env.REPLIES.put(seenKey, "processed", { expirationTtl: 86400 });
+  // D1 batch is transactional: the unique update_id claim and message insert
+  // either both commit or both roll back, preventing duplicate replies on retries.
+  const batch = await env.DB.batch([
+    env.DB.prepare(
+      "INSERT OR IGNORE INTO telegram_updates (update_id, processed_at) VALUES (?, ?)"
+    ).bind(updateId, new Date().toISOString()),
+    env.DB.prepare(
+      "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) SELECT ?, 'admin', ?, ? WHERE changes() = 1"
+    ).bind(ticket.id, replyText, new Date().toISOString())
+  ]);
+  const claimed = Number(batch[0]?.meta?.changes ?? 0) === 1;
+  if (!claimed) {
+    await env.REPLIES.put(seenKey, "processed", { expirationTtl: 86400 });
+    return json({ ok: true, duplicate: true });
+  }
+  await env.REPLIES.put(seenKey, "processed", { expirationTtl: 86400 }).catch(error => {
+    console.error("[telegram] KV cache write failed; D1 idempotency remains active", error instanceof Error ? error.message : "unknown error");
+  });
   console.log("[telegram] support reply saved to ticket", { ticketId });
   return json({ ok: true, ticketId });
 }
@@ -261,15 +284,42 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
 export class TicketsDurableObject extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
-    const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-    const key = `rate:${ip}`;
-    const now = Date.now();
-    const current = await this.ctx.storage.get<{ start: number; count: number }>(key);
-    const windowState = !current || now - current.start > 60_000 ? { start: now, count: 0 } : current;
-    if (windowState.count >= 90) return json({ ok: false, error: "rate_limited" }, 429);
-    windowState.count += 1;
-    await this.ctx.storage.put(key, windowState);
+    const url = new URL(request.url);
+    const bypassRateLimit = url.pathname === "/health" || url.pathname === "/telegram/webhook";
+
+    if (!bypassRateLimit) {
+      const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+      const key = `rate:${ip}`;
+      const now = Date.now();
+      const allowed = await this.ctx.storage.transaction(async transaction => {
+        const current = await transaction.get<{ start: number; count: number }>(key);
+        const state = !current || now - current.start >= 60_000 ? { start: now, count: 0 } : current;
+        if (state.count >= 90) return false;
+        state.count += 1;
+        await transaction.put(key, state);
+        return true;
+      });
+      if (!allowed) return json({ ok: false, error: "rate_limited" }, 429);
+
+      if (await this.ctx.storage.getAlarm() === null) {
+        await this.ctx.storage.setAlarm(now + 60 * 60 * 1000);
+      }
+    }
+
     return handleApi(request, this.env);
+  }
+
+  async alarm(): Promise<void> {
+    const now = Date.now();
+    const entries = await this.ctx.storage.list<{ start: number; count: number }>({ prefix: "rate:" });
+    const stale: string[] = [];
+    for (const [key, value] of entries) {
+      if (!value || now - value.start > 2 * 60 * 60 * 1000) stale.push(key);
+    }
+    if (stale.length) await this.ctx.storage.delete(stale);
+    if (entries.size > stale.length) {
+      await this.ctx.storage.setAlarm(now + 60 * 60 * 1000);
+    }
   }
 }
 
@@ -292,8 +342,11 @@ export default {
       const resultHeaders = new Headers(response.headers);
       headers.forEach((value, key) => resultHeaders.set(key, value));
       return new Response(response.body, { status: response.status, headers: resultHeaders });
-    } catch {
-      return json({ ok: false, error: "internal_error" }, 500);
+    } catch (error) {
+      console.error("[worker] unhandled request error", error instanceof Error ? error.message : "unknown error");
+      headers.set("content-type", "application/json; charset=utf-8");
+      headers.set("cache-control", "no-store");
+      return new Response(JSON.stringify({ ok: false, error: "internal_error" }), { status: 500, headers });
     }
   }
 };
