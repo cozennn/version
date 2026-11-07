@@ -52,6 +52,25 @@ async function notifyTicketMessage(env: Env, ticketId: string, userName: string,
   return notifyTelegram(env, `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${userName}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
 }
 
+
+async function telegramBotId(env: Env): Promise<string | null> {
+  const cacheKey = "telegram:bot:id";
+  const cached = await env.REPLIES.get(cacheKey);
+  if (cached) return cached;
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getMe`);
+    if (!response.ok) return null;
+    const result = parseBody(await response.json());
+    const data = parseBody(result.result);
+    if (result.ok !== true || (typeof data.id !== "number" && typeof data.id !== "string")) return null;
+    const id = String(data.id);
+    await env.REPLIES.put(cacheKey, id, { expirationTtl: 3600 });
+    return id;
+  } catch {
+    return null;
+  }
+}
+
 async function handleTelegramWebhook(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID || !env.TELEGRAM_WEBHOOK_SECRET) {
@@ -86,10 +105,15 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const replyTo = parseBody(message.reply_to_message);
   const replySender = parseBody(replyTo.from);
-  if (replySender.is_bot !== true) {
-    console.warn("[telegram] ignored: reply does not target a bot message");
+  const expectedBotId = await telegramBotId(env);
+  if (!expectedBotId) {
+    console.error("[telegram] could not verify support bot identity");
+    return json({ ok: false, error: "telegram_bot_identity_unavailable" }, 503);
+  }
+  if (replySender.is_bot !== true || String(replySender.id ?? "") !== expectedBotId) {
+    console.warn("[telegram] ignored: reply does not target this support bot");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
-    return json({ ok: true, ignored: true, reason: "reply_must_target_bot_notification" });
+    return json({ ok: true, ignored: true, reason: "reply_must_target_support_bot_notification" });
   }
   const repliedText = text(replyTo.text, 5000);
   const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f-]{20,64})/i);
@@ -119,9 +143,10 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 }
 
 async function ticketOwner(env: Env, ticketId: string, userId: string) {
+  if (!userId) return null;
   return env.DB.prepare(
-    "SELECT id, public_id, visitor_id, user_name, status, created_at, closed_at FROM tickets WHERE public_id = ? LIMIT 1"
-  ).bind(ticketId).first<Record<string, unknown>>();
+    "SELECT id, public_id, visitor_id, user_name, status, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
+  ).bind(ticketId, userId).first<Record<string, unknown>>();
 }
 
 async function handleApi(request: Request, env: Env): Promise<Response> {
