@@ -1,0 +1,16 @@
+{
+  "name": "norda-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "types": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20261107.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.149.0"
+  }
+}
