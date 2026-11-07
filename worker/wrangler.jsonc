@@ -5,7 +5,7 @@
   "compatibility_date": "2026-11-07",
   "workers_dev": true,
   "vars": {
-    "ALLOWED_ORIGINS": "https://norda-site.pages.dev"
+    "ALLOWED_ORIGINS": "https://version-3y3.pages.dev"
   },
   "d1_databases": [
     {
