@@ -58,12 +58,14 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     return json({ ok: false, error: "telegram_webhook_not_configured" }, 503);
   }
   if (request.headers.get("x-telegram-bot-api-secret-token") !== env.TELEGRAM_WEBHOOK_SECRET) {
+    console.warn("[telegram] webhook rejected: secret mismatch");
     return json({ ok: false, error: "unauthorized" }, 401);
   }
 
   const update = parseBody(await request.json().catch(() => ({})));
+  console.log("[telegram] webhook update received", { hasMessage: Boolean(update.message), hasEditedMessage: Boolean(update.edited_message) });
   const updateId = typeof update.update_id === "number" ? update.update_id : null;
-  if (updateId === null) return json({ ok: true, ignored: true });
+  if (updateId === null) { console.warn("[telegram] ignored: missing update_id"); return json({ ok: true, ignored: true }); }
   const seenKey = `telegram:update:${updateId}`;
   if (await env.REPLIES.get(seenKey)) return json({ ok: true, duplicate: true });
 
@@ -77,6 +79,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     chat.type !== "private" ||
     String(sender.id ?? "") !== String(env.TELEGRAM_CHAT_ID)
   ) {
+    console.warn("[telegram] ignored: sender/chat does not match configured private support account");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true });
   }
@@ -84,6 +87,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
   const replyTo = parseBody(message.reply_to_message);
   const replySender = parseBody(replyTo.from);
   if (replySender.is_bot !== true) {
+    console.warn("[telegram] ignored: reply does not target a bot message");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true, reason: "reply_must_target_bot_notification" });
   }
@@ -91,6 +95,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
   const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f-]{20,64})/i);
   const replyText = text(message.text, 4000);
   if (!ticketMatch || !replyText) {
+    console.warn("[telegram] ignored: replied message has no ticket ID or reply text");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true, reason: "reply_to_a_ticket_notification_required" });
   }
@@ -100,6 +105,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     "SELECT id, public_id FROM tickets WHERE public_id = ? LIMIT 1"
   ).bind(ticketId).first<{ id: number; public_id: string }>();
   if (!ticket) {
+    console.warn("[telegram] ignored: ticket ID not found in D1");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true, reason: "ticket_not_found" });
   }
@@ -108,6 +114,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'admin', ?, ?)"
   ).bind(ticket.id, replyText, new Date().toISOString()).run();
   await env.REPLIES.put(seenKey, "processed", { expirationTtl: 86400 });
+  console.log("[telegram] support reply saved to ticket", { ticketId });
   return json({ ok: true, ticketId });
 }
 
