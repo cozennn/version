@@ -32,7 +32,7 @@ Do not rely on opening the HTML files directly with `file://`; use a local HTTP 
 
 ## Contact form and support chat
 
-The browser sends contact form and support-ticket requests to the Cloudflare Worker configured in `assets/config.js`. The Worker implementation is maintained separately from this repository. Server-side validation, CORS rules, spam protection, upload validation and rate limiting must be maintained and tested in the Worker itself.
+The standalone Cloudflare API Worker source and deployment configuration are maintained in `worker/`. It uses the existing `norda-db` D1 database and `REPLIES` KV namespace, with a SQLite-backed Durable Object for request coordination. See `worker/README.md` for deployment steps and current limitations. The website endpoint in `assets/config.js` is intentionally not changed until the new Worker has been deployed and tested.
 
 ## Deployment
 
