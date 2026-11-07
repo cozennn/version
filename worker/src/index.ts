@@ -7,6 +7,7 @@ interface Env {
   ALLOWED_ORIGINS?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  TELEGRAM_WEBHOOK_SECRET?: string;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -38,9 +39,60 @@ async function notifyTelegram(env: Env, message: string): Promise<boolean> {
   const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message })
+    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true })
   });
   return response.ok;
+}
+
+async function notifyTicketMessage(env: Env, ticketId: string, userName: string, message: string): Promise<boolean> {
+  return notifyTelegram(env, `NORDA Support Ticket\\nTicket ID: ${ticketId}\\nVisitor: ${userName}\\n\\n${message}\\n\\n↩ Reply directly to this message to answer the visitor.`);
+}
+
+async function handleTelegramWebhook(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID || !env.TELEGRAM_WEBHOOK_SECRET) {
+    return json({ ok: false, error: "telegram_webhook_not_configured" }, 503);
+  }
+  if (request.headers.get("x-telegram-bot-api-secret-token") !== env.TELEGRAM_WEBHOOK_SECRET) {
+    return json({ ok: false, error: "unauthorized" }, 401);
+  }
+
+  const update = parseBody(await request.json().catch(() => ({})));
+  const updateId = typeof update.update_id === "number" ? update.update_id : null;
+  if (updateId === null) return json({ ok: true, ignored: true });
+  const seenKey = `telegram:update:${updateId}`;
+  if (await env.REPLIES.get(seenKey)) return json({ ok: true, duplicate: true });
+
+  const message = parseBody(update.message);
+  const chat = parseBody(message.chat);
+  if (String(chat.id ?? "") !== String(env.TELEGRAM_CHAT_ID)) {
+    await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
+    return json({ ok: true, ignored: true });
+  }
+
+  const replyTo = parseBody(message.reply_to_message);
+  const repliedText = text(replyTo.text, 5000);
+  const ticketMatch = repliedText.match(/Ticket ID:\\s*([0-9a-f-]{20,64})/i);
+  const replyText = text(message.text, 4000);
+  if (!ticketMatch || !replyText) {
+    await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
+    return json({ ok: true, ignored: true, reason: "reply_to_a_ticket_notification_required" });
+  }
+
+  const ticketId = ticketMatch[1];
+  const ticket = await env.DB.prepare(
+    "SELECT id, public_id FROM tickets WHERE public_id = ? LIMIT 1"
+  ).bind(ticketId).first<{ id: number; public_id: string }>();
+  if (!ticket) {
+    await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
+    return json({ ok: true, ignored: true, reason: "ticket_not_found" });
+  }
+
+  await env.DB.prepare(
+    "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'admin', ?, ?)"
+  ).bind(ticket.id, replyText, new Date().toISOString()).run();
+  await env.REPLIES.put(seenKey, "processed", { expirationTtl: 86400 });
+  return json({ ok: true, ticketId });
 }
 
 async function ticketOwner(env: Env, ticketId: string, userId: string) {
@@ -53,6 +105,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
+
+  if (path === "/telegram/webhook") return handleTelegramWebhook(request, env);
 
   if (method === "GET" && path === "/health") {
     return json({ ok: true, service: "norda-api", status: "ready" });
