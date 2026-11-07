@@ -153,23 +153,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     return json({ ok: true, tickets: rows.results ?? [] });
   }
 
-  const adminMatch = path.match(/^\/admin\/ticket\/([^/]+)\/message$/);
-  if (method === "POST" && adminMatch) {
-    if (!env.ADMIN_TOKEN || request.headers.get("authorization") !== `Bearer ${env.ADMIN_TOKEN}`) {
-      return json({ ok: false, error: "unauthorized" }, 401);
-    }
-    const ticketId = decodeURIComponent(adminMatch[1]);
-    const body = parseBody(await request.json().catch(() => ({})));
-    const message = text(body.text, 4000);
-    if (!message) return json({ ok: false, error: "text_required" }, 400);
-    const ticket = await env.DB.prepare("SELECT id FROM tickets WHERE public_id = ? LIMIT 1")
-      .bind(ticketId).first<{ id: number }>();
-    if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
-    await env.DB.prepare(
-      "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'admin', ?, ?)"
-    ).bind(ticket.id, message, new Date().toISOString()).run();
-    return json({ ok: true });
-  }
+
 
   return json({ ok: false, error: "not_found" }, 404);
 }
