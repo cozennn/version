@@ -146,7 +146,8 @@ function archiveClosed(ticket){
       (Array.isArray(group)?group:[]).forEach(function(message){
         if(!message||typeof message!=='object')return;
         var fileName=message.file&&message.file.name?String(message.file.name):'';
-        var key=[message.from||'',message.time||'',message.text||'',fileName].join('\\u001f');
+        var timeKey=typeof message.time==='number'?message.time:Date.parse(message.time||'')||0;
+        var key=[message.from||'',timeKey,message.text||'',fileName].join('\\u001f');
         if(seen[key])return;
         seen[key]=true;
         combined.push(message);
