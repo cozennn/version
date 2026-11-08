@@ -201,6 +201,7 @@
         <a href="product.html?id=${encodeURIComponent(p.id)}" class="prod__img">
           <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
           <span class="prod__badge">${esc(catNames[p.category]||p.category)}</span>
+          ${p.subscription ? '<span class="prod__badge prod__badge--sub">Subscription · ' + (p.interval === 'year' ? 'Yearly' : 'Monthly') + '</span>' : ''}
         </a>
         <div class="prod__body">
           <div class="prod__head">
@@ -215,8 +216,9 @@
           </div>
         </div>
       </article>`).join('');
-    if (window.gsap && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.gsap && !matchMedia('(prefers-reduced-motion: reduce)').matches && !grid.dataset.animated) {
       window.gsap.from(grid.querySelectorAll('.prod'), { opacity: 0, y: 20, duration: .6, ease: 'power3.out', stagger: .05, clearProps: 'transform,opacity' });
+      grid.dataset.animated = '1';
     }
   }
   render();
