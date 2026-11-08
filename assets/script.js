@@ -88,7 +88,7 @@ function fmtDate(ts){return new Date(ts).toLocaleDateString(loc(),{year:'numeric
 function esc(s){var x=d.createElement('div');x.textContent=String(s==null?'':s);return x.innerHTML}
 function validEmail(v){return v.length<=254&&/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)}
 /* ===== نظام التذاكر ===== */
-var userId=sget('norda_uid');if(!userId){var uid='';try{uid=window.crypto&&crypto.randomUUID?crypto.randomUUID():''}catch(e){}if(!uid)uid=Date.now().toString(36)+Math.random().toString(36).slice(2,12);userId='u_'+uid;sset('norda_uid',userId)}
+var userId=sget('norda_uid');if(!userId){var uid='';try{if(window.crypto&&crypto.randomUUID)uid=crypto.randomUUID();else if(window.crypto&&crypto.getRandomValues){var randomBytes=new Uint8Array(24);crypto.getRandomValues(randomBytes);uid=Array.prototype.map.call(randomBytes,function(value){return value.toString(16).padStart(2,'0')}).join('')}}catch(e){}if(!uid)uid=Date.now().toString(36)+Math.random().toString(36).slice(2,12);userId='u_'+uid;sset('norda_uid',userId)}
 var API=String(CFG.TELEGRAM_API||window.TELEGRAM_API||'').replace(/\/+$/,'');
 var sessionToken=sget('norda_session')||'',sessionMode=sessionToken?'secure':'unknown',sessionPromise=null,sessionWarningShown=false;
 function saveSession(token){sessionToken=token||'';sessionMode=sessionToken?'secure':'unknown';if(sessionToken)sset('norda_session',sessionToken);else sdel('norda_session')}
