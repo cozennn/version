@@ -274,7 +274,7 @@ async function saveVisitorSession(env: Env, visitorId: string, token: string, re
   const tokenHash = await hashSessionToken(token);
   const statement = renewExpired
     ? env.DB.prepare(
-        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL OR visitor_sessions.created_at >= datetime(excluded.created_at, '-10 minutes')"
+        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL"
       ).bind(visitorId, tokenHash, createdAt, expiresAt)
     : env.DB.prepare(
         "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL)"
