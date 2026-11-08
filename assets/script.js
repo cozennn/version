@@ -357,7 +357,7 @@ if(bh)bh.addEventListener('click',async function(){
     if(!response.ok||!result.ok)throw new Error('handoff');
     if(currentTicket!==ticket)return;
     ticket.supportMode=result.supportMode==='human'?'human':'ai';updateSupportMode();persist();
-    toastRaw(result.notificationSent===false?t('handoff_failed'):t('handoff_requested'));
+    toastRaw(result.handoffPending?t('handoff_pending'):(result.notificationSent===false?t('handoff_failed'):t('handoff_requested')));
     loadMessages();
   }catch(e){toast('msg_err')}
   finally{setBusy(bh,false)}
