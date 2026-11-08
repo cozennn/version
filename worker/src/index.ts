@@ -38,6 +38,55 @@ function constantTimeEqual(left: string, right: string): boolean {
   return difference === 0;
 }
 
+async function readJsonBody(request: Request, maxBytes: number): Promise<{ body: JsonObject; error?: string }> {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return { body: {}, error: "unsupported_media_type" };
+  }
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    return { body: {}, error: "payload_too_large" };
+  }
+  if (!request.body) return { body: {}, error: "invalid_json" };
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) {
+        await reader.cancel();
+        return { body: {}, error: "payload_too_large" };
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return { body: {}, error: "invalid_json" };
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    return { body: parseBody(JSON.parse(new TextDecoder().decode(bytes))) };
+  } catch {
+    return { body: {}, error: "invalid_json" };
+  }
+}
+
+function bodyErrorResponse(error: string): Response {
+  const status = error === "payload_too_large" ? 413 : error === "unsupported_media_type" ? 415 : 400;
+  return json({ ok: false, error }, status);
+}
+
 function messageRow(row: Record<string, unknown>) {
   return {
     from: row.sender_type === "visitor" ? "user" : row.sender_type === "admin" ? "admin" : "unknown",
@@ -103,7 +152,9 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     return json({ ok: false, error: "unauthorized" }, 401);
   }
 
-  const update = parseBody(await request.json().catch(() => ({})));
+  const parsed = await readJsonBody(request, 64 * 1024);
+  if (parsed.error) return bodyErrorResponse(parsed.error);
+  const update = parsed.body;
   console.log("[telegram] webhook update received", { hasMessage: Boolean(update.message), hasEditedMessage: Boolean(update.edited_message) });
   const updateId = typeof update.update_id === "number" && Number.isSafeInteger(update.update_id) && update.update_id >= 0
     ? update.update_id
@@ -241,7 +292,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   }
 
   if (method === "POST" && path === "/contact") {
-    const body = parseBody(await request.json().catch(() => ({})));
+    const parsed = await readJsonBody(request, 8 * 1024);
+    if (parsed.error) return bodyErrorResponse(parsed.error);
+    const body = parsed.body;
     const name = text(body.name, 100);
     const email = text(body.email, 180);
     const subject = text(body.subject, 180);
@@ -256,7 +309,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   }
 
   if (method === "POST" && path === "/session/upgrade") {
-    const body = parseBody(await request.json().catch(() => ({})));
+    const parsed = await readJsonBody(request, 2 * 1024);
+    if (parsed.error) return bodyErrorResponse(parsed.error);
+    const body = parsed.body;
     const legacyUserId = text(body.userId, 128);
     if (!/^u_[A-Za-z0-9_-]{16,64}$/.test(legacyUserId)) {
       return json({ ok: false, error: "invalid_legacy_session" }, 400);
@@ -273,7 +328,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   }
 
   if (method === "POST" && path === "/ticket/new") {
-    const body = parseBody(await request.json().catch(() => ({})));
+    const parsed = await readJsonBody(request, 2 * 1024);
+    if (parsed.error) return bodyErrorResponse(parsed.error);
+    const body = parsed.body;
     const userName = text(body.userName, 100) || "Visitor";
     const authorization = request.headers.get("authorization");
     let visitorId: string;
@@ -320,7 +377,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const session = await getVisitorSession(request, env);
     if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const visitorId = session.visitor_id;
-    const body = parseBody(await request.json().catch(() => ({})));
+    const parsed = await readJsonBody(request, 16 * 1024);
+    if (parsed.error) return bodyErrorResponse(parsed.error);
+    const body = parsed.body;
     const message = typeof body.text === "string" ? body.text.trim() : "";
     if (!message) return json({ ok: false, error: "text_required" }, 400);
     if (message.length > 3500) return json({ ok: false, error: "message_too_long", maxLength: 3500 }, 413);
