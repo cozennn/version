@@ -302,7 +302,7 @@ async function getVisitorSession(request: Request, env: Env): Promise<{ visitor_
   if (!match) return null;
   const tokenHash = await hashSessionToken(match[1]);
   return env.DB.prepare(
-    "SELECT visitor_id FROM visitor_sessions WHERE token_hash = ? AND expires_at > ? AND revoked_at IS NULL LIMIT 1"
+    "SELECT visitor_id FROM visitor_auth_sessions WHERE token_hash = ? AND expires_at > ? AND revoked_at IS NULL LIMIT 1"
   ).bind(tokenHash, new Date().toISOString()).first<{ visitor_id: string }>();
 }
 
@@ -313,10 +313,10 @@ async function saveVisitorSession(env: Env, visitorId: string, token: string, re
   const tokenHash = await hashSessionToken(token);
   const statement = renewExpired
     ? env.DB.prepare(
-        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL"
+        "INSERT INTO visitor_auth_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_auth_sessions.expires_at <= excluded.created_at OR visitor_auth_sessions.revoked_at IS NOT NULL"
       ).bind(visitorId, tokenHash, createdAt, expiresAt)
     : env.DB.prepare(
-        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL)"
+        "INSERT INTO visitor_auth_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL)"
       ).bind(visitorId, tokenHash, createdAt, expiresAt);
   const result = await statement.run();
   return Number(result.meta?.changes ?? 0) === 1;
@@ -338,7 +338,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
   if (method === "GET" && path === "/health") {
     try {
-      await env.DB.prepare("SELECT 1 AS ok FROM visitor_sessions LIMIT 1").first<{ ok: number }>();
+      await env.DB.prepare("SELECT 1 AS ok FROM visitor_auth_sessions LIMIT 1").first<{ ok: number }>();
       await env.DB.prepare("SELECT support_mode FROM tickets LIMIT 1").first();
       const latestFailure = await env.DB.prepare(
         "SELECT failed_at FROM telegram_delivery_failures ORDER BY id DESC LIMIT 1"
@@ -642,7 +642,7 @@ export default {
       const [updates, failures, sessions] = await Promise.all([
         env.DB.prepare("DELETE FROM telegram_updates WHERE processed_at < ?").bind(cutoff).run(),
         env.DB.prepare("DELETE FROM telegram_delivery_failures WHERE failed_at < ?").bind(cutoff).run(),
-        env.DB.prepare("DELETE FROM visitor_sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND created_at < ?)").bind(cutoff, cutoff).run()
+        env.DB.prepare("DELETE FROM visitor_auth_sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND created_at < ?)").bind(cutoff, cutoff).run()
       ]);
       console.log("[cleanup] expired records removed", {
         telegramUpdates: Number(updates.meta?.changes ?? 0),
