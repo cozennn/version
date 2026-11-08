@@ -246,6 +246,10 @@ async function startNew(){
   setBusy(btn,true);var j=await createTicket(custom||t('guest'));setBusy(btn,false);
   if(j){setView('chat');if(!j.existing)toast('ticket_new_msg');setTimeout(function(){ta.focus()},120)}else toast('msg_err');
 }
+function createClientMessageId(){
+  if(window.crypto&&typeof window.crypto.randomUUID==='function')return window.crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16)});
+}
 async function apiSend(p,ticket,tid){
   if(!API)throw new Error('NORDA API endpoint is not configured');
   var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('Visitor session unavailable');
@@ -330,7 +334,7 @@ if(cf)cf.addEventListener('submit',async function(e){
   e.preventDefault();
   if(!hasOpen()||sending){if(!hasOpen())toast('ticket_closed_msg');return}
   var btn=$1('#chBtn'),msg=ta.value.trim(),file=pendingFile,ticket=currentTicket,tid=String(ticket.ticketId);if(!msg&&!file)return;
-  var payload={text:msg,file:file?file.data:null,fileName:file?file.name:null,fileType:file?file.type:null};
+  var payload={text:msg,file:file?file.data:null,fileName:file?file.name:null,fileType:file?file.type:null,clientMessageId:createClientMessageId()};
   ta.value='';grow();pendingFile=null;clearFile();
   currentTicket.messages=currentTicket.messages||[];
   currentTicket.messages.push({from:'user',text:msg,time:Date.now(),file:file?{name:file.name,type:file.type,data:file.data}:null});
