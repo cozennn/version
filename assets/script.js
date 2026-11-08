@@ -90,7 +90,7 @@ function validEmail(v){return v.length<=254&&/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.tes
 /* ===== نظام التذاكر ===== */
 var userId=sget('norda_uid');if(!userId){var uid='';try{uid=window.crypto&&crypto.randomUUID?crypto.randomUUID():''}catch(e){}if(!uid)uid=Date.now().toString(36)+Math.random().toString(36).slice(2,12);userId='u_'+uid;sset('norda_uid',userId)}
 var API=String(CFG.TELEGRAM_API||window.TELEGRAM_API||'').replace(/\/+$/,'');
-var sessionToken=sget('norda_session')||'',sessionMode=sessionToken?'secure':'unknown',sessionPromise=null;
+var sessionToken=sget('norda_session')||'',sessionMode=sessionToken?'secure':'unknown',sessionPromise=null,sessionWarningShown=false;
 function saveSession(token){sessionToken=token||'';sessionMode=sessionToken?'secure':'unknown';if(sessionToken)sset('norda_session',sessionToken);else sdel('norda_session')}
 async function ensureSession(){
   if(sessionMode!=='unknown')return sessionMode;
@@ -195,7 +195,7 @@ function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=set
 function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+currentTicket.ticketId;renderMessages(currentTicket.messages||[],true)}
 async function createTicket(name){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
-  var mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;
+  var mode=await ensureSession();if(mode==='error')return null;if(mode==='blocked')mode='fresh';
   try{
     var body={userName:name};if(mode==='legacy')body.userId=userId;
     var r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(body)});
@@ -217,14 +217,24 @@ async function apiSend(p,ticket,tid){
   if(!API)throw new Error('NORDA API endpoint is not configured');
   var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('Visitor session unavailable');
   var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/message'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify(p)});
+  if(r.status===401&&sessionToken){
+    saveSession('');sessionMode='unknown';mode=await ensureSession();
+    if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('Visitor session unavailable');
+    r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/message'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify(p)});
+  }
   return r.json();
 }
 async function loadMessages(){
   if(!hasOpen()||sending)return;
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return}
   var mode=await ensureSession();
-  if(mode==='fresh'){toastRaw('Your previous chat cannot be restored. Please start a new chat.');return}
-  if(mode==='blocked'||mode==='error')return;
+  if(mode==='fresh'||mode==='blocked'){
+    if(currentTicket){try{sset('norda_legacy_ticket_backup',JSON.stringify(currentTicket))}catch(e){}}
+    currentTicket=null;sdel('norda_last_ticket');updateTabs();setView('new');
+    if(!sessionWarningShown){sessionWarningShown=true;toastRaw(lang==='ar'?'تعذّر استعادة المحادثة القديمة. ابدأ محادثة جديدة للمتابعة.':lang==='fr'?'Cette ancienne conversation ne peut pas être restaurée. Démarrez une nouvelle conversation.':'Your previous chat cannot be restored. Please start a new chat.')}
+    return;
+  }
+  if(mode==='error')return;
   var ticket=currentTicket,tid=String(ticket.ticketId);
   try{
     var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/messages'),{headers:apiHeaders(false)});
@@ -280,6 +290,7 @@ if(bc)bc.addEventListener('click',async function(){
   try{
     var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh'){toast('msg_err');return}
     var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/close'),{method:'POST',headers:apiHeaders(false)});
+    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh'){toast('msg_err');return}r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/close'),{method:'POST',headers:apiHeaders(false)})}
     var j=await r.json();
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
     if(j.ok){
