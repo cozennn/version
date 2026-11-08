@@ -38,9 +38,10 @@ jobs:
           const pages = ['index.html', 'templates.html', 'digital.html', 'product.html', 'contact.html', 'faq.html'];
           for (const page of pages) {
             const html = fs.readFileSync(page, 'utf8');
-            const scripts = [...html.matchAll(/<script(?![^>]*\\bsrc=)(?![^>]*application\\/ld\\+json)[^>]*>([\\s\\S]*?)<\\/script>/gi)];
-            for (const [index, match] of scripts.entries()) {
-              if (match[1].trim()) new Function(match[1]);
+            const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)];
+            for (const [, attrs, body] of scripts) {
+              if (/\bsrc\s*=/.test(attrs) || /application\/ld\+json/i.test(attrs)) continue;
+              if (body.trim()) new Function(body);
             }
           }
           console.log('Inline page scripts parsed successfully.');
