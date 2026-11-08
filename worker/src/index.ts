@@ -123,6 +123,16 @@ async function notifyTicketMessage(env: Env, ticketId: string, userName: string,
   return notifyTelegram(env, `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${userName}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
 }
 
+async function recordNotificationFailure(env: Env, eventType: "contact" | "ticket_message", referenceId: string | null): Promise<void> {
+  try {
+    await env.DB.prepare(
+      "INSERT INTO telegram_delivery_failures (event_type, reference_id, failed_at) VALUES (?, ?, ?)"
+    ).bind(eventType, referenceId, new Date().toISOString()).run();
+  } catch (error) {
+    console.error("[telegram] could not persist notification failure", error instanceof Error ? error.message : "unknown error");
+  }
+}
+
 
 async function telegramBotId(env: Env): Promise<string | null> {
   const cacheKey = "telegram:bot:id";
@@ -288,7 +298,22 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   if (path === "/telegram/webhook") return handleTelegramWebhook(request, env);
 
   if (method === "GET" && path === "/health") {
-    return json({ ok: true, service: "norda-api", status: "ready" });
+    try {
+      const [sessionCheck, latestFailure] = await Promise.all([
+        env.DB.prepare("SELECT visitor_id FROM visitor_sessions LIMIT 1").first<{ visitor_id: string }>(),
+        env.DB.prepare("SELECT failed_at FROM telegram_delivery_failures ORDER BY id DESC LIMIT 1").first<{ failed_at: string }>()
+      ]);
+      return json({
+        ok: true,
+        service: "norda-api",
+        status: "ready",
+        database: "connected",
+        lastNotificationFailureAt: latestFailure?.failed_at ?? null
+      });
+    } catch (error) {
+      console.error("[health] dependency check failed", error instanceof Error ? error.message : "unknown error");
+      return json({ ok: false, service: "norda-api", status: "degraded", error: "database_unavailable_or_migrations_pending" }, 503);
+    }
   }
 
   if (method === "POST" && path === "/contact") {
@@ -304,7 +329,10 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       return json({ ok: false, error: "invalid_contact_data" }, 400);
     }
     const sent = await notifyTelegram(env, `NORDA contact\nName: ${name}\nEmail: ${email}\nSubject: ${subject || "No subject"}\n\n${message}`);
-    if (!sent) return json({ ok: false, error: "contact_delivery_not_configured" }, 503);
+    if (!sent) {
+      await recordNotificationFailure(env, "contact", null);
+      return json({ ok: false, error: "contact_delivery_not_configured" }, 503);
+    }
     return json({ ok: true });
   }
 
@@ -393,6 +421,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'visitor', ?, ?)"
     ).bind(ticket.id, message, new Date().toISOString()).run();
     const notificationSent = await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
+    if (!notificationSent) await recordNotificationFailure(env, "ticket_message", ticketId);
     return json({ ok: true, notificationSent });
   }
 
