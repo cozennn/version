@@ -315,3 +315,29 @@
 .ci b{color:var(--text);font-weight:800}.ci small{color:var(--muted);font-size:11.5px}
 .ci span{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ci button{justify-self:start;margin-top:6px;padding:0;border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:var(--primary);cursor:pointer}
+
+/* Clear state for unavailable attachments and message length */
+#btnAttach:disabled {
+  opacity: .38;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+.tk-char-count {
+  display: block;
+  margin: 4px 12px 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.tk-char-count.is-near-limit {
+  color: var(--bad, #c33a52);
+  font-weight: 700;
+}
+body.cart-open #chatFab,
+body.cart-open #chatPanel {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
