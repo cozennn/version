@@ -324,21 +324,47 @@ window.NORDA_SCROLL_LOCK = (name, locked) => {
 
 // ─── Cart open/close ─────────────────────────────────────
 let cartSavedScrollY = 0;
+let cartLastFocus = null;
 function openCart() {
+  const cart = document.querySelector('.cart');
+  if (!cart) return;
+  if (!cart.classList.contains('is-open')) cartLastFocus = document.activeElement;
   document.body.classList.add('cart-open');
-  document.querySelector('.cart')?.classList.add('is-open');
+  cart.classList.add('is-open');
+  cart.setAttribute('aria-hidden', 'false');
   document.querySelector('.cart-backdrop')?.classList.add('is-open');
+  document.querySelectorAll('[data-cart-open]').forEach(button => button.setAttribute('aria-expanded', 'true'));
   if (window.innerWidth <= 520) cartSavedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
   window.NORDA_SCROLL_LOCK('cart', true);
   renderCart();
+  requestAnimationFrame(() => cart.querySelector('.cart__close')?.focus());
 }
 function closeCart() {
+  const cart = document.querySelector('.cart');
+  if (!cart) return;
+  const wasOpen = cart.classList.contains('is-open');
   document.body.classList.remove('cart-open');
-  document.querySelector('.cart')?.classList.remove('is-open');
+  cart.classList.remove('is-open');
+  cart.setAttribute('aria-hidden', 'true');
   document.querySelector('.cart-backdrop')?.classList.remove('is-open');
+  document.querySelectorAll('[data-cart-open]').forEach(button => button.setAttribute('aria-expanded', 'false'));
   window.NORDA_SCROLL_LOCK('cart', false);
+  if (wasOpen && cartLastFocus && typeof cartLastFocus.focus === 'function') cartLastFocus.focus();
   if (window.innerWidth <= 520) requestAnimationFrame(() => window.scrollTo(0, cartSavedScrollY));
 }
+function trapCartFocus(event) {
+  const cart = document.querySelector('.cart');
+  if (!cart?.classList.contains('is-open') || event.key !== 'Tab') return;
+  const focusable = Array.from(cart.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter(el => el.getClientRects().length > 0);
+  if (!focusable.length) { event.preventDefault(); cart.focus(); return; }
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (event.shiftKey && (document.activeElement === first || !cart.contains(document.activeElement))) {
+    event.preventDefault(); last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault(); first.focus();
+  }
+}
+document.addEventListener('keydown', trapCartFocus);
 window.openCart = openCart;
 window.NORDA_ESC = esc;
 window.closeCart = closeCart;
