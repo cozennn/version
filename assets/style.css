@@ -517,3 +517,13 @@ img { height: auto; }
   background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--primary);
 }
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--bad, #c33a52);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad, #c33a52) 14%, transparent);
+}
+.contact-consent input[aria-invalid="true"] {
+  outline: 2px solid var(--bad, #c33a52);
+  outline-offset: 2px;
+}
