@@ -25,6 +25,19 @@ function parseBody(value: unknown): JsonObject {
   return value && typeof value === "object" && !Array.isArray(value) ? value as JsonObject : {};
 }
 
+function isTicketId(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+  let difference = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return difference === 0;
+}
+
 function messageRow(row: Record<string, unknown>) {
   return {
     from: row.sender_type === "visitor" ? "user" : row.sender_type === "admin" ? "admin" : "unknown",
@@ -85,7 +98,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID || !env.TELEGRAM_WEBHOOK_SECRET) {
     return json({ ok: false, error: "telegram_webhook_not_configured" }, 503);
   }
-  if (request.headers.get("x-telegram-bot-api-secret-token") !== env.TELEGRAM_WEBHOOK_SECRET) {
+  if (!constantTimeEqual(request.headers.get("x-telegram-bot-api-secret-token") ?? "", env.TELEGRAM_WEBHOOK_SECRET)) {
     console.warn("[telegram] webhook rejected: secret mismatch");
     return json({ ok: false, error: "unauthorized" }, 401);
   }
@@ -130,7 +143,7 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     return json({ ok: true, ignored: true, reason: "reply_must_target_support_bot_notification" });
   }
   const repliedText = text(replyTo.text, 5000);
-  const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f-]{20,64})/i);
+  const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})/i);
   const replyText = text(message.text, 4000);
   if (!ticketMatch || !replyText) {
     console.warn("[telegram] ignored: replied message has no ticket ID or reply text");
@@ -140,9 +153,9 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const ticketId = ticketMatch[1];
   const ticket = await env.DB.prepare(
-    "SELECT id, public_id FROM tickets WHERE public_id = ? LIMIT 1"
-  ).bind(ticketId).first<{ id: number; public_id: string }>();
-  if (!ticket) {
+    "SELECT id, public_id, status FROM tickets WHERE public_id = ? LIMIT 1"
+  ).bind(ticketId).first<{ id: number; public_id: string; status: string }>();
+  if (!ticket || ticket.status !== "open") {
     console.warn("[telegram] ignored: ticket ID not found in D1");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true, reason: "ticket_not_found" });
@@ -302,7 +315,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
   const messageMatch = path.match(/^\/ticket\/([^/]+)\/message$/);
   if (method === "POST" && messageMatch) {
-    const ticketId = decodeURIComponent(messageMatch[1]);
+    const ticketId = messageMatch[1];
+    if (!isTicketId(ticketId)) return json({ ok: false, error: "ticket_not_found" }, 404);
     const session = await getVisitorSession(request, env);
     if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const visitorId = session.visitor_id;
@@ -325,7 +339,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
   const messagesMatch = path.match(/^\/ticket\/([^/]+)\/messages$/);
   if (method === "GET" && messagesMatch) {
-    const ticketId = decodeURIComponent(messagesMatch[1]);
+    const ticketId = messagesMatch[1];
+    if (!isTicketId(ticketId)) return json({ ok: false, error: "ticket_not_found" }, 404);
     const session = await getVisitorSession(request, env);
     if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const ticket = await ticketOwner(env, ticketId, session.visitor_id);
@@ -339,7 +354,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
   const closeMatch = path.match(/^\/ticket\/([^/]+)\/close$/);
   if (method === "POST" && closeMatch) {
-    const ticketId = decodeURIComponent(closeMatch[1]);
+    const ticketId = closeMatch[1];
+    if (!isTicketId(ticketId)) return json({ ok: false, error: "ticket_not_found" }, 404);
     const session = await getVisitorSession(request, env);
     if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const ticket = await ticketOwner(env, ticketId, session.visitor_id);
