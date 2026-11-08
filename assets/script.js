@@ -139,8 +139,30 @@ function archiveClosed(ticket){
     return String(t.ticketId)===id;
   });
 
-  if(index>=0)archived[index]=saved;
-  else archived.unshift(saved);
+  if(index>=0){
+    var existing=archived[index]||{};
+    var combined=[],seen=Object.create(null);
+    [existing.messages,saved.messages].forEach(function(group){
+      (Array.isArray(group)?group:[]).forEach(function(message){
+        if(!message||typeof message!=='object')return;
+        var fileName=message.file&&message.file.name?String(message.file.name):'';
+        var key=[message.from||'',message.time||'',message.text||'',fileName].join('\\u001f');
+        if(seen[key])return;
+        seen[key]=true;
+        combined.push(message);
+      });
+    });
+    combined.sort(function(a,b){
+      var at=typeof a.time==='number'?a.time:Date.parse(a.time||'')||0;
+      var bt=typeof b.time==='number'?b.time:Date.parse(b.time||'')||0;
+      return at-bt;
+    });
+    saved.messages=combined.slice(-200);
+    saved.closedAt=existing.closedAt||saved.closedAt;
+    saved.createdAt=existing.createdAt||saved.createdAt;
+    saved.userName=existing.userName||saved.userName;
+    archived[index]=saved;
+  }else archived.unshift(saved);
 
   try{
     sset(CLOSED_ARCHIVE_KEY,JSON.stringify(archived));
