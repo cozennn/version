@@ -75,24 +75,24 @@
       <div class="form-row">
         <div class="field">
           <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" maxlength="80" required autocomplete="name">
+          <input id="cf-name" name="name" type="text" maxlength="80" required autocomplete="name" aria-describedby="cfMsg">
         </div>
         <div class="field">
           <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" maxlength="120" required autocomplete="email">
+          <input id="cf-email" name="email" type="email" maxlength="120" required autocomplete="email" aria-describedby="cfMsg">
         </div>
       </div>
       <div class="field">
         <label for="cf-subject">Subject</label>
-        <input id="cf-subject" name="subject" type="text" maxlength="120" required>
+        <input id="cf-subject" name="subject" type="text" maxlength="120" required aria-describedby="cfMsg">
       </div>
       <div class="field">
         <label for="cf-msg">Message</label>
-        <textarea id="cf-msg" name="message" maxlength="1500" required></textarea>
+        <textarea id="cf-msg" name="message" maxlength="1500" required aria-describedby="cfMsg"></textarea>
       </div>
       <input id="cf-site" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px" >
       <label class="contact-consent" for="cf-consent" style="display:flex;align-items:flex-start;gap:10px;font-size:.8125rem;color:var(--muted)">
-        <input id="cf-consent" name="privacyConsent" type="checkbox" required style="margin-top:4px">
+        <input id="cf-consent" name="privacyConsent" type="checkbox" required style="margin-top:4px" aria-describedby="cfMsg">
         <span>I agree to the <a href="faq.html#privacy">Privacy Policy</a> and consent to the use of my information to respond to this message.</span>
       </label>
       <button class="btn btn--primary btn--block" id="cfBtn" type="submit">
