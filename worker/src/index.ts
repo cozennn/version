@@ -181,6 +181,62 @@ async function recordNotificationFailure(env: Env, eventType: "contact" | "ticke
 }
 
 
+
+type OutboxEvent = "contact" | "ticket_message" | "handoff";
+
+async function attemptOutboxItem(env: Env, id: string): Promise<boolean> {
+  const item = await env.DB.prepare(
+    "SELECT id, event_type, reference_id, payload, status, attempts FROM notification_outbox WHERE id = ? LIMIT 1"
+  ).bind(id).first<{ id: string; event_type: OutboxEvent; reference_id: string | null; payload: string; status: string; attempts: number }>();
+  if (!item) return false;
+  if (item.status === "sent") return true;
+  const sent = await notifyTelegram(env, item.payload);
+  const now = new Date().toISOString();
+  if (sent) {
+    await env.DB.prepare(
+      "UPDATE notification_outbox SET status = 'sent', delivered_at = ?, last_error = NULL WHERE id = ? AND status = 'pending'"
+    ).bind(now, id).run();
+    if (item.event_type === "handoff" && item.reference_id) {
+      await env.DB.prepare(
+        "UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE public_id = ? AND status = 'open' AND handoff_status = 'pending'"
+      ).bind(item.reference_id).run();
+    }
+    if (item.event_type === "contact" && item.reference_id) {
+      await env.DB.prepare(
+        "UPDATE contact_submissions SET delivery_status = 'sent' WHERE id = ?"
+      ).bind(item.reference_id).run();
+    }
+    return true;
+  }
+  const attempts = Number(item.attempts ?? 0) + 1;
+  const delaySeconds = Math.min(3600, 30 * (2 ** Math.min(attempts - 1, 7)));
+  const nextAttempt = new Date(Date.now() + delaySeconds * 1000).toISOString();
+  await env.DB.prepare(
+    "UPDATE notification_outbox SET attempts = ?, next_attempt_at = ?, last_error = 'telegram_delivery_failed' WHERE id = ? AND status = 'pending'"
+  ).bind(attempts, nextAttempt, id).run();
+  return false;
+}
+
+async function enqueueAndDeliver(env: Env, eventType: OutboxEvent, referenceId: string | null, dedupeKey: string, payload: string): Promise<boolean> {
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  await env.DB.prepare(
+    "INSERT OR IGNORE INTO notification_outbox (id, event_type, reference_id, dedupe_key, payload, status, attempts, created_at, next_attempt_at) VALUES (?, ?, ?, ?, ?, 'pending', 0, ?, ?)"
+  ).bind(id, eventType, referenceId, dedupeKey, payload, now, now).run();
+  const existing = await env.DB.prepare(
+    "SELECT id FROM notification_outbox WHERE dedupe_key = ? LIMIT 1"
+  ).bind(dedupeKey).first<{ id: string }>();
+  return existing ? attemptOutboxItem(env, existing.id) : false;
+}
+
+async function retryPendingNotifications(env: Env): Promise<void> {
+  const now = new Date().toISOString();
+  const due = await env.DB.prepare(
+    "SELECT id FROM notification_outbox WHERE status = 'pending' AND next_attempt_at <= ? ORDER BY created_at ASC LIMIT 20"
+  ).bind(now).all<{ id: string }>();
+  for (const item of due.results ?? []) await attemptOutboxItem(env, item.id);
+}
+
 async function telegramBotId(env: Env): Promise<string | null> {
   const cacheKey = "telegram:bot:id";
   const cached = await env.REPLIES.get(cacheKey);
@@ -333,7 +389,7 @@ async function saveVisitorSession(env: Env, visitorId: string, token: string, re
 async function ticketOwner(env: Env, ticketId: string, visitorId: string) {
   if (!visitorId) return null;
   return env.DB.prepare(
-    "SELECT id, public_id, visitor_id, user_name, status, support_mode, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
+    "SELECT id, public_id, visitor_id, user_name, status, support_mode, handoff_status, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
   ).bind(ticketId, visitorId).first<Record<string, unknown>>();
 }
 
@@ -376,12 +432,16 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !message || body.privacyConsent !== true) {
       return json({ ok: false, error: "invalid_contact_data" }, 400);
     }
-    const sent = await notifyTelegram(env, `NORDA contact\nName: ${name}\nEmail: ${email}\nSubject: ${subject || "No subject"}\n\n${message}`);
-    if (!sent) {
-      await recordNotificationFailure(env, "contact", null);
-      return json({ ok: false, error: "contact_delivery_not_configured" }, 503);
-    }
-    return json({ ok: true });
+    const submissionId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const outboxId = crypto.randomUUID();
+    const payload = `NORDA contact\nSubmission ID: ${submissionId}\nName: ${name}\nEmail: ${email}\nSubject: ${subject || "No subject"}\n\n${message}`;
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO contact_submissions (id, name, email, subject, message, created_at, delivery_status) VALUES (?, ?, ?, ?, ?, ?, 'pending')").bind(submissionId, name, email, subject, message, now),
+      env.DB.prepare("INSERT INTO notification_outbox (id, event_type, reference_id, dedupe_key, payload, status, attempts, created_at, next_attempt_at) VALUES (?, 'contact', ?, ?, ?, 'pending', 0, ?, ?)").bind(outboxId, submissionId, "contact:" + submissionId, payload, now, now)
+    ]);
+    const notificationSent = await attemptOutboxItem(env, outboxId);
+    return json({ ok: true, messageSaved: true, notificationSent });
   }
 
   if (method === "POST" && path === "/session/upgrade") {
@@ -477,18 +537,24 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
     const supportMode = ticket.support_mode === "human" ? "human" : "ai";
     if (supportMode === "human") {
-      const notificationSent = await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
-      if (!notificationSent) await recordNotificationFailure(env, "ticket_message", ticketId);
+      const notificationSent = await enqueueAndDeliver(env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
+        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
       return json({ ok: true, supportMode: "human", notificationSent, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
 
     const latestBeforeAI = await env.DB.prepare(
-      "SELECT support_mode FROM tickets WHERE id = ? LIMIT 1"
-    ).bind(ticket.id).first<{ support_mode: string }>();
+      "SELECT support_mode, handoff_status FROM tickets WHERE id = ? LIMIT 1"
+    ).bind(ticket.id).first<{ support_mode: string; handoff_status: string }>();
     if (latestBeforeAI?.support_mode === "human") {
-      const notificationSent = await notifyTicketMessage(env, ticketId, String(ticket.user_name ?? "Visitor"), message);
-      if (!notificationSent) await recordNotificationFailure(env, "ticket_message", ticketId);
+      const notificationSent = await enqueueAndDeliver(env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
+        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
       return json({ ok: true, supportMode: "human", notificationSent, messages: await readTicketMessages(env, Number(ticket.id)) });
+    }
+    if (latestBeforeAI?.handoff_status === "pending") {
+      const pending = await env.DB.prepare("SELECT id FROM notification_outbox WHERE dedupe_key = ? LIMIT 1").bind("handoff:" + ticketId).first<{ id: string }>();
+      if (pending) await attemptOutboxItem(env, pending.id);
+      const refreshed = await env.DB.prepare("SELECT support_mode FROM tickets WHERE id = ? LIMIT 1").bind(ticket.id).first<{ support_mode: string }>();
+      return json({ ok: true, supportMode: refreshed?.support_mode === "human" ? "human" : "ai", handoffPending: refreshed?.support_mode !== "human", aiUnavailable: false, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
 
     const conversation = await readTicketMessages(env, Number(ticket.id));
@@ -520,22 +586,23 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const ticket = await ticketOwner(env, ticketId, session.visitor_id);
     if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
     if (ticket.status !== "open") return json({ ok: false, error: "ticket_closed" }, 409);
+    if (ticket.support_mode === "human") return json({ ok: true, supportMode: "human", alreadyHuman: true, notificationSent: true });
 
-    const changed = await env.DB.prepare(
-      "UPDATE tickets SET support_mode = 'human' WHERE id = ? AND status = 'open' AND support_mode = 'ai'"
-    ).bind(ticket.id).run();
-    if (Number(changed.meta?.changes ?? 0) === 0) {
-      return json({ ok: true, supportMode: ticket.support_mode === "human" ? "human" : "ai", alreadyHuman: ticket.support_mode === "human" });
-    }
-
-    const sent = await notifyTelegram(
-      env,
-      "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + ticketId +
+    const dedupeKey = "handoff:" + ticketId;
+    const now = new Date().toISOString();
+    const outboxId = crypto.randomUUID();
+    const payload = "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + ticketId +
       "\nVisitor: " + String(ticket.user_name ?? "Visitor") +
-      "\n\nThe visitor requested a human support agent. Please reply directly to this message to answer in the website chat."
-    );
-    if (!sent) await recordNotificationFailure(env, "ticket_message", ticketId);
-    return json({ ok: true, supportMode: "human", notificationSent: sent });
+      "\n\nThe visitor requested a human support agent. Please reply directly to this message to answer in the website chat.";
+    await env.DB.batch([
+      env.DB.prepare("UPDATE tickets SET handoff_status = 'pending' WHERE id = ? AND status = 'open' AND support_mode = 'ai' AND handoff_status = 'none'").bind(ticket.id),
+      env.DB.prepare("INSERT OR IGNORE INTO notification_outbox (id, event_type, reference_id, dedupe_key, payload, status, attempts, created_at, next_attempt_at) SELECT ?, 'handoff', ?, ?, ?, 'pending', 0, ?, ? WHERE EXISTS (SELECT 1 FROM tickets WHERE id = ? AND status = 'open' AND handoff_status = 'pending')").bind(outboxId, ticketId, dedupeKey, payload, now, now, ticket.id)
+    ]);
+    const queued = await env.DB.prepare("SELECT id FROM notification_outbox WHERE dedupe_key = ? LIMIT 1").bind(dedupeKey).first<{ id: string }>();
+    const notificationSent = queued ? await attemptOutboxItem(env, queued.id) : false;
+    const latest = await ticketOwner(env, ticketId, session.visitor_id);
+    const supportMode = latest?.support_mode === "human" ? "human" : "ai";
+    return json({ ok: true, supportMode, handoffPending: supportMode !== "human", notificationSent });
   }
 
   const messagesMatch = path.match(/^\/ticket\/([^/]+)\/messages$/);
@@ -619,7 +686,7 @@ export class TicketsDurableObject extends DurableObject<Env> {
       }
     }
 
-    if (url.pathname === "/ticket/new" && request.method === "POST") {
+    if (path === "/ticket/new" && request.method.toUpperCase() === "POST") {
       // Keep the read-then-create sequence atomic, but never hold the global
       // Durable Object while AI or Telegram network requests are in flight.
       return this.ctx.blockConcurrencyWhile(() => handleApi(request, this.env));
@@ -642,21 +709,26 @@ export class TicketsDurableObject extends DurableObject<Env> {
 }
 
 export default {
-  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     ctx.waitUntil((async () => {
+      await retryPendingNotifications(env);
+      if (controller.cron !== "0 3 * * *") return;
       const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const [updates, failures, sessions] = await Promise.all([
+      const contactCutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+      const [updates, failures, sessions, outbox, contacts] = await Promise.all([
         env.DB.prepare("DELETE FROM telegram_updates WHERE processed_at < ?").bind(cutoff).run(),
         env.DB.prepare("DELETE FROM telegram_delivery_failures WHERE failed_at < ?").bind(cutoff).run(),
-        env.DB.prepare("DELETE FROM visitor_auth_sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND created_at < ?)").bind(cutoff, cutoff).run()
+        env.DB.prepare("DELETE FROM visitor_auth_sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND created_at < ?)").bind(cutoff, cutoff).run(),
+        env.DB.prepare("DELETE FROM notification_outbox WHERE status = 'sent' AND delivered_at < ?").bind(cutoff).run(),
+        env.DB.prepare("DELETE FROM contact_submissions WHERE delivery_status = 'sent' AND created_at < ?").bind(contactCutoff).run()
       ]);
       console.log("[cleanup] expired records removed", {
-        telegramUpdates: Number(updates.meta?.changes ?? 0),
-        notificationFailures: Number(failures.meta?.changes ?? 0),
-        visitorSessions: Number(sessions.meta?.changes ?? 0)
+        telegramUpdates: Number(updates.meta?.changes ?? 0), notificationFailures: Number(failures.meta?.changes ?? 0),
+        visitorSessions: Number(sessions.meta?.changes ?? 0), sentNotifications: Number(outbox.meta?.changes ?? 0),
+        deliveredContacts: Number(contacts.meta?.changes ?? 0)
       });
     })().catch(error => {
-      console.error("[cleanup] scheduled retention job failed", error instanceof Error ? error.message : "unknown error");
+      console.error("[scheduled] retry or cleanup failed", error instanceof Error ? error.message : "unknown error");
     }));
   },
 
