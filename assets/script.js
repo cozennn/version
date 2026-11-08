@@ -220,10 +220,10 @@ async function createTicket(name){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
   var mode=await ensureSession();if(mode==='error')return null;if(mode==='blocked')mode='fresh';
   try{
-    var body={userName:name};if(mode==='legacy')body.userId=userId;
+    var body={userId:userId,userName:name};
     var r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(body)});
     var j=await r.json();
-    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(mode==='legacy'?{userId:userId,userName:name}:{userName:name})});j=await r.json()}
+    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userId:userId,userName:name})});j=await r.json()}
     if(j.ok&&j.ticket){
       if(j.sessionToken)saveSession(j.sessionToken);
       currentTicket=j.ticket;persist();lastCount=(currentTicket.messages||[]).length;updateTabs();renderChat();return j;
