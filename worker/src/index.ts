@@ -299,10 +299,10 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 
   if (method === "GET" && path === "/health") {
     try {
-      const [sessionCheck, latestFailure] = await Promise.all([
-        env.DB.prepare("SELECT visitor_id FROM visitor_sessions LIMIT 1").first<{ visitor_id: string }>(),
-        env.DB.prepare("SELECT failed_at FROM telegram_delivery_failures ORDER BY id DESC LIMIT 1").first<{ failed_at: string }>()
-      ]);
+      await env.DB.prepare("SELECT 1 AS ok FROM visitor_sessions LIMIT 1").first<{ ok: number }>();
+      const latestFailure = await env.DB.prepare(
+        "SELECT failed_at FROM telegram_delivery_failures ORDER BY id DESC LIMIT 1"
+      ).first<{ failed_at: string }>();
       return json({
         ok: true,
         service: "norda-api",
@@ -525,6 +525,24 @@ export class TicketsDurableObject extends DurableObject<Env> {
 }
 
 export default {
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil((async () => {
+      const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const [updates, failures, sessions] = await Promise.all([
+        env.DB.prepare("DELETE FROM telegram_updates WHERE processed_at < ?").bind(cutoff).run(),
+        env.DB.prepare("DELETE FROM telegram_delivery_failures WHERE failed_at < ?").bind(cutoff).run(),
+        env.DB.prepare("DELETE FROM visitor_sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND created_at < ?)").bind(cutoff, cutoff).run()
+      ]);
+      console.log("[cleanup] expired records removed", {
+        telegramUpdates: Number(updates.meta?.changes ?? 0),
+        notificationFailures: Number(failures.meta?.changes ?? 0),
+        visitorSessions: Number(sessions.meta?.changes ?? 0)
+      });
+    })().catch(error => {
+      console.error("[cleanup] scheduled retention job failed", error instanceof Error ? error.message : "unknown error");
+    }));
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("origin") ?? "";
     const allowed = (env.ALLOWED_ORIGINS ?? "").split(",").map(value => value.trim()).filter(Boolean);
