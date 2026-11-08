@@ -611,11 +611,9 @@ export class TicketsDurableObject extends DurableObject<Env> {
       }
     }
 
-    if (
-      (url.pathname === "/ticket/new" && request.method === "POST") ||
-      (url.pathname.endsWith("/message") && request.method === "POST") ||
-      (url.pathname.endsWith("/handoff") && request.method === "POST")
-    ) {
+    if (url.pathname === "/ticket/new" && request.method === "POST") {
+      // Keep the read-then-create sequence atomic, but never hold the global
+      // Durable Object while AI or Telegram network requests are in flight.
       return this.ctx.blockConcurrencyWhile(() => handleApi(request, this.env));
     }
     return handleApi(request, this.env);
