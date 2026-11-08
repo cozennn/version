@@ -274,7 +274,7 @@ async function saveVisitorSession(env: Env, visitorId: string, token: string, re
   const tokenHash = await hashSessionToken(token);
   const statement = renewExpired
     ? env.DB.prepare(
-        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL"
+        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL OR visitor_sessions.created_at >= datetime(excluded.created_at, '-10 minutes')"
       ).bind(visitorId, tokenHash, createdAt, expiresAt)
     : env.DB.prepare(
         "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL)"
@@ -369,10 +369,11 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       if (!session) return json({ ok: false, error: "invalid_or_expired_session" }, 401);
       visitorId = session.visitor_id;
     } else {
-      visitorId = crypto.randomUUID();
+      const suppliedVisitorId = text(body.userId, 128);
+      visitorId = /^u_[A-Za-z0-9_-]{16,64}$/.test(suppliedVisitorId)
+        ? suppliedVisitorId
+        : crypto.randomUUID();
       sessionToken = createSessionToken();
-      const saved = await saveVisitorSession(env, visitorId, sessionToken);
-      if (!saved) return json({ ok: false, error: "session_creation_failed" }, 500);
     }
 
     const existing = await env.DB.prepare(
@@ -384,6 +385,11 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       await env.DB.prepare(
         "INSERT INTO tickets (public_id, visitor_id, user_name, status, created_at) VALUES (?, ?, ?, 'open', ?)"
       ).bind(ticketId, visitorId, userName, new Date().toISOString()).run();
+    }
+
+    if (sessionToken) {
+      const saved = await saveVisitorSession(env, visitorId, sessionToken, true);
+      if (!saved) return json({ ok: false, error: "visitor_session_already_active" }, 409);
     }
 
     const rows = await env.DB.prepare(
