@@ -69,6 +69,8 @@ function loc(){return lang==='ar'?'ar-EG':lang==='fr'?'fr-FR':'en-US'}
 function applyLang(l){
   lang=l;d.documentElement.lang=l;d.documentElement.dir=l==='ar'?'rtl':'ltr';
   $('.lang__item').forEach(function(item){item.setAttribute('aria-checked',String(item.getAttribute('data-lang')===l))});
+  var langButton=$1('.lang__btn'),langLabel=langButton&&(langButton.querySelector('.lang__label')||langButton.querySelector('span'));
+  if(langLabel)langLabel.textContent=l.toUpperCase();
   var w=d.createTreeWalker(d.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|svg)$/i.test(p.nodeName)||(p.closest&&p.closest('svg, .tk-log, code, pre')))return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT}}),n,list=[];
   while((n=w.nextNode()))list.push(n);
   list.forEach(function(n){if(n._o===undefined)n._o=n.nodeValue;var k=n._o.trim();if(!k)return;var m=n._o.match(/^(\s*)[\s\S]*?(\s*)$/);n.nodeValue=m[1]+tr(k,l)+m[2]});
