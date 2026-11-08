@@ -444,13 +444,28 @@ d.addEventListener('keydown',function(e){
 });
 /* نموذج التواصل المستقل عن نظام التذاكر */
 var cform=$1('#contactForm');
+var contactFieldIds=['cf-name','cf-email','cf-subject','cf-msg','cf-consent'];
+contactFieldIds.forEach(function(id){
+  var field=$1('#'+id);if(!field)return;
+  field.setAttribute('aria-invalid','false');
+  ['input','change'].forEach(function(eventName){
+    field.addEventListener(eventName,function(){field.setAttribute('aria-invalid','false')});
+  });
+});
 if(cform)cform.addEventListener('submit',async function(e){
   e.preventDefault();
   var nm=$1('#cf-name').value.trim(),em=$1('#cf-email').value.trim(),sj=$1('#cf-subject').value.trim(),ms=$1('#cf-msg').value.trim(),out=$1('#cfMsg'),btn=$1('#cfBtn'),consent=$1('#cf-consent');
+  contactFieldIds.forEach(function(id){var field=$1('#'+id);if(field)field.setAttribute('aria-invalid','false')});
   out.className='fmsg';if($1('#cf-site').value)return;
-  if(!nm||!em||!sj||!ms){out.textContent=t('msg_req');out.classList.add('err');return}
-  if(!validEmail(em)){out.textContent=t('msg_email');out.classList.add('err');return}
-  if(!consent||!consent.checked){out.textContent=t('msg_consent');out.classList.add('err');if(consent)consent.focus();return}
+  if(!nm||!em||!sj||!ms){
+    out.textContent=t('msg_req');out.classList.add('err');
+    var missing=['cf-name','cf-email','cf-subject','cf-msg'].filter(function(id){return !$1('#'+id).value.trim()});
+    missing.forEach(function(id){$1('#'+id).setAttribute('aria-invalid','true')});
+    if(missing.length)$1('#'+missing[0]).focus();
+    return;
+  }
+  if(!validEmail(em)){$1('#cf-email').setAttribute('aria-invalid','true');out.textContent=t('msg_email');out.classList.add('err');$1('#cf-email').focus();return}
+  if(!consent||!consent.checked){out.textContent=t('msg_consent');out.classList.add('err');if(consent){consent.setAttribute('aria-invalid','true');consent.focus()}return}
   out.textContent=t('msg_wait');setBusy(btn,true);
   var controller=new AbortController(),contactTimer=setTimeout(function(){controller.abort()},15000);
   try{
@@ -458,6 +473,7 @@ if(cform)cform.addEventListener('submit',async function(e){
     var result=await response.json();
     if(!response.ok||!result||!result.ok)throw new Error('send');
     out.textContent=t('msg_ok');out.classList.add('ok');cform.reset();
+    contactFieldIds.forEach(function(id){var field=$1('#'+id);if(field)field.setAttribute('aria-invalid','false')});
   }catch(err){out.textContent=err.name==='AbortError'?t('msg_timeout'):t('msg_err');out.classList.add('err')}
   finally{clearTimeout(contactTimer);setBusy(btn,false)}
 });
