@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_auth_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, and `0004` adds a default-`ai` `support_mode` to existing tickets. Existing tickets and messages are preserved. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
+The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_auth_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, `0004` adds a default-`ai` `support_mode`, and `0005` adds recoverable handoff state, durable contact submissions, and a Telegram notification outbox. Existing ticket and message rows are preserved. Apply all pending migrations successfully before deploying the updated Worker.
 
 Then configure secrets and the private NorDa AI bridge connection:
 
@@ -48,7 +48,7 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 - `POST /session/upgrade` (one-time exchange of a legacy browser ID for a server-issued session)
 - `POST /ticket/new` (creates a server-side visitor session when no bearer token is supplied)
 - `POST /ticket/:ticketId/message` (requires `Authorization: Bearer <session-token>`; routes to AI or Telegram according to the persisted support mode)
-- `POST /ticket/:ticketId/handoff` (permanently switches an open ticket to human support and sends a Telegram alert)
+- `POST /ticket/:ticketId/handoff` (queues a durable human-support handoff; the ticket switches to human mode only after Telegram confirms delivery)
 - `GET /ticket/:ticketId/messages` (requires a bearer session)
 - `POST /ticket/:ticketId/close` (requires a bearer session)
 - `GET /ticket/closed/closed` (requires a bearer session)
@@ -59,15 +59,15 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 
 - JSON request bodies are streamed and capped by route: 64 KiB for Telegram updates, 16 KiB for visitor messages, 8 KiB for contact, and 2 KiB for session upgrades and ticket creation.
 - Rate limits are applied per Cloudflare client IP: contact 5/minute, ticket creation 5/minute, legacy session upgrade 10/minute, visitor messages 30/minute, Telegram webhook 120/minute, and 90/minute for other API routes. Health checks are exempt.
-- A daily 03:00 UTC Cron removes Telegram update IDs and notification-failure records older than 30 days, plus expired/revoked visitor sessions after the retention window. Existing ticket and message history is not removed.
+- A five-minute Cron retries pending Telegram notifications with exponential backoff. The daily 03:00 UTC Cron removes sent outbox records and Telegram monitoring records older than 30 days, delivered contact submissions older than 90 days, and expired/revoked visitor sessions. Undelivered contact submissions and notifications are retained for retry. Existing ticket and message history is not removed.
 
 ## Important limitations before production
 
 - File attachments are deliberately rejected with HTTP 501. The current Cloudflare account configuration supplied for this work did not include a confirmed R2 bucket/binding. Configure R2 before enabling attachment persistence; do not store Base64 files in D1 or KV.
-- Every visitor message is saved in D1 and a Telegram notification is attempted. The API reports `notificationSent: false` if Telegram delivery fails, logs the Telegram API failure, and the website tells the visitor that the message was saved but the notification failed. Visitor messages are limited to 3,500 characters to leave room for the ticket metadata in Telegram. Reply directly to the bot's notification; the webhook validates Telegram’s secret header, requires the configured private chat and matching account ID, verifies the exact support bot identity, and accepts replies only to that bot's notification. Group chats are intentionally rejected. Replies are saved with D1-backed update-id idempotency, so Telegram retries cannot insert the same reply twice. No admin dashboard is required.
+- Visitor messages are saved in D1. AI-mode messages are sent to NorDa AI; human-mode messages generate Telegram notifications. Contact submissions, human-support handoff alerts, and human-mode message notifications are written to a D1 outbox before Telegram delivery is attempted. Failed notifications are retried every five minutes with exponential backoff. Contact messages are retained for 90 days after successful delivery; undelivered contact submissions are retained until delivery succeeds. Visitor messages are limited to 3,500 characters. Reply directly to the bot's notification; the webhook validates Telegram’s secret header, requires the configured private chat and matching account ID, verifies the exact support bot identity, and accepts replies only to that bot's notification. Group chats are intentionally rejected. Replies are saved with D1-backed update-id idempotency, so Telegram retries cannot insert the same reply twice. No admin dashboard is required.
 - Ticket ownership is now checked against a server-issued 256-bit bearer token. Only the SHA-256 hash is stored in D1; the token is returned once and kept in the visitor's browser storage. Sessions expire after 365 days. Existing browser IDs are exchanged once through `/session/upgrade` so existing tickets remain associated with their original visitor; the legacy ID is not accepted by ticket read/write routes after the Worker update. If browser storage is cleared, the visitor must start a new ticket because the raw session token cannot be recovered.
 - Telegram notifications are optional for ticket messages. The contact form requires Telegram configuration.
-- The Worker uses the existing `tickets` and `messages` D1 tables plus `telegram_updates` and `visitor_auth_sessions`, created by additive migrations. Existing ticket and message rows are preserved.
+- The Worker uses the existing `tickets` and `messages` D1 tables plus `telegram_updates`, `visitor_auth_sessions`, `contact_submissions`, and `notification_outbox`, created by additive migrations. Existing ticket and message rows are preserved.
 
 Check the Worker after deployment:
 
