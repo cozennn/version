@@ -561,11 +561,24 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
     if (ticket.status !== "open") return json({ ok: false, error: "ticket_closed" }, 409);
 
-    await env.DB.prepare(
-      "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) VALUES (?, 'visitor', ?, ?)"
-    ).bind(ticket.id, message, new Date().toISOString()).run();
+    const clientMessageId = text(body.clientMessageId, 36);
+    if (clientMessageId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientMessageId)) {
+      return json({ ok: false, error: "invalid_client_message_id" }, 400);
+    }
+    const messageId = clientMessageId || crypto.randomUUID();
+    const insertedMessage = await env.DB.prepare(
+      "INSERT OR IGNORE INTO messages (ticket_id, sender_type, message_text, created_at, client_message_id) VALUES (?, 'visitor', ?, ?, ?)"
+    ).bind(ticket.id, message, new Date().toISOString(), messageId).run();
 
     const supportMode = ticket.support_mode === "human" ? "human" : "ai";
+    if (Number(insertedMessage.meta?.changes ?? 0) !== 1) {
+      return json({
+        ok: true,
+        duplicate: true,
+        supportMode,
+        messages: await readTicketMessages(env, Number(ticket.id))
+      });
+    }
     if (supportMode === "human") {
       const notificationSent = await enqueueAndDeliver(env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
         `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
