@@ -485,6 +485,14 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       sessionToken = createSessionToken();
     }
 
+    // Claim the legacy visitor ID before creating or exposing any ticket.
+    // Otherwise a failed session claim could still leave a ticket attached to
+    // an identity that belongs to another active visitor session.
+    if (sessionToken) {
+      const saved = await saveVisitorSession(env, visitorId, sessionToken, true);
+      if (!saved) return json({ ok: false, error: "visitor_session_already_active" }, 409);
+    }
+
     const existing = await env.DB.prepare(
       "SELECT public_id, support_mode FROM tickets WHERE visitor_id = ? AND status = 'open' ORDER BY id DESC LIMIT 1"
     ).bind(visitorId).first<{ public_id: string; support_mode: string }>();
@@ -494,11 +502,6 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       await env.DB.prepare(
         "INSERT INTO tickets (public_id, visitor_id, user_name, status, created_at, support_mode) VALUES (?, ?, ?, 'open', ?, 'ai')"
       ).bind(ticketId, visitorId, userName, new Date().toISOString()).run();
-    }
-
-    if (sessionToken) {
-      const saved = await saveVisitorSession(env, visitorId, sessionToken, true);
-      if (!saved) return json({ ok: false, error: "visitor_session_already_active" }, 409);
     }
 
     const rows = await env.DB.prepare(
