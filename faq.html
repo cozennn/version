@@ -114,11 +114,12 @@
   <section class="section section--tight" id="privacy">
     <h2 class="h2" style="margin-bottom:16px">Privacy Policy</h2>
     <div style="max-width:70ch;color:var(--muted);font-size:.9375rem;line-height:1.75;display:grid;gap:14px">
-<p><strong style="color:var(--text)">What we collect.</strong> When you submit the contact form, we receive the name, email address, subject and message you provide. When you use support chat, we receive your chat identifier, ticket details, messages and any files you choose to attach. Do not send sensitive payment information through the website.</p>
-      <p><strong style="color:var(--text)">How information is processed.</strong> Contact form submissions and support chat requests are sent to our Cloudflare Worker for processing and support handling. Messages and attachments may be forwarded to Telegram so NORDA can respond. Cloudflare and Telegram process data under their own privacy terms. We do not sell your personal information or use it for advertising.</p>
-      <p><strong style="color:var(--text)">Browser storage.</strong> The website stores preferences and cart contents in localStorage. Support chat also stores a random chat identifier, your name if provided, the current or last ticket, notification preferences and a local archive of closed tickets. A session marker may be stored in sessionStorage to control the intro screen. You can clear this information through your browser settings; doing so may remove your locally stored chat history and cart.</p>
+<p><strong style="color:var(--text)">What we collect.</strong> When you submit the contact form, we receive the name, email address, subject and message you provide. When you use support chat, we receive your chat identifier, ticket details and messages. File attachments are not currently available. Do not send sensitive payment information through the website.</p>
+      <p><strong style="color:var(--text)">How information is processed.</strong> Contact form submissions are sent to our Cloudflare Worker and forwarded to our Telegram support account when delivery is configured. Support chat messages are processed by the Cloudflare Worker and sent to our configured NorDa AI service while AI support is active. If you request a human agent, your messages are forwarded to our Telegram support account. Cloudflare, Telegram and the configured AI service process information under their own privacy terms. We do not sell your personal information or use it for advertising.</p>
+      <p><strong style="color:var(--text)">Browser storage.</strong> The website stores preferences and cart contents in localStorage. Support chat also stores a random chat identifier, a server-issued session token, your name if provided, the current or last ticket, notification preferences and a local archive of closed tickets. A session marker may be stored in sessionStorage to control the intro screen. You can clear this information through your browser settings; doing so may remove your locally stored chat history and cart.</p>
+      <p><strong style="color:var(--text)">Retention.</strong> Support tickets and messages are retained for support history and are not currently deleted automatically. Expired visitor sessions and Telegram delivery records are cleaned up under the service retention schedule. You may request deletion of your ticket or contact information by emailing <a href="mailto:norda@duck.com">norda@duck.com</a>.</p>
       <p><strong style="color:var(--text)">External services.</strong> The site loads fonts from Google Fonts, the GSAP animation library from jsDelivr, and some product images from Unsplash. These services may receive technical information such as your IP address when your browser requests their resources. We do not currently use third-party analytics or advertising trackers.</p>
-      <p><strong style="color:var(--text)">Your rights.</strong> You can ask us to delete your email from our records at any time by writing to <a href="mailto:norda@duck.com" style="text-decoration:underline">norda@duck.com</a>.</p>
+      <p><strong style="color:var(--text)">Your rights.</strong> You can request access to, correction of, or deletion of the personal information and support-chat data you have sent us by writing to <a href="mailto:norda@duck.com" style="text-decoration:underline">norda@duck.com</a>.</p>
     </div>
   </section>
 
@@ -145,7 +146,7 @@
         <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15"/><path d="M6 12c3.8 0 6.4-2.4 7.2-7.5"/><path d="M6 12c3.8 0 6.4 2.4 7.2 7.5"/><circle cx="17.6" cy="12" r="2.1"/></svg></span>NORDA</a>
         <p>Templates and tools for independent designers.</p>
       </div>
-      <div class="footer__col"><h4>Website links</h4><ul><li><a href="index.html">Home</a></li><li><a href="templates.html">Templates</a></li><li><a href="digital.html">Services</a></li><li><a href="digital.html">Packages</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer__col"><h4>Website links</h4><ul><li><a href="index.html">Home</a></li><li><a href="templates.html">Templates</a></li><li><a href="digital.html">Digital goods</a></li><li><a href="templates.html">Templates</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer__col"><h4>Help &amp; Policies</h4><ul><li><a href="faq.html">Frequently Asked Questions</a></li><li><a href="faq.html#terms">Terms of Use</a></li><li><a href="faq.html#privacy">Privacy Policy</a></li><li><a href="faq.html#refunds">Payment &amp; Refund Policy</a></li></ul></div>
       <div class="footer__col"><h4>Contact</h4><ul><li><a href="mailto:norda@duck.com">norda@duck.com</a></li><li><a data-social="telegram" href="https://t.me/nour_04x" target="_blank" rel="noopener">Telegram</a></li><li><a data-social="instagram" href="https://instagram.com/nour_04x" target="_blank" rel="noopener">Instagram</a></li></ul></div>
     </div>
@@ -253,6 +254,6 @@
 <script src="assets/products.js"></script>
 <script src="assets/main.js?v=20261108-1"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script src="assets/script.js?v=20261108-1"></script>
+<script src="assets/script.js?v=20261108-2"></script>
 </body>
 </html>
