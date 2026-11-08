@@ -19,15 +19,22 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_sessions` for hashed server-issued bearer tokens, and `0003` adds Telegram delivery-failure monitoring and retention indexes. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
+The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, and `0004` adds a default-`ai` `support_mode` to existing tickets. Existing tickets and messages are preserved. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
 
-Then configure secrets:
+Then configure secrets and the private NorDa AI bridge connection:
 
 ```cmd
 npx wrangler secret put TELEGRAM_BOT_TOKEN
 npx wrangler secret put TELEGRAM_CHAT_ID
 npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
+npx wrangler secret put NORDA_AI_URL
+npx wrangler secret put NORDA_AI_TOKEN
 ```
+
+For `NORDA_AI_URL`, enter the base URL of the running Cloudflare Tunnel (without `/chat`). The bridge token is stored locally in `C:\\norda-ai\\bridge-token.txt`; paste it only into Wrangler's secure prompt, never into chat or website files. A Quick Tunnel URL changes when the tunnel restarts, so update this secret whenever its URL changes. Keep Ollama and the bridge running on the computer hosting the model.
+
+The AI integration is server-to-server: the browser never receives the bridge URL or token. If the bridge is unavailable, visitors can still request a human agent.
+
 
 Telegram secrets are required for notifications and contact delivery. `TELEGRAM_WEBHOOK_SECRET` must be a random 32-64 character value using only letters, numbers, underscores, or hyphens; use the exact same value when registering the Telegram webhook.
 
@@ -40,7 +47,8 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 - `GET /health` (checks D1 migration dependencies and reports the latest Telegram delivery failure timestamp)
 - `POST /session/upgrade` (one-time exchange of a legacy browser ID for a server-issued session)
 - `POST /ticket/new` (creates a server-side visitor session when no bearer token is supplied)
-- `POST /ticket/:ticketId/message` (requires `Authorization: Bearer <session-token>`)
+- `POST /ticket/:ticketId/message` (requires `Authorization: Bearer <session-token>`; routes to AI or Telegram according to the persisted support mode)
+- `POST /ticket/:ticketId/handoff` (permanently switches an open ticket to human support and sends a Telegram alert)
 - `GET /ticket/:ticketId/messages` (requires a bearer session)
 - `POST /ticket/:ticketId/close` (requires a bearer session)
 - `GET /ticket/closed/closed` (requires a bearer session)
