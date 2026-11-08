@@ -170,11 +170,50 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
   return json({ ok: true, ticketId });
 }
 
-async function ticketOwner(env: Env, ticketId: string, userId: string) {
-  if (!userId) return null;
+const SESSION_TTL_DAYS = 365;
+
+function createSessionToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, value => value.toString(16).padStart(2, "0")).join("");
+}
+
+async function hashSessionToken(token: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
+}
+
+async function getVisitorSession(request: Request, env: Env): Promise<{ visitor_id: string } | null> {
+  const authorization = request.headers.get("authorization") ?? "";
+  const match = authorization.match(/^Bearer ([a-f0-9]{64})$/i);
+  if (!match) return null;
+  const tokenHash = await hashSessionToken(match[1]);
+  return env.DB.prepare(
+    "SELECT visitor_id FROM visitor_sessions WHERE token_hash = ? AND expires_at > ? AND revoked_at IS NULL LIMIT 1"
+  ).bind(tokenHash, new Date().toISOString()).first<{ visitor_id: string }>();
+}
+
+async function saveVisitorSession(env: Env, visitorId: string, token: string, renewExpired = false): Promise<boolean> {
+  const now = new Date();
+  const createdAt = now.toISOString();
+  const expiresAt = new Date(now.getTime() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const tokenHash = await hashSessionToken(token);
+  const statement = renewExpired
+    ? env.DB.prepare(
+        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL) ON CONFLICT(visitor_id) DO UPDATE SET token_hash = excluded.token_hash, created_at = excluded.created_at, expires_at = excluded.expires_at, revoked_at = NULL WHERE visitor_sessions.expires_at <= excluded.created_at OR visitor_sessions.revoked_at IS NOT NULL"
+      ).bind(visitorId, tokenHash, createdAt, expiresAt)
+    : env.DB.prepare(
+        "INSERT INTO visitor_sessions (visitor_id, token_hash, created_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, NULL)"
+      ).bind(visitorId, tokenHash, createdAt, expiresAt);
+  const result = await statement.run();
+  return Number(result.meta?.changes ?? 0) === 1;
+}
+
+async function ticketOwner(env: Env, ticketId: string, visitorId: string) {
+  if (!visitorId) return null;
   return env.DB.prepare(
     "SELECT id, public_id, visitor_id, user_name, status, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
-  ).bind(ticketId, userId).first<Record<string, unknown>>();
+  ).bind(ticketId, visitorId).first<Record<string, unknown>>();
 }
 
 async function handleApi(request: Request, env: Env): Promise<Response> {
@@ -203,42 +242,78 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     return json({ ok: true });
   }
 
+  if (method === "POST" && path === "/session/upgrade") {
+    const body = parseBody(await request.json().catch(() => ({})));
+    const legacyUserId = text(body.userId, 128);
+    if (!/^u_[A-Za-z0-9_-]{16,64}$/.test(legacyUserId)) {
+      return json({ ok: false, error: "invalid_legacy_session" }, 400);
+    }
+    const legacyTicket = await env.DB.prepare(
+      "SELECT 1 AS found FROM tickets WHERE visitor_id = ? LIMIT 1"
+    ).bind(legacyUserId).first<{ found: number }>();
+    if (!legacyTicket) return json({ ok: false, error: "legacy_session_not_found" }, 404);
+
+    const sessionToken = createSessionToken();
+    const saved = await saveVisitorSession(env, legacyUserId, sessionToken, true);
+    if (!saved) return json({ ok: false, error: "legacy_session_already_claimed" }, 409);
+    return json({ ok: true, sessionToken, expiresInDays: SESSION_TTL_DAYS });
+  }
+
   if (method === "POST" && path === "/ticket/new") {
     const body = parseBody(await request.json().catch(() => ({})));
-    const userId = text(body.userId, 128);
     const userName = text(body.userName, 100) || "Visitor";
-    if (!userId) return json({ ok: false, error: "userId_required" }, 400);
+    const authorization = request.headers.get("authorization");
+    let visitorId: string;
+    let sessionToken: string | null = null;
+
+    if (authorization) {
+      const session = await getVisitorSession(request, env);
+      if (!session) return json({ ok: false, error: "invalid_or_expired_session" }, 401);
+      visitorId = session.visitor_id;
+    } else {
+      visitorId = crypto.randomUUID();
+      sessionToken = createSessionToken();
+      const saved = await saveVisitorSession(env, visitorId, sessionToken);
+      if (!saved) return json({ ok: false, error: "session_creation_failed" }, 500);
+    }
 
     const existing = await env.DB.prepare(
       "SELECT public_id FROM tickets WHERE visitor_id = ? AND status = 'open' ORDER BY id DESC LIMIT 1"
-    ).bind(userId).first<{ public_id: string }>();
+    ).bind(visitorId).first<{ public_id: string }>();
 
     const ticketId = existing?.public_id ?? crypto.randomUUID();
     if (!existing) {
       await env.DB.prepare(
         "INSERT INTO tickets (public_id, visitor_id, user_name, status, created_at) VALUES (?, ?, ?, 'open', ?)"
-      ).bind(ticketId, userId, userName, new Date().toISOString()).run();
+      ).bind(ticketId, visitorId, userName, new Date().toISOString()).run();
     }
 
     const rows = await env.DB.prepare(
       "SELECT sender_type, message_text, created_at FROM messages WHERE ticket_id = (SELECT id FROM tickets WHERE public_id = ?) ORDER BY id ASC"
     ).bind(ticketId).all<Record<string, unknown>>();
 
-    return json({ ok: true, existing: Boolean(existing), ticket: { ticketId, messages: (rows.results ?? []).map(messageRow) } });
+    return json({
+      ok: true,
+      existing: Boolean(existing),
+      ...(sessionToken ? { sessionToken, expiresInDays: SESSION_TTL_DAYS } : {}),
+      ticket: { ticketId, messages: (rows.results ?? []).map(messageRow) }
+    });
   }
 
   const messageMatch = path.match(/^\/ticket\/([^/]+)\/message$/);
   if (method === "POST" && messageMatch) {
     const ticketId = decodeURIComponent(messageMatch[1]);
-    const userId = text(url.searchParams.get("userId"), 128);
+    const session = await getVisitorSession(request, env);
+    if (!session) return json({ ok: false, error: "unauthorized" }, 401);
+    const visitorId = session.visitor_id;
     const body = parseBody(await request.json().catch(() => ({})));
     const message = typeof body.text === "string" ? body.text.trim() : "";
-    if (!userId || !message) return json({ ok: false, error: "userId_and_text_required" }, 400);
+    if (!message) return json({ ok: false, error: "text_required" }, 400);
     if (message.length > 3500) return json({ ok: false, error: "message_too_long", maxLength: 3500 }, 413);
     if (body.file || body.fileName) return json({ ok: false, error: "attachments_not_enabled_until_R2_is_configured" }, 501);
 
-    const ticket = await ticketOwner(env, ticketId, userId);
-    if (!ticket || ticket.visitor_id !== userId) return json({ ok: false, error: "ticket_not_found" }, 404);
+    const ticket = await ticketOwner(env, ticketId, visitorId);
+    if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
     if (ticket.status !== "open") return json({ ok: false, error: "ticket_closed" }, 409);
 
     await env.DB.prepare(
@@ -251,10 +326,10 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   const messagesMatch = path.match(/^\/ticket\/([^/]+)\/messages$/);
   if (method === "GET" && messagesMatch) {
     const ticketId = decodeURIComponent(messagesMatch[1]);
-    const userId = text(url.searchParams.get("userId"), 128);
-    if (!userId) return json({ ok: false, error: "userId_required" }, 400);
-    const ticket = await ticketOwner(env, ticketId, userId);
-    if (!ticket || ticket.visitor_id !== userId) return json({ ok: false, error: "ticket_not_found" }, 404);
+    const session = await getVisitorSession(request, env);
+    if (!session) return json({ ok: false, error: "unauthorized" }, 401);
+    const ticket = await ticketOwner(env, ticketId, session.visitor_id);
+    if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
 
     const rows = await env.DB.prepare(
       "SELECT sender_type, message_text, created_at FROM messages WHERE ticket_id = ? ORDER BY id ASC"
@@ -265,9 +340,10 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   const closeMatch = path.match(/^\/ticket\/([^/]+)\/close$/);
   if (method === "POST" && closeMatch) {
     const ticketId = decodeURIComponent(closeMatch[1]);
-    const userId = text(url.searchParams.get("userId"), 128);
-    const ticket = await ticketOwner(env, ticketId, userId);
-    if (!ticket || ticket.visitor_id !== userId) return json({ ok: false, error: "ticket_not_found" }, 404);
+    const session = await getVisitorSession(request, env);
+    if (!session) return json({ ok: false, error: "unauthorized" }, 401);
+    const ticket = await ticketOwner(env, ticketId, session.visitor_id);
+    if (!ticket) return json({ ok: false, error: "ticket_not_found" }, 404);
     await env.DB.prepare(
       "UPDATE tickets SET status = 'closed', closed_at = ? WHERE id = ? AND status = 'open'"
     ).bind(new Date().toISOString(), ticket.id).run();
@@ -275,11 +351,11 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   }
 
   if (method === "GET" && path === "/ticket/closed/closed") {
-    const userId = text(url.searchParams.get("userId"), 128);
-    if (!userId) return json({ ok: false, error: "userId_required" }, 400);
+    const session = await getVisitorSession(request, env);
+    if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const rows = await env.DB.prepare(
       "SELECT public_id AS ticketId, user_name AS userName, status, created_at AS createdAt, closed_at AS closedAt FROM tickets WHERE visitor_id = ? AND status = 'closed' ORDER BY id DESC LIMIT 50"
-    ).bind(userId).all<Record<string, unknown>>();
+    ).bind(session.visitor_id).all<Record<string, unknown>>();
     return json({ ok: true, tickets: rows.results ?? [] });
   }
 
