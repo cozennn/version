@@ -527,3 +527,14 @@ img { height: auto; }
   outline: 2px solid var(--bad, #c33a52);
   outline-offset: 2px;
 }
+
+.cart__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.cart__empty-actions .btn {
+  flex: 1 1 130px;
+}
