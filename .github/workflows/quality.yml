@@ -54,7 +54,7 @@ jobs:
           db = sqlite3.connect(':memory:')
           db.executescript('''
             CREATE TABLE tickets (id INTEGER PRIMARY KEY, public_id TEXT, visitor_id TEXT);
-            CREATE TABLE messages (id INTEGER PRIMARY KEY, ticket_id INTEGER, message_text TEXT);
+            CREATE TABLE messages (id INTEGER PRIMARY KEY, ticket_id INTEGER, sender_type TEXT, message_text TEXT, created_at TEXT);
             INSERT INTO tickets (id, public_id, visitor_id) VALUES (1, 'legacy-ticket', 'legacy-user');
             INSERT INTO messages (id, ticket_id, message_text) VALUES (1, 1, 'preserve this');
           ''')
@@ -73,9 +73,26 @@ jobs:
           assert "SET claimed_at = ?, claim_token = ?" in worker, 'Outbox delivery must acquire an atomic lease'
           assert "claimed_at IS NULL OR claimed_at <= ?" in worker, 'Outbox claims must recover after an expired lease'
           assert "claim_token = ?" in worker, 'Outbox updates must be guarded by the active claim token'
+          assert 'client_message_id' in worker, 'Visitor messages must persist client idempotency keys'
+          assert 'invalid_client_message_id' in worker, 'Visitor message idempotency keys must be validated'
+          assert 'duplicate: true' in worker, 'Duplicate visitor requests must return a duplicate response'
           assert "AbortSignal.timeout(15000)" in worker, 'Telegram requests must have a bounded timeout'
           outbox_columns = {row[1] for row in db.execute("PRAGMA table_info(notification_outbox)")}
           assert {'claimed_at', 'claim_token'} <= outbox_columns, 'Outbox lease columns are missing'
+          message_columns = {row[1] for row in db.execute("PRAGMA table_info(messages)")}
+          assert 'client_message_id' in message_columns, 'Message idempotency column is missing'
+          db.execute("""
+            INSERT OR IGNORE INTO messages
+              (ticket_id, sender_type, message_text, created_at, client_message_id)
+            VALUES (1, 'visitor', 'first copy', '2026-01-01T00:00:00Z', '11111111-1111-4111-8111-111111111111')
+          """)
+          duplicate_message = db.execute("""
+            INSERT OR IGNORE INTO messages
+              (ticket_id, sender_type, message_text, created_at, client_message_id)
+            VALUES (1, 'visitor', 'retry copy', '2026-01-01T00:00:01Z', '11111111-1111-4111-8111-111111111111')
+          """)
+          assert duplicate_message.rowcount == 0, 'A retried visitor message must be ignored'
+          assert db.execute("SELECT COUNT(*) FROM messages WHERE client_message_id='11111111-1111-4111-8111-111111111111'").fetchone()[0] == 1
           db.execute("""
             INSERT INTO notification_outbox
               (id, event_type, reference_id, dedupe_key, payload, status, attempts, created_at, next_attempt_at)
