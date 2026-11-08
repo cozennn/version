@@ -315,9 +315,9 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
 
   const ticketId = ticketMatch[1];
   const ticket = await env.DB.prepare(
-    "SELECT id, public_id, status, support_mode FROM tickets WHERE public_id = ? LIMIT 1"
-  ).bind(ticketId).first<{ id: number; public_id: string; status: string; support_mode: string }>();
-  if (!ticket || ticket.status !== "open" || ticket.support_mode !== "human") {
+    "SELECT id, public_id, status, support_mode, handoff_status FROM tickets WHERE public_id = ? LIMIT 1"
+  ).bind(ticketId).first<{ id: number; public_id: string; status: string; support_mode: string; handoff_status: string }>();
+  if (!ticket || ticket.status !== "open" || (ticket.support_mode !== "human" && ticket.handoff_status !== "pending")) {
     console.warn("[telegram] ignored: ticket ID not found in D1");
     await env.REPLIES.put(seenKey, "ignored", { expirationTtl: 86400 });
     return json({ ok: true, ignored: true, reason: "ticket_not_found" });
@@ -331,7 +331,10 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     ).bind(updateId, new Date().toISOString()),
     env.DB.prepare(
       "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) SELECT ?, 'admin', ?, ? WHERE changes() = 1"
-    ).bind(ticket.id, replyText, new Date().toISOString())
+    ).bind(ticket.id, replyText, new Date().toISOString()),
+    env.DB.prepare(
+      "UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE id = ? AND status = 'open' AND handoff_status = 'pending'"
+    ).bind(ticket.id)
   ]);
   const claimed = Number(batch[0]?.meta?.changes ?? 0) === 1;
   if (!claimed) {
