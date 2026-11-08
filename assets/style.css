@@ -511,3 +511,9 @@ img { height: auto; }
   background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--primary);
 }
+
+.prod__badge--sub {
+  top: 44px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
