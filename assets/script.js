@@ -90,6 +90,27 @@ function validEmail(v){return v.length<=254&&/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.tes
 /* ===== نظام التذاكر ===== */
 var userId=sget('norda_uid');if(!userId){var uid='';try{uid=window.crypto&&crypto.randomUUID?crypto.randomUUID():''}catch(e){}if(!uid)uid=Date.now().toString(36)+Math.random().toString(36).slice(2,12);userId='u_'+uid;sset('norda_uid',userId)}
 var API=String(CFG.TELEGRAM_API||window.TELEGRAM_API||'').replace(/\/+$/,'');
+var sessionToken=sget('norda_session')||'',sessionMode=sessionToken?'secure':'unknown',sessionPromise=null;
+function saveSession(token){sessionToken=token||'';sessionMode=sessionToken?'secure':'unknown';if(sessionToken)sset('norda_session',sessionToken);else sdel('norda_session')}
+async function ensureSession(){
+  if(sessionMode!=='unknown')return sessionMode;
+  if(sessionPromise)return sessionPromise;
+  sessionPromise=(async function(){
+    if(!API)return 'error';
+    try{
+      var r=await fetch(API+'/session/upgrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:userId})});
+      var j=await r.json().catch(function(){return {}});
+      if(r.ok&&j.ok&&typeof j.sessionToken==='string'&&/^[a-f0-9]{64}$/i.test(j.sessionToken)){saveSession(j.sessionToken);return 'secure'}
+      if(r.status===404&&j.error==='not_found'){sessionMode='legacy';return 'legacy'}
+      if(r.status===404&&j.error==='legacy_session_not_found'){sessionMode='fresh';return 'fresh'}
+      if(r.status===409&&j.error==='legacy_session_already_claimed'){sessionMode='blocked';return 'blocked'}
+      return 'error';
+    }catch(e){return 'error'}
+  })();
+  try{return await sessionPromise}finally{sessionPromise=null}
+}
+function apiHeaders(json){var h={};if(json)h['Content-Type']='application/json';if(sessionToken)h.Authorization='Bearer '+sessionToken;return h}
+function apiTicketUrl(path){return API+path+(sessionMode==='legacy'?'?userId='+encodeURIComponent(userId):'')}
 var currentTicket=null,pendingFile=null,lastCount=0,shown=0,typing=false,typingTimer=null,sending=false,closedCache=[],detailTicket=null,unread=0,view='new',remoteReady=false;
             
 var CLOSED_ARCHIVE_KEY='norda_closed_archive';
@@ -174,8 +195,17 @@ function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=set
 function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+currentTicket.ticketId;renderMessages(currentTicket.messages||[],true)}
 async function createTicket(name){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
-  try{var r=await fetch(API+'/ticket/new',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:userId,userName:name})});var j=await r.json();
-    if(j.ok&&j.ticket){currentTicket=j.ticket;persist();lastCount=(currentTicket.messages||[]).length;updateTabs();renderChat();return j}}catch(e){}
+  var mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;
+  try{
+    var body={userName:name};if(mode==='legacy')body.userId=userId;
+    var r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(body)});
+    var j=await r.json();
+    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(mode==='legacy'?{userId:userId,userName:name}:{userName:name})});j=await r.json()}
+    if(j.ok&&j.ticket){
+      if(j.sessionToken)saveSession(j.sessionToken);
+      currentTicket=j.ticket;persist();lastCount=(currentTicket.messages||[]).length;updateTabs();renderChat();return j;
+    }
+  }catch(e){}
   return null;
 }
 async function startNew(){
@@ -185,15 +215,20 @@ async function startNew(){
 }
 async function apiSend(p,ticket,tid){
   if(!API)throw new Error('NORDA API endpoint is not configured');
-  var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/message?userId='+encodeURIComponent(userId),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+  var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('Visitor session unavailable');
+  var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/message'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify(p)});
   return r.json();
 }
 async function loadMessages(){
   if(!hasOpen()||sending)return;
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return}
+  var mode=await ensureSession();
+  if(mode==='fresh'){toastRaw('Your previous chat cannot be restored. Please start a new chat.');return}
+  if(mode==='blocked'||mode==='error')return;
   var ticket=currentTicket,tid=String(ticket.ticketId);
   try{
-    var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/messages?userId='+encodeURIComponent(userId));
+    var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/messages'),{headers:apiHeaders(false)});
+    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';await ensureSession();return}
     var j=await r.json();
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid||!j.ok||sending)return;
     var was=remoteReady;
@@ -243,7 +278,8 @@ if(bc)bc.addEventListener('click',async function(){
   var ticket=currentTicket,tid=String(ticket.ticketId);
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');toast('msg_err');return}
   try{
-    var r=await fetch(API+'/ticket/'+encodeURIComponent(tid)+'/close?userId='+encodeURIComponent(userId),{method:'POST'});
+    var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh'){toast('msg_err');return}
+    var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/close'),{method:'POST',headers:apiHeaders(false)});
     var j=await r.json();
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
     if(j.ok){
@@ -276,15 +312,17 @@ async function loadClosed(){
     closedCache=archived;
 
     if(!API){renderClosed();return}
-    var r=await fetch(
-      API+'/ticket/closed/closed?userId='+encodeURIComponent(userId)
-    );
-    var j=await r.json();
+    var mode=await ensureSession();
+    if(mode==='secure'||mode==='legacy'){
+      var r=await fetch(apiTicketUrl('/ticket/closed/closed'),{headers:apiHeaders(false)});
+      if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';await ensureSession();renderClosed();return}
+      var j=await r.json();
 
     if(j.ok&&Array.isArray(j.tickets)){
       j.tickets.forEach(function(ticket){
         archiveClosed(ticket);
       });
+      }
     }
   }catch(e){}
   renderClosed();
