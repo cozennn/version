@@ -78,3 +78,17 @@ curl -X POST "https://api.telegram.org/bot%TELEGRAM_BOT_TOKEN%/setWebhook" -d "u
 ```
 
 Telegram should return `"ok":true`. The bot must be able to post in the support chat. To answer a visitor, use Telegram's **Reply** action on the specific NORDA ticket notification, not a new standalone message.
+
+## Post-deploy verification
+
+Run these checks only after applying all D1 migrations and deploying the Worker:
+
+1. Open `/health`; expect HTTP 200 with `ok: true` and `database: "connected"`.
+2. Open the website in a normal browser, create a test ticket, and send a short message. Confirm the message appears in the configured Telegram support chat.
+3. Reply using Telegram's **Reply** action on that exact notification. Confirm the response appears in the same website ticket.
+4. Open a private/incognito browser session and create a different ticket. Confirm that its session cannot read the first ticket.
+5. Close the first ticket, open the closed-ticket view, and confirm its saved message history remains visible after refreshing the page.
+6. Submit the contact form with consent enabled and verify Telegram delivery. Confirm the form blocks submission when consent is not checked.
+7. Replay a previously processed Telegram update in a staging environment and confirm D1 does not insert a duplicate reply.
+
+Do not test rate limits by flooding the production Worker. A successful static-site build does not replace these live Worker, D1, and Telegram checks.
