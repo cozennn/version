@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0001` creates the `telegram_updates` idempotency table and `0002` creates `visitor_sessions` for hashed, server-issued bearer tokens. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
+The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_sessions` for hashed server-issued bearer tokens, and `0003` adds Telegram delivery-failure monitoring and retention indexes. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
 
 Then configure secrets:
 
@@ -37,7 +37,7 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 
 ## Routes
 
-- `GET /health`
+- `GET /health` (checks D1 migration dependencies and reports the latest Telegram delivery failure timestamp)
 - `POST /session/upgrade` (one-time exchange of a legacy browser ID for a server-issued session)
 - `POST /ticket/new` (creates a server-side visitor session when no bearer token is supplied)
 - `POST /ticket/:ticketId/message` (requires `Authorization: Bearer <session-token>`)
@@ -46,6 +46,12 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 - `GET /ticket/closed/closed` (requires a bearer session)
 - `POST /contact`
 - `POST /telegram/webhook` (secure Telegram replies to the exact notification message)
+
+## API safeguards and retention
+
+- JSON request bodies are streamed and capped by route: 64 KiB for Telegram updates, 16 KiB for visitor messages, 8 KiB for contact, and 2 KiB for session upgrades and ticket creation.
+- Rate limits are applied per Cloudflare client IP: contact 5/minute, ticket creation 5/minute, legacy session upgrade 10/minute, visitor messages 30/minute, Telegram webhook 120/minute, and 90/minute for other API routes. Health checks are exempt.
+- A daily 03:00 UTC Cron removes Telegram update IDs and notification-failure records older than 30 days, plus expired/revoked visitor sessions after the retention window. Existing ticket and message history is not removed.
 
 ## Important limitations before production
 
