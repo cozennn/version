@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, and `0004` adds a default-`ai` `support_mode` to existing tickets. Existing tickets and messages are preserved. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
+The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_auth_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, and `0004` adds a default-`ai` `support_mode` to existing tickets. Existing tickets and messages are preserved. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
 
 Then configure secrets and the private NorDa AI bridge connection:
 
@@ -67,7 +67,7 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 - Every visitor message is saved in D1 and a Telegram notification is attempted. The API reports `notificationSent: false` if Telegram delivery fails, logs the Telegram API failure, and the website tells the visitor that the message was saved but the notification failed. Visitor messages are limited to 3,500 characters to leave room for the ticket metadata in Telegram. Reply directly to the bot's notification; the webhook validates Telegram’s secret header, requires the configured private chat and matching account ID, verifies the exact support bot identity, and accepts replies only to that bot's notification. Group chats are intentionally rejected. Replies are saved with D1-backed update-id idempotency, so Telegram retries cannot insert the same reply twice. No admin dashboard is required.
 - Ticket ownership is now checked against a server-issued 256-bit bearer token. Only the SHA-256 hash is stored in D1; the token is returned once and kept in the visitor's browser storage. Sessions expire after 365 days. Existing browser IDs are exchanged once through `/session/upgrade` so existing tickets remain associated with their original visitor; the legacy ID is not accepted by ticket read/write routes after the Worker update. If browser storage is cleared, the visitor must start a new ticket because the raw session token cannot be recovered.
 - Telegram notifications are optional for ticket messages. The contact form requires Telegram configuration.
-- The Worker uses the existing `tickets` and `messages` D1 tables plus `telegram_updates` and `visitor_sessions`, created by additive migrations. Existing ticket and message rows are preserved.
+- The Worker uses the existing `tickets` and `messages` D1 tables plus `telegram_updates` and `visitor_auth_sessions`, created by additive migrations. Existing ticket and message rows are preserved.
 
 Check the Worker after deployment:
 
