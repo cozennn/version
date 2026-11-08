@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migration creates only the `telegram_updates` idempotency table. It does not delete or rewrite existing tickets or messages. Do not deploy the updated Worker until the migration has completed successfully.
+The migrations are additive: `0001` creates the `telegram_updates` idempotency table and `0002` creates `visitor_sessions` for hashed, server-issued bearer tokens. They do not delete or rewrite existing tickets or messages. Apply all pending migrations successfully before deploying the updated Worker.
 
 Then configure secrets:
 
@@ -38,11 +38,12 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 ## Routes
 
 - `GET /health`
-- `POST /ticket/new`
-- `POST /ticket/:ticketId/message?userId=...`
-- `GET /ticket/:ticketId/messages?userId=...`
-- `POST /ticket/:ticketId/close?userId=...`
-- `GET /ticket/closed/closed?userId=...`
+- `POST /session/upgrade` (one-time exchange of a legacy browser ID for a server-issued session)
+- `POST /ticket/new` (creates a server-side visitor session when no bearer token is supplied)
+- `POST /ticket/:ticketId/message` (requires `Authorization: Bearer <session-token>`)
+- `GET /ticket/:ticketId/messages` (requires a bearer session)
+- `POST /ticket/:ticketId/close` (requires a bearer session)
+- `GET /ticket/closed/closed` (requires a bearer session)
 - `POST /contact`
 - `POST /telegram/webhook` (secure Telegram replies to the exact notification message)
 
@@ -50,9 +51,9 @@ The current `ALLOWED_ORIGINS` is `https://version-3y3.pages.dev`. If the website
 
 - File attachments are deliberately rejected with HTTP 501. The current Cloudflare account configuration supplied for this work did not include a confirmed R2 bucket/binding. Configure R2 before enabling attachment persistence; do not store Base64 files in D1 or KV.
 - Every visitor message is saved in D1 and a Telegram notification is attempted. The API reports `notificationSent: false` if Telegram delivery fails, logs the Telegram API failure, and the website tells the visitor that the message was saved but the notification failed. Visitor messages are limited to 3,500 characters to leave room for the ticket metadata in Telegram. Reply directly to the bot's notification; the webhook validates Telegram’s secret header, requires the configured private chat and matching account ID, verifies the exact support bot identity, and accepts replies only to that bot's notification. Group chats are intentionally rejected. Replies are saved with D1-backed update-id idempotency, so Telegram retries cannot insert the same reply twice. No admin dashboard is required.
-- Visitor ownership currently uses the `userId` supplied by the existing browser client. It prevents accidental cross-ticket access but is not strong authentication because a client can spoof its own identifier. A signed visitor session is a required security improvement before treating tickets as private.
+- Ticket ownership is now checked against a server-issued 256-bit bearer token. Only the SHA-256 hash is stored in D1; the token is returned once and kept in the visitor's browser storage. Sessions expire after 365 days. Existing browser IDs are exchanged once through `/session/upgrade` so existing tickets remain associated with their original visitor; the legacy ID is not accepted by ticket read/write routes after the Worker update. If browser storage is cleared, the visitor must start a new ticket because the raw session token cannot be recovered.
 - Telegram notifications are optional for ticket messages. The contact form requires Telegram configuration.
-- The Worker uses the existing `tickets` and `messages` D1 tables plus the `telegram_updates` table created by the included D1 migration. The migration is additive and preserves existing tickets and messages.
+- The Worker uses the existing `tickets` and `messages` D1 tables plus `telegram_updates` and `visitor_sessions`, created by additive migrations. Existing ticket and message rows are preserved.
 
 Check the Worker after deployment:
 
