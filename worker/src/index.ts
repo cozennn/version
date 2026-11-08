@@ -471,16 +471,28 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 export class TicketsDurableObject extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    const bypassRateLimit = url.pathname === "/health" || url.pathname === "/telegram/webhook";
+    const path = url.pathname.replace(/\\/+$/, "") || "/";
+    const bypassRateLimit = path === "/health";
 
     if (!bypassRateLimit) {
       const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-      const key = `rate:${ip}`;
+      const rule = path === "/telegram/webhook"
+        ? { bucket: "webhook", limit: 120 }
+        : path === "/contact"
+          ? { bucket: "contact", limit: 5 }
+          : path === "/ticket/new"
+            ? { bucket: "ticket_new", limit: 5 }
+            : path === "/session/upgrade"
+              ? { bucket: "session_upgrade", limit: 10 }
+              : path.endsWith("/message") && request.method === "POST"
+                ? { bucket: "ticket_message", limit: 30 }
+                : { bucket: "general", limit: 90 };
+      const key = `rate:${rule.bucket}:${ip}`;
       const now = Date.now();
       const allowed = await this.ctx.storage.transaction(async transaction => {
         const current = await transaction.get<{ start: number; count: number }>(key);
         const state = !current || now - current.start >= 60_000 ? { start: now, count: 0 } : current;
-        if (state.count >= 90) return false;
+        if (state.count >= rule.limit) return false;
         state.count += 1;
         await transaction.put(key, state);
         return true;
