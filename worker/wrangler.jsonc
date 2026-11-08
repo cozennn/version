@@ -5,7 +5,7 @@
   "compatibility_date": "2026-11-07",
   "workers_dev": true,
   "triggers": {
-    "crons": ["0 3 * * *"]
+    "crons": ["*/5 * * * *", "0 3 * * *"]
   },
   "vars": {
     "ALLOWED_ORIGINS": "https://version-3y3.pages.dev"
