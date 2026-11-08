@@ -147,7 +147,7 @@ function archiveClosed(ticket){
     closedCache=archived;
   }catch(e){}
 }
-var cp=$1('#chatPanel'),fab=$1('#chatFab'),clog=$1('#chatLog'),cf=$1('#chatForm'),badge=$1('#fabBadge'),ta=$1('#ch-msg'),fileInput=$1('#fileInput');
+var cp=$1('#chatPanel'),fab=$1('#chatFab'),clog=$1('#chatLog'),cf=$1('#chatForm'),badge=$1('#fabBadge'),ta=$1('#ch-msg'),fileInput=$1('#fileInput'),charCount=$1('#chatCharCount');
 var tabs={'new':$1('#tabNew'),'chat':$1('#tabChat'),'closed':$1('#tabClosed')};
 var soundToggle=$1('#soundToggle'),soundOn=sget('norda_chat_sound')!=='off',ac=null;
 function paintSound(){if(!soundToggle)return;soundToggle.setAttribute('aria-pressed',soundOn?'true':'false');soundToggle.setAttribute('aria-label',t(soundOn?'sound_on':'sound_off'));soundToggle.style.opacity=soundOn?1:.55}
@@ -261,8 +261,36 @@ function onClosedRemote(){
   loadClosed();
   toast('ticket_closed_msg');
 }
-var pollBusy=false;async function poll(){if(!cp)return;if(!d.hidden&&hasOpen()&&!sending&&!pollBusy){pollBusy=true;try{await loadMessages()}finally{pollBusy=false}}setTimeout(poll,cp.classList.contains('open')?1000:3000)}
-function grow(){if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,110)+'px'}
+var pollBusy=false,pollTimer=null;
+function schedulePoll(){
+  if(!cp||d.hidden)return;
+  clearTimeout(pollTimer);
+  pollTimer=setTimeout(poll,cp.classList.contains('open')?1500:4000);
+}
+async function poll(){
+  if(!cp||d.hidden)return;
+  if(hasOpen()&&!sending&&!pollBusy){
+    pollBusy=true;
+    try{await loadMessages()}finally{pollBusy=false}
+  }
+  schedulePoll();
+}
+d.addEventListener('visibilitychange',function(){
+  if(d.hidden)clearTimeout(pollTimer);
+  else poll();
+});
+window.addEventListener('pagehide',function(){clearTimeout(pollTimer)});
+window.addEventListener('pageshow',function(){if(!d.hidden)poll()});
+function grow(){
+  if(!ta)return;
+  ta.style.height='auto';
+  ta.style.height=Math.min(ta.scrollHeight,110)+'px';
+  if(charCount){
+    var count=ta.value.length;
+    charCount.textContent=count+' / 3500';
+    charCount.classList.toggle('is-near-limit',count>=3000);
+  }
+}
 function clearFile(){var p=$1('#filePreview');if(p){p.style.display='none';$1('#fileNamePreview').textContent='';$1('#fileSizePreview').textContent='';fileInput.value=''}}
 if(cf)cf.addEventListener('submit',async function(e){
   e.preventDefault();
