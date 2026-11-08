@@ -67,4 +67,8 @@ jobs:
           assert {'telegram_updates', 'visitor_auth_sessions', 'telegram_delivery_failures', 'contact_submissions', 'notification_outbox'} <= tables
           assert db.execute("SELECT handoff_status FROM tickets WHERE id=1").fetchone()[0] == 'none'
           print('Migrations are valid and existing ticket/message rows are preserved.')
+          worker = open('worker/src/index.ts', encoding='utf-8').read()
+          assert "support_mode = 'ai' AND handoff_status = 'none'" in worker, 'AI replies must be blocked once human handoff starts'
+          assert 'const handoffPending = latest?.handoff_status === "pending"' in worker, 'API must expose pending handoff state'
+          print('Human handoff race guard is present.')
           PY
