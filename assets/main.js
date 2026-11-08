@@ -281,7 +281,10 @@ function renderCart() {
       <div class="cart__empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
         <p>Your bag is empty</p>
-        <a href="templates.html" class="btn btn--ghost btn--sm">Browse templates</a>
+        <div class="cart__empty-actions">
+          <a href="templates.html" class="btn btn--ghost btn--sm">Browse templates</a>
+          <a href="digital.html" class="btn btn--ghost btn--sm">Browse digital goods</a>
+        </div>
       </div>`;
     if (foot) foot.hidden = true;
     return;
