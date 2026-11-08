@@ -471,7 +471,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
 export class TicketsDurableObject extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    const path = url.pathname.replace(/\\/+$/, "") || "/";
+    const path = url.pathname.replace(/\/+$/, "") || "/";
     const bypassRateLimit = path === "/health";
 
     if (!bypassRateLimit) {
