@@ -128,10 +128,11 @@ async function notifyTicketMessage(env: Env, ticketId: string, userName: string,
 async function requestNordaAI(env: Env, message: string, history: Array<{ from: string; text: string }> = []): Promise<string | null> {
   if (!env.NORDA_AI_URL || !env.NORDA_AI_TOKEN) return null;
   const instructions = "NorDa support assistant. Reply in the visitor's language (Arabic, English, French). Be concise; never invent prices, policies, delivery dates or private order details. NORDA designs websites and delivers files; hosting, domains and publishing are client-managed. No complex e-commerce, admin dashboards or integrated payments. If unsure or a human decision/custom quote is needed, say so and suggest the human-agent button. Do not claim a handoff.";
-  const maxContext = Math.max(0, 3900 - instructions.length - message.length - 18);
-  const context = history.slice(-8).map(item =>
+  const maxContext = Math.max(0, 3900 - instructions.length - message.length - 40);
+  const contextText = history.slice(-8).map(item =>
     (item.from === "user" ? "Visitor: " : "Support: ") + String(item.text ?? "").slice(0, 500)
-  ).join("\n").slice(-maxContext);
+  ).join("\n");
+  const context = maxContext > 0 ? contextText.slice(-maxContext) : "";
   const prompt = instructions + (context ? "\n\nRecent conversation:\n" + context : "") + "\n\nVisitor: " + message;
   try {
     const response = await fetch(env.NORDA_AI_URL.replace(/\/+$/, "") + "/chat", {
