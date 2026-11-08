@@ -186,26 +186,24 @@ type OutboxEvent = "contact" | "ticket_message" | "handoff";
 
 async function attemptOutboxItem(env: Env, id: string): Promise<boolean> {
   const item = await env.DB.prepare(
-    "SELECT id, event_type, reference_id, payload, status, attempts FROM notification_outbox WHERE id = ? LIMIT 1"
-  ).bind(id).first<{ id: string; event_type: OutboxEvent; reference_id: string | null; payload: string; status: string; attempts: number }>();
+    "SELECT id, event_type, reference_id, payload, status, attempts, next_attempt_at FROM notification_outbox WHERE id = ? LIMIT 1"
+  ).bind(id).first<{ id: string; event_type: OutboxEvent; reference_id: string | null; payload: string; status: string; attempts: number; next_attempt_at: string }>();
   if (!item) return false;
   if (item.status === "sent") return true;
+  if (item.next_attempt_at > new Date().toISOString()) return false;
   const sent = await notifyTelegram(env, item.payload);
   const now = new Date().toISOString();
   if (sent) {
-    await env.DB.prepare(
-      "UPDATE notification_outbox SET status = 'sent', delivered_at = ?, last_error = NULL WHERE id = ? AND status = 'pending'"
-    ).bind(now, id).run();
+    const statements = [
+      env.DB.prepare("UPDATE notification_outbox SET status = 'sent', delivered_at = ?, last_error = NULL WHERE id = ? AND status = 'pending'").bind(now, id)
+    ];
     if (item.event_type === "handoff" && item.reference_id) {
-      await env.DB.prepare(
-        "UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE public_id = ? AND status = 'open' AND handoff_status = 'pending'"
-      ).bind(item.reference_id).run();
+      statements.push(env.DB.prepare("UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE public_id = ? AND status = 'open' AND handoff_status = 'pending'").bind(item.reference_id));
     }
     if (item.event_type === "contact" && item.reference_id) {
-      await env.DB.prepare(
-        "UPDATE contact_submissions SET delivery_status = 'sent' WHERE id = ?"
-      ).bind(item.reference_id).run();
+      statements.push(env.DB.prepare("UPDATE contact_submissions SET delivery_status = 'sent' WHERE id = ?").bind(item.reference_id));
     }
+    await env.DB.batch(statements);
     return true;
   }
   const attempts = Number(item.attempts ?? 0) + 1;
@@ -554,7 +552,12 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       const pending = await env.DB.prepare("SELECT id FROM notification_outbox WHERE dedupe_key = ? LIMIT 1").bind("handoff:" + ticketId).first<{ id: string }>();
       if (pending) await attemptOutboxItem(env, pending.id);
       const refreshed = await env.DB.prepare("SELECT support_mode FROM tickets WHERE id = ? LIMIT 1").bind(ticket.id).first<{ support_mode: string }>();
-      return json({ ok: true, supportMode: refreshed?.support_mode === "human" ? "human" : "ai", handoffPending: refreshed?.support_mode !== "human", aiUnavailable: false, messages: await readTicketMessages(env, Number(ticket.id)) });
+      const becameHuman = refreshed?.support_mode === "human";
+      const notificationSent = becameHuman ? await enqueueAndDeliver(
+        env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
+        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`
+      ) : false;
+      return json({ ok: true, supportMode: becameHuman ? "human" : "ai", handoffPending: !becameHuman, notificationSent, aiUnavailable: false, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
 
     const conversation = await readTicketMessages(env, Number(ticket.id));
