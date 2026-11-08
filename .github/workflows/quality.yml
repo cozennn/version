@@ -70,5 +70,28 @@ jobs:
           worker = open('worker/src/index.ts', encoding='utf-8').read()
           assert "support_mode = 'ai' AND handoff_status = 'none'" in worker, 'AI replies must be blocked once human handoff starts'
           assert 'const handoffPending = latest?.handoff_status === "pending"' in worker, 'API must expose pending handoff state'
+          assert "SET claimed_at = ?, claim_token = ?" in worker, 'Outbox delivery must acquire an atomic lease'
+          assert "claimed_at IS NULL OR claimed_at <= ?" in worker, 'Outbox claims must recover after an expired lease'
+          assert "claim_token = ?" in worker, 'Outbox updates must be guarded by the active claim token'
+          assert "AbortSignal.timeout(15000)" in worker, 'Telegram requests must have a bounded timeout'
+          outbox_columns = {row[1] for row in db.execute("PRAGMA table_info(notification_outbox)")}
+          assert {'claimed_at', 'claim_token'} <= outbox_columns, 'Outbox lease columns are missing'
+          db.execute("""
+            INSERT INTO notification_outbox
+              (id, event_type, reference_id, dedupe_key, payload, status, attempts, created_at, next_attempt_at)
+            VALUES ('claim-test', 'contact', 'contact-test', 'claim-test', 'payload', 'pending', 0, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')
+          """)
+          first_claim = db.execute("""
+            UPDATE notification_outbox SET claimed_at='2026-01-01T00:00:01Z', claim_token='worker-a'
+            WHERE id='claim-test' AND status='pending' AND next_attempt_at <= '2026-01-01T00:00:02Z'
+              AND (claimed_at IS NULL OR claimed_at <= '2025-12-31T23:58:02Z')
+          """)
+          second_claim = db.execute("""
+            UPDATE notification_outbox SET claimed_at='2026-01-01T00:00:02Z', claim_token='worker-b'
+            WHERE id='claim-test' AND status='pending' AND next_attempt_at <= '2026-01-01T00:00:02Z'
+              AND (claimed_at IS NULL OR claimed_at <= '2025-12-31T23:58:02Z')
+          """)
+          assert first_claim.rowcount == 1 and second_claim.rowcount == 0, 'Concurrent outbox claims must be exclusive'
           print('Human handoff race guard is present.')
+          print('Telegram outbox lease and exclusive-claim checks passed.')
           PY
