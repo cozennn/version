@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <article class="prod" data-id="${esc(p.id)}">
         <a class="prod__img" href="product.html?id=${encodeURIComponent(p.id)}">
           <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">
+          ${p.subscription ? '<span class="prod__badge">Subscription</span>' : ''}
         </a>
         <div class="prod__body">
           <div class="prod__head">
@@ -203,7 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <p class="prod__tagline">${esc(p.tagline)}</p>
           <div class="prod__tags">${(p.tags || []).map(tag => `<span class="prod__tag">${esc(tag)}</span>`).join('')}</div>
-          <div class="prod__actions"><button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button></div>
+          <div class="prod__actions">
+            <a class="btn btn--ghost btn--sm" href="product.html?id=${encodeURIComponent(p.id)}">Details</a>
+            <button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>
+          </div>
         </div>
       </article>`).join('');
     filters.querySelectorAll('[data-filter]').forEach(button => {
