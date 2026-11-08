@@ -162,6 +162,23 @@ function updateCartBadge() {
     const c = b.querySelector('.cart-btn__count');
     if (c) c.textContent = n;
   });
+  let status = document.querySelector('[data-cart-live]');
+  if (!status) {
+    status = document.createElement('span');
+    status.className = 'sr-only';
+    status.dataset.cartLive = '';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('aria-atomic', 'true');
+    document.body.appendChild(status);
+  }
+  const lang = document.documentElement.lang;
+  const message = lang === 'ar'
+    ? 'عدد العناصر في الحقيبة: ' + n
+    : lang === 'fr'
+      ? n + (n === 1 ? ' article dans le panier' : ' articles dans le panier')
+      : n + (n === 1 ? ' item in bag' : ' items in bag');
+  if (status.textContent !== message) status.textContent = message;
 }
 function cartTotal() {
   return getCart().reduce((s, x) => s + x.qty * x.price, 0);
@@ -240,6 +257,10 @@ function addToCart(id, btn, card) {
   if (existing) existing.qty = Math.min(existing.qty + 1, 99);
   else items.push({ id, qty: 1 });
   setCart(items);
+  if (btn) {
+    btn.setAttribute('aria-busy', 'true');
+    setTimeout(() => btn.removeAttribute('aria-busy'), 1400);
+  }
   if (btn && card) animateProduct(btn, card);
   toast(p.name + ' — added to bag');
 }
@@ -304,6 +325,7 @@ window.NORDA_SCROLL_LOCK = (name, locked) => {
 // ─── Cart open/close ─────────────────────────────────────
 let cartSavedScrollY = 0;
 function openCart() {
+  document.body.classList.add('cart-open');
   document.querySelector('.cart')?.classList.add('is-open');
   document.querySelector('.cart-backdrop')?.classList.add('is-open');
   if (window.innerWidth <= 520) cartSavedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -311,6 +333,7 @@ function openCart() {
   renderCart();
 }
 function closeCart() {
+  document.body.classList.remove('cart-open');
   document.querySelector('.cart')?.classList.remove('is-open');
   document.querySelector('.cart-backdrop')?.classList.remove('is-open');
   window.NORDA_SCROLL_LOCK('cart', false);
