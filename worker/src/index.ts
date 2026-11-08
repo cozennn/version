@@ -104,7 +104,8 @@ async function notifyTelegram(env: Env, message: string): Promise<boolean> {
     const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true })
+      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(15000)
     });
     const result = parseBody(await response.json().catch(() => ({})));
     if (!response.ok || result.ok !== true) {
@@ -190,28 +191,53 @@ async function attemptOutboxItem(env: Env, id: string): Promise<boolean> {
   ).bind(id).first<{ id: string; event_type: OutboxEvent; reference_id: string | null; payload: string; status: string; attempts: number; next_attempt_at: string }>();
   if (!item) return false;
   if (item.status === "sent") return true;
-  if (item.next_attempt_at > new Date().toISOString()) return false;
+
+  const now = new Date();
+  const nowIso = now.toISOString();
+  if (item.next_attempt_at > nowIso) return false;
+
+  // Claim atomically before contacting Telegram. A two-minute lease is much
+  // longer than the bounded 15-second Telegram request timeout.
+  const claimToken = crypto.randomUUID();
+  const staleClaimBefore = new Date(now.getTime() - 2 * 60 * 1000).toISOString();
+  const claim = await env.DB.prepare(
+    "UPDATE notification_outbox SET claimed_at = ?, claim_token = ? WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND (claimed_at IS NULL OR claimed_at <= ?)"
+  ).bind(nowIso, claimToken, id, nowIso, staleClaimBefore).run();
+  if (Number(claim.meta?.changes ?? 0) !== 1) {
+    const current = await env.DB.prepare(
+      "SELECT status FROM notification_outbox WHERE id = ? LIMIT 1"
+    ).bind(id).first<{ status: string }>();
+    return current?.status === "sent";
+  }
+
   const sent = await notifyTelegram(env, item.payload);
-  const now = new Date().toISOString();
+  const deliveredAt = new Date().toISOString();
   if (sent) {
     const statements = [
-      env.DB.prepare("UPDATE notification_outbox SET status = 'sent', delivered_at = ?, last_error = NULL WHERE id = ? AND status = 'pending'").bind(now, id)
+      env.DB.prepare(
+        "UPDATE notification_outbox SET status = 'sent', delivered_at = ?, last_error = NULL WHERE id = ? AND status = 'pending' AND claim_token = ?"
+      ).bind(deliveredAt, id, claimToken)
     ];
     if (item.event_type === "handoff" && item.reference_id) {
-      statements.push(env.DB.prepare("UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE public_id = ? AND status = 'open' AND handoff_status = 'pending'").bind(item.reference_id));
+      statements.push(env.DB.prepare(
+        "UPDATE tickets SET support_mode = 'human', handoff_status = 'sent' WHERE public_id = ? AND status = 'open' AND handoff_status = 'pending' AND EXISTS (SELECT 1 FROM notification_outbox WHERE id = ? AND status = 'sent' AND claim_token = ?)"
+      ).bind(item.reference_id, id, claimToken));
     }
     if (item.event_type === "contact" && item.reference_id) {
-      statements.push(env.DB.prepare("UPDATE contact_submissions SET delivery_status = 'sent' WHERE id = ?").bind(item.reference_id));
+      statements.push(env.DB.prepare(
+        "UPDATE contact_submissions SET delivery_status = 'sent' WHERE id = ? AND EXISTS (SELECT 1 FROM notification_outbox WHERE id = ? AND status = 'sent' AND claim_token = ?)"
+      ).bind(item.reference_id, id, claimToken));
     }
-    await env.DB.batch(statements);
-    return true;
+    const results = await env.DB.batch(statements);
+    return Number(results[0]?.meta?.changes ?? 0) === 1;
   }
+
   const attempts = Number(item.attempts ?? 0) + 1;
   const delaySeconds = Math.min(3600, 30 * (2 ** Math.min(attempts - 1, 7)));
   const nextAttempt = new Date(Date.now() + delaySeconds * 1000).toISOString();
   await env.DB.prepare(
-    "UPDATE notification_outbox SET attempts = ?, next_attempt_at = ?, last_error = 'telegram_delivery_failed' WHERE id = ? AND status = 'pending'"
-  ).bind(attempts, nextAttempt, id).run();
+    "UPDATE notification_outbox SET attempts = ?, next_attempt_at = ?, last_error = 'telegram_delivery_failed', claimed_at = NULL, claim_token = NULL WHERE id = ? AND status = 'pending' AND claim_token = ?"
+  ).bind(attempts, nextAttempt, id, claimToken).run();
   return false;
 }
 
