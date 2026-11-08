@@ -569,19 +569,23 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const conversation = await readTicketMessages(env, Number(ticket.id));
     const aiReply = await requestNordaAI(env, message, conversation.slice(0, -1));
     if (aiReply) {
+      // A handoff may begin while the AI request is in flight. Never persist
+      // an AI answer after the ticket has entered the pending-human state.
       await env.DB.prepare(
-        "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) SELECT ?, 'admin', ?, ? WHERE EXISTS (SELECT 1 FROM tickets WHERE id = ? AND status = 'open' AND support_mode = 'ai')"
+        "INSERT INTO messages (ticket_id, sender_type, message_text, created_at) SELECT ?, 'admin', ?, ? WHERE EXISTS (SELECT 1 FROM tickets WHERE id = ? AND status = 'open' AND support_mode = 'ai' AND handoff_status = 'none')"
       ).bind(ticket.id, aiReply, new Date().toISOString(), ticket.id).run();
     }
     const latest = await env.DB.prepare(
-      "SELECT support_mode FROM tickets WHERE id = ? LIMIT 1"
-    ).bind(ticket.id).first<{ support_mode: string }>();
+      "SELECT support_mode, handoff_status FROM tickets WHERE id = ? LIMIT 1"
+    ).bind(ticket.id).first<{ support_mode: string; handoff_status: string }>();
     const finalMode = latest?.support_mode === "human" ? "human" : "ai";
+    const handoffPending = latest?.handoff_status === "pending";
     return json({
       ok: true,
       supportMode: finalMode,
-      aiUnavailable: !aiReply && finalMode === "ai",
-      handoffAvailable: finalMode === "ai",
+      handoffPending,
+      aiUnavailable: !aiReply && finalMode === "ai" && !handoffPending,
+      handoffAvailable: finalMode === "ai" && !handoffPending,
       messages: await readTicketMessages(env, Number(ticket.id))
     });
   }
