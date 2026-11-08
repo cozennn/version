@@ -64,6 +64,7 @@ jobs:
           assert db.execute("SELECT message_text FROM messages WHERE id=1").fetchone()[0] == 'preserve this'
           assert db.execute("SELECT visitor_id FROM tickets WHERE id=1").fetchone()[0] == 'legacy-user'
           tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-          assert {'telegram_updates', 'visitor_auth_sessions', 'telegram_delivery_failures'} <= tables
+          assert {'telegram_updates', 'visitor_auth_sessions', 'telegram_delivery_failures', 'contact_submissions', 'notification_outbox'} <= tables
+          assert db.execute("SELECT handoff_status FROM tickets WHERE id=1").fetchone()[0] == 'none'
           print('Migrations are valid and existing ticket/message rows are preserved.')
           PY
