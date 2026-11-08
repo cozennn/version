@@ -489,3 +489,25 @@ img { height: auto; }
 }
 /* إخفاء أي fab--top (لأن #toTop من script.js يقوم بالمهمة) */
 .fab--top { display: none !important; }
+
+/* Accessibility helpers and consistent product focus */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.prod:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: var(--r-card, 16px);
+}
+.prod-page__badge--sub {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
