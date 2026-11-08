@@ -214,10 +214,11 @@
     </nav>
     <section class="prod-page">
       <div class="prod-page__img">
-        <img src="${esc(product.image)}" alt="${esc(product.name)}" loading="lazy" decoding="async">
+        <img src="${esc(product.image)}" alt="${esc(product.name)}" loading="eager" fetchpriority="high" decoding="async">
       </div>
       <div class="prod-page__info">
         <span class="prod-page__badge">${esc(categoryNames[product.category] || product.category || '')}</span>
+        ${product.subscription ? '<span class="prod-page__badge prod-page__badge--sub">Subscription · ' + (product.interval === 'year' ? 'Yearly' : 'Monthly') + '</span>' : ''}
         <h1 class="prod-page__name">${esc(product.name)}</h1>
         <p class="prod-page__tagline">${esc(product.tagline || '')}</p>
         <div class="prod-page__price">${formatPrice(product.price)}${priceSuffix}</div>
