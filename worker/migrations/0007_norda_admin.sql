@@ -1,0 +1,9 @@
+-- Additive NORDA admin tables. Existing visitor and support records are untouched.
+CREATE TABLE IF NOT EXISTS norda_admin_users (id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE COLLATE NOCASE, password_hash TEXT NOT NULL, password_salt TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'owner' CHECK(role IN ('owner','admin','editor','support')), created_at TEXT NOT NULL, updated_at TEXT NOT NULL, disabled_at TEXT);
+CREATE TABLE IF NOT EXISTS norda_admin_sessions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES norda_admin_users(id) ON DELETE CASCADE, token_hash TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, revoked_at TEXT);
+CREATE INDEX IF NOT EXISTS norda_admin_sessions_expiry_idx ON norda_admin_sessions(expires_at,revoked_at);
+CREATE TABLE IF NOT EXISTS norda_admin_audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, action TEXT NOT NULL, resource TEXT NOT NULL, resource_id TEXT, details TEXT, created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS norda_admin_audit_created_idx ON norda_admin_audit_log(created_at DESC);
+CREATE TABLE IF NOT EXISTS norda_products (id TEXT PRIMARY KEY, type TEXT NOT NULL CHECK(type IN ('template','digital')), name TEXT NOT NULL, tagline TEXT NOT NULL DEFAULT '', price REAL NOT NULL DEFAULT 0 CHECK(price>=0), category TEXT NOT NULL DEFAULT '', image TEXT NOT NULL DEFAULT '', tags_json TEXT NOT NULL DEFAULT '[]', description TEXT NOT NULL DEFAULT '', includes_json TEXT NOT NULL DEFAULT '[]', featured INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'active', subscription INTEGER NOT NULL DEFAULT 0, interval TEXT NOT NULL DEFAULT 'month', updated_at TEXT NOT NULL, updated_by TEXT);
+CREATE INDEX IF NOT EXISTS norda_products_type_idx ON norda_products(type,status);
+CREATE TABLE IF NOT EXISTS norda_site_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT);
