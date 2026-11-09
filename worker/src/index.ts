@@ -11,6 +11,7 @@ interface Env {
   TELEGRAM_WEBHOOK_SECRET?: string;
   NORDA_AI_URL?: string;
   NORDA_AI_TOKEN?: string;
+  NORDA_ADMIN_SETUP_TOKEN?: string;
 }
 
 type JsonObject = Record<string, unknown>;
