@@ -1,4 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
+import { handleAdminApi } from "./admin";
 
 interface Env {
   DB: D1Database;
@@ -426,6 +427,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   const method = request.method.toUpperCase();
 
   if (path === "/telegram/webhook") return handleTelegramWebhook(request, env);
+
+  const adminResponse = await handleAdminApi(request, env);
+  if (adminResponse) return adminResponse;
 
   if (method === "GET" && path === "/health") {
     try {
