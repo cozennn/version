@@ -120,7 +120,8 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const {page,perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),100);
     const where=q ? "WHERE name LIKE ? OR id LIKE ?" : "";
     const binds=q ? [`%${q}%`,`%${q}%`] : [];
-    const rows=await env.DB.prepare(`SELECT * FROM norda_products ${where} ORDER BY updated_at DESC LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const order=orderClause(url,{id:"id",name:"name",type:"type",price:"price",category:"category",status:"status",updated_at:"updated_at"},"updated_at");
+    const rows=await env.DB.prepare(`SELECT * FROM norda_products ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM norda_products ${where}`).bind(...binds).first<{total:number}>();
     const data=(rows.results||[]).map(p=>({...p,tags:jsonArray(p.tags_json),includes:jsonArray(p.includes_json),featured:Boolean(p.featured),subscription:Boolean(p.subscription)}));
     return adminJson({data,total:Number(count?.total||0)});
