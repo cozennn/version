@@ -165,7 +165,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   }
   if(method==="GET"&&path==="/admin/activity"){
     const {perPage,offset}=pageParams(url);
-    const rows=await env.DB.prepare("SELECT id,user_id,action,resource,resource_id,created_at FROM norda_admin_audit_log ORDER BY id DESC LIMIT ? OFFSET ?").bind(perPage,offset).all<Record<string,unknown>>();
+    const rows=await env.DB.prepare("SELECT l.id,l.user_id,u.username,l.action,l.resource,l.resource_id,l.created_at FROM norda_admin_audit_log l LEFT JOIN norda_admin_users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT ? OFFSET ?").bind(perPage,offset).all<Record<string,unknown>>();
     const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM norda_admin_audit_log").first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
