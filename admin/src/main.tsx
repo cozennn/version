@@ -1,16 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Admin, Resource, ListGuesser } from "react-admin";
+import { Admin, Resource } from "react-admin";
 import { authProvider } from "./providers/authProvider";
 import { dataProvider } from "./providers/dataProvider";
 import { ProductList } from "./resources/products";
 import { ProductCreate, ProductEdit } from "./resources/productForms";
+import { InquiryList } from "./resources/inquiries";
+import { TicketList } from "./resources/tickets";
+import { ActivityList } from "./resources/activity";
+import { Dashboard } from "./pages/Dashboard";
 import "./theme.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
- <React.StrictMode><Admin title="NORDA" dataProvider={dataProvider} authProvider={authProvider} requireAuth>
+ <React.StrictMode><Admin title="NORDA" dashboard={Dashboard} dataProvider={dataProvider} authProvider={authProvider} requireAuth>
   <Resource name="products" list={ProductList} create={ProductCreate} edit={ProductEdit}/>
-  <Resource name="inquiries" list={ListGuesser}/>
-  <Resource name="tickets" list={ListGuesser}/>
-  <Resource name="activity" list={ListGuesser}/>
+  <Resource name="inquiries" list={InquiryList}/>
+  <Resource name="tickets" list={TicketList}/>
+  <Resource name="activity" list={ActivityList}/>
  </Admin></React.StrictMode>
 );
