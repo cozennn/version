@@ -104,6 +104,13 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   const session = await adminSession(request, env);
   if (!session) return adminJson({ error: "unauthorized" }, 401);
 
+  const productDetail = path.match(/^\/admin\/products\/([^/]+)$/);
+  if (method === "GET" && productDetail) {
+    const id = decodeURIComponent(productDetail[1]);
+    const row = await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
+    if (!row) return adminJson({error:"not_found"},404);
+    return adminJson({data:{...row,tags:jsonArray(row.tags_json),includes:jsonArray(row.includes_json),featured:Boolean(row.featured),subscription:Boolean(row.subscription)}});
+  }
   if (method === "GET" && path === "/admin/products") {
     const {page,perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),100);
     const where=q ? "WHERE name LIKE ? OR id LIKE ?" : "";
