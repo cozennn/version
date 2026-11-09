@@ -11,10 +11,10 @@ async function call(path:string,init:RequestInit={}){
  return payload;
 }
 export const dataProvider:DataProvider={
- async getList(resource,params){const q=new URLSearchParams({page:String(params.pagination.page),perPage:String(params.pagination.perPage)});if(params.filter?.q)q.set("q",String(params.filter.q));return call("/admin/"+resource+"?"+q).then(x=>({data:x.data||[],total:x.total||0}));},
+ async getList(resource,params){const pagination=params.pagination||{page:1,perPage:25};const q=new URLSearchParams({page:String(pagination.page),perPage:String(pagination.perPage)});if(params.filter?.q)q.set("q",String(params.filter.q));return call("/admin/"+resource+"?"+q).then(x=>({data:x.data||[],total:x.total||0}));},
  async getOne(resource,params){const x=await call("/admin/"+resource+"/"+encodeURIComponent(String(params.id)));return{data:x.data||x};},
  async getMany(resource,params){const q=new URLSearchParams({ids:params.ids.join(",")});const x=await call("/admin/"+resource+"?"+q);return{data:x.data||[]};},
- async getManyReference(resource,params){const q=new URLSearchParams({page:String(params.pagination.page),perPage:String(params.pagination.perPage),[params.target]:String(params.id)});const x=await call("/admin/"+resource+"?"+q);return{data:x.data||[],total:x.total||0};},
+ async getManyReference(resource,params){const pagination=params.pagination||{page:1,perPage:25};const q=new URLSearchParams({page:String(pagination.page),perPage:String(pagination.perPage),[params.target]:String(params.id)});const x=await call("/admin/"+resource+"?"+q);return{data:x.data||[],total:x.total||0};},
  async create(resource,params){const x=await call("/admin/"+resource,{method:"POST",body:JSON.stringify(params.data)});return{data:x.data||x};},
  async update(resource,params){const x=await call("/admin/"+resource+"/"+encodeURIComponent(String(params.id)),{method:"POST",body:JSON.stringify(params.data)});return{data:x.data||x};},
  async updateMany(resource,params){await Promise.all(params.ids.map(id=>call("/admin/"+resource+"/"+encodeURIComponent(String(id)),{method:"POST",body:JSON.stringify(params.data)})));return{data:params.ids};},
