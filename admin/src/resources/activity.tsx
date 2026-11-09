@@ -1,0 +1,2 @@
+import { Datagrid, DateField, List, TextField } from "react-admin";
+export function ActivityList(){return <List perPage={25}><Datagrid rowClick={false}><DateField source="created_at" showTime/><TextField source="username"/><TextField source="action"/><TextField source="resource"/><TextField source="resource_id"/></Datagrid></List>;}
