@@ -24,7 +24,7 @@ async function sha256(value: string) {
 async function passwordHash(password: string, saltHex: string) {
   const salt = Uint8Array.from(saltHex.match(/.{2}/g) || [], x => parseInt(x, 16));
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: 210000 }, key, 256);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: 100000 }, key, 256);
   return Array.from(new Uint8Array(bits), b => b.toString(16).padStart(2, "0")).join("");
 }
 async function adminSession(request: Request, env: AdminEnv) {
@@ -42,6 +42,11 @@ function pageParams(url: URL) {
   const page = Math.max(1, Math.min(10000, Number(url.searchParams.get("page") || 1)));
   const perPage = Math.max(1, Math.min(100, Number(url.searchParams.get("perPage") || 25)));
   return { page, perPage, offset: (page - 1) * perPage };
+}
+function orderClause(url: URL, allowed: Record<string, string>, fallback: string) {
+  const field = allowed[url.searchParams.get("sort") || ""] || fallback;
+  const direction = url.searchParams.get("order")?.toLowerCase() === "asc" ? "ASC" : "DESC";
+  return field + " " + direction;
 }
 function jsonArray(value: unknown) {
   try { const parsed = JSON.parse(String(value || "[]")); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
@@ -152,21 +157,30 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     return adminJson({data:row});
   }
   if(method==="GET"&&path==="/admin/inquiries"){
-    const {perPage,offset}=pageParams(url);
-    const rows=await env.DB.prepare("SELECT id,name,email,subject,message,created_at,delivery_status FROM contact_submissions ORDER BY created_at DESC LIMIT ? OFFSET ?").bind(perPage,offset).all<Record<string,unknown>>();
-    const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM contact_submissions").first<{total:number}>();
+    const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
+    const where=q ? "WHERE name LIKE ? OR email LIKE ? OR subject LIKE ? OR message LIKE ?" : "";
+    const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
+    const order=orderClause(url,{id:"id",name:"name",email:"email",subject:"subject",created_at:"created_at",delivery_status:"delivery_status"},"created_at");
+    const rows=await env.DB.prepare(`SELECT id,name,email,subject,message,created_at,delivery_status FROM contact_submissions ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM contact_submissions ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
   if(method==="GET"&&path==="/admin/tickets"){
-    const {perPage,offset}=pageParams(url);
-    const rows=await env.DB.prepare("SELECT id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ORDER BY created_at DESC LIMIT ? OFFSET ?").bind(perPage,offset).all<Record<string,unknown>>();
-    const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM tickets").first<{total:number}>();
+    const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
+    const where=q ? "WHERE public_id LIKE ? OR user_name LIKE ? OR status LIKE ? OR support_mode LIKE ?" : "";
+    const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
+    const order=orderClause(url,{id:"id",public_id:"public_id",user_name:"user_name",status:"status",support_mode:"support_mode",created_at:"created_at",closed_at:"closed_at"},"created_at");
+    const rows=await env.DB.prepare(`SELECT id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM tickets ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
   if(method==="GET"&&path==="/admin/activity"){
-    const {perPage,offset}=pageParams(url);
-    const rows=await env.DB.prepare("SELECT l.id,l.user_id,u.username,l.action,l.resource,l.resource_id,l.created_at FROM norda_admin_audit_log l LEFT JOIN norda_admin_users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT ? OFFSET ?").bind(perPage,offset).all<Record<string,unknown>>();
-    const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM norda_admin_audit_log").first<{total:number}>();
+    const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
+    const where=q ? "WHERE u.username LIKE ? OR l.action LIKE ? OR l.resource LIKE ? OR l.resource_id LIKE ?" : "";
+    const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
+    const order=orderClause(url,{id:"l.id",username:"u.username",action:"l.action",resource:"l.resource",resource_id:"l.resource_id",created_at:"l.created_at"},"l.id");
+    const rows=await env.DB.prepare(`SELECT l.id,l.user_id,u.username,l.action,l.resource,l.resource_id,l.created_at FROM norda_admin_audit_log l LEFT JOIN norda_admin_users u ON u.id=l.user_id ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM norda_admin_audit_log l LEFT JOIN norda_admin_users u ON u.id=l.user_id ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
   return adminJson({error:"not_found"},404);
