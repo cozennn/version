@@ -712,7 +712,11 @@ export class TicketsDurableObject extends DurableObject<Env> {
 
     if (!bypassRateLimit) {
       const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-      const rule = path === "/telegram/webhook"
+      const rule = path === "/admin/auth/login"
+        ? { bucket: "admin_login", limit: 8 }
+        : path === "/admin/auth/setup"
+          ? { bucket: "admin_setup", limit: 3 }
+          : path === "/telegram/webhook"
         ? { bucket: "webhook", limit: 120 }
         : path === "/contact"
           ? { bucket: "contact", limit: 5 }
