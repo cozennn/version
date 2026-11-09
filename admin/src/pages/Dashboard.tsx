@@ -1,0 +1,4 @@
+import { Card, CardContent, Grid, Typography } from "@mui/material";
+import { useGetList } from "react-admin";
+function Metric({label,resource}:{label:string;resource:string}){const {total,isLoading,error}=useGetList(resource,{pagination:{page:1,perPage:1},sort:{field:"id",order:"DESC"},filter:{}});return <Card variant="outlined"><CardContent><Typography color="text.secondary">{label}</Typography><Typography variant="h4">{isLoading?"…":error?"—":total??0}</Typography></CardContent></Card>;}
+export function Dashboard(){return <div style={{padding:24}}><Typography variant="h4" sx={{mb:3}}>Overview</Typography><Grid container spacing={2}><Grid size={{xs:12,md:4}}><Metric label="Products" resource="products"/></Grid><Grid size={{xs:12,md:4}}><Metric label="Inquiries" resource="inquiries"/></Grid><Grid size={{xs:12,md:4}}><Metric label="Support tickets" resource="tickets"/></Grid></Grid></div>;}
