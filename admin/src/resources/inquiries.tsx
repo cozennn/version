@@ -1,0 +1,2 @@
+import { Datagrid, DateField, List, TextField, TextInput } from "react-admin";
+export function InquiryList(){return <List filters={[<TextInput source="q" label="Search" alwaysOn key="q"/>]} perPage={25}><Datagrid rowClick={false}><TextField source="name"/><TextField source="email"/><TextField source="subject"/><DateField source="created_at" showTime/><TextField source="delivery_status"/></Datagrid></List>;}
