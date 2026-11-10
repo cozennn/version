@@ -47,7 +47,7 @@ Recommended Git-integrated Pages settings:
 For a CLI preview deployment after creating the Pages project:
 
 ```cmd
-cd /d "%USERPROFILE%\\OneDrive\\سطح المكتب\\version-admin\\admin"
+cd /d "%USERPROFILE%\OneDrive\سطح المكتب\version-admin\admin"
 npm install
 npm run build
 npx wrangler pages deploy dist --project-name norda-admin --branch feature/norda-admin-react-admin
