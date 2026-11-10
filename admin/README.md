@@ -44,16 +44,20 @@ Recommended Git-integrated Pages settings:
 - Build output directory: `dist`.
 - Build environment variable: `VITE_API_URL=https://norda-api.houda2004houdaa.workers.dev`.
 
-For a CLI preview deployment after creating the Pages project:
+For a CLI preview deployment, build the app first, then use Wrangler from the existing `worker` folder (where Wrangler is installed):
 
 ```cmd
-cd /d "%USERPROFILE%\OneDrive\سطح المكتب\version-admin\admin"
+cd /d "%USERPROFILE%\\OneDrive\\سطح المكتب\\version-admin\\admin"
 npm install
 npm run build
-npx wrangler pages deploy dist --project-name norda-admin --branch feature/norda-admin-react-admin
+
+cd ..\\worker
+npx wrangler pages project list
+npx wrangler pages project create norda-admin --production-branch main
+npx wrangler pages deploy ..\\admin\\dist --project-name norda-admin --branch feature/norda-admin-react-admin --config ..\\admin\\wrangler.jsonc
 ```
 
-The Pages project must exist before the deploy command. A production deployment should use the configured production branch, not the feature branch.
+If `norda-admin` already appears in the project list, skip the project-create command. The Pages project must exist before deployment. A production deployment should use the configured production branch after the code is merged and ready, not the feature branch.
 
 After Cloudflare assigns the production hostname, add that exact HTTPS origin to the Worker `ALLOWED_ORIGINS` variable and deploy the Worker. The current allowlist includes the public site and local development origin only, so the new admin hostname will otherwise receive a CORS rejection. Add preview hostnames separately only when preview access is required.
 
