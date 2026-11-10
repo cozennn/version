@@ -29,6 +29,14 @@ jobs:
         working-directory: worker
         run: npx wrangler deploy --dry-run --outdir=/tmp/norda-worker-build
 
+      - name: Install NorDa Admin dependencies
+        working-directory: admin
+        run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Build NorDa Admin
+        working-directory: admin
+        run: npm run build
+
       - name: Check frontend JavaScript syntax
         run: |
           node --check assets/main.js
