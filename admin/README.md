@@ -47,14 +47,14 @@ Recommended Git-integrated Pages settings:
 For a CLI preview deployment, build the app first, then use Wrangler from the existing `worker` folder (where Wrangler is installed):
 
 ```cmd
-cd /d "%USERPROFILE%\\OneDrive\\سطح المكتب\\version-admin\\admin"
+cd /d "%USERPROFILE%\OneDrive\سطح المكتب\version-admin\admin"
 npm install
 npm run build
 
-cd ..\\worker
+cd ..\worker
 npx wrangler pages project list
 npx wrangler pages project create norda-admin --production-branch main
-npx wrangler pages deploy ..\\admin\\dist --project-name norda-admin --branch feature/norda-admin-react-admin --config ..\\admin\\wrangler.jsonc
+npx wrangler pages deploy ..\admin\dist --project-name norda-admin --branch feature/norda-admin-react-admin --config ..\admin\wrangler.jsonc
 ```
 
 If `norda-admin` already appears in the project list, skip the project-create command. The Pages project must exist before deployment. A production deployment should use the configured production branch after the code is merged and ready, not the feature branch.
