@@ -148,7 +148,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const id=decodeURIComponent(productUpdate[1]), b=await bodyOf(request);
     const current=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     if(!current)return adminJson({error:"not_found"},404);
-    const merged={...current,...b,id};
+    const merged: Record<string, unknown> = {...current,...b,id};
     const type=clean(merged.type,20),name=clean(merged.name,120),price=Number(merged.price);
     if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0)return adminJson({error:"invalid_product"},400);
     await env.DB.prepare("UPDATE norda_products SET type=?,name=?,tagline=?,price=?,category=?,image=?,tags_json=?,description=?,includes_json=?,featured=?,status=?,subscription=?,interval=?,updated_at=?,updated_by=? WHERE id=?")
