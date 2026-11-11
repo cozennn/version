@@ -6,7 +6,7 @@ import { dataProvider } from "./providers/dataProvider";
 import { ProductList } from "./resources/products";
 import { ProductCreate, ProductEdit } from "./resources/productForms";
 import { InquiryList } from "./resources/inquiries";
-import { TicketList } from "./resources/tickets";
+import { TicketList, TicketShow } from "./resources/tickets";
 import { ActivityList } from "./resources/activity";
 import { CustomerCreate, CustomerEdit, CustomerList } from "./resources/customers";
 import { OrderCreate, OrderEdit, OrderList } from "./resources/orders";
@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <Resource name="customers" list={CustomerList} create={CustomerCreate} edit={CustomerEdit}/>
   <Resource name="orders" list={OrderList} create={OrderCreate} edit={OrderEdit}/>
   <Resource name="inquiries" list={InquiryList}/>
-  <Resource name="tickets" list={TicketList}/>
+  <Resource name="tickets" list={TicketList} show={TicketShow}/>
   <Resource name="activity" list={ActivityList}/>
  </Admin></React.StrictMode>
 );
