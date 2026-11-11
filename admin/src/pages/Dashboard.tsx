@@ -28,10 +28,16 @@ export function Dashboard() {
         A live overview of your NorDa workspace.
       </Typography>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
           <Metric label="Products" resource="products" />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+          <Metric label="Customers" resource="customers" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+          <Metric label="Orders" resource="orders" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
           <Metric label="Customer inquiries" resource="inquiries" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
