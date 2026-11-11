@@ -184,5 +184,105 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM norda_admin_audit_log l LEFT JOIN norda_admin_users u ON u.id=l.user_id ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
+
+  const customerDetail = path.match(/^\/admin\/customers\/([^/]+)$/);
+  if (method === "GET" && customerDetail) {
+    const id = decodeURIComponent(customerDetail[1]);
+    const row = await env.DB.prepare("SELECT * FROM norda_customers WHERE id=? AND archived_at IS NULL").bind(id).first<Record<string,unknown>>();
+    return row ? adminJson({data:row}) : adminJson({error:"not_found"},404);
+  }
+  if (method === "GET" && path === "/admin/customers") {
+    const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
+    const where=q ? "WHERE archived_at IS NULL AND (name LIKE ? OR email LIKE ? OR phone LIKE ? OR company LIKE ? OR country LIKE ?)" : "WHERE archived_at IS NULL";
+    const binds=q ? Array(5).fill(`%${q}%`) : [];
+    const order=orderClause(url,{id:"id",name:"name",email:"email",phone:"phone",company:"company",country:"country",created_at:"created_at",updated_at:"updated_at"},"created_at");
+    const rows=await env.DB.prepare(`SELECT * FROM norda_customers ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM norda_customers ${where}`).bind(...binds).first<{total:number}>();
+    return adminJson({data:rows.results||[],total:Number(count?.total||0)});
+  }
+  if (method === "POST" && path === "/admin/customers") {
+    const b=await bodyOf(request), id=crypto.randomUUID(), name=clean(b.name,160);
+    if(!name) return adminJson({error:"customer_name_required"},400);
+    const stamp=nowIso();
+    await env.DB.prepare("INSERT INTO norda_customers(id,name,email,phone,company,country,source,notes,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)")
+      .bind(id,name,clean(b.email,180),clean(b.phone,60),clean(b.company,160),clean(b.country,100),clean(b.source,80)||"manual",clean(b.notes,4000),stamp,stamp).run();
+    await audit(env,session.id,"create","customer",id);
+    const row=await env.DB.prepare("SELECT * FROM norda_customers WHERE id=?").bind(id).first<Record<string,unknown>>();
+    return adminJson({data:row},201);
+  }
+  const customerUpdate=path.match(/^\/admin\/customers\/([^/]+)$/);
+  if(method==="POST"&&customerUpdate){
+    const id=decodeURIComponent(customerUpdate[1]),b=await bodyOf(request);
+    const current=await env.DB.prepare("SELECT * FROM norda_customers WHERE id=? AND archived_at IS NULL").bind(id).first<Record<string,unknown>>();
+    if(!current)return adminJson({error:"not_found"},404);
+    const merged={...current,...b},name=clean(merged.name,160);
+    if(!name)return adminJson({error:"customer_name_required"},400);
+    await env.DB.prepare("UPDATE norda_customers SET name=?,email=?,phone=?,company=?,country=?,source=?,notes=?,updated_at=? WHERE id=?")
+      .bind(name,clean(merged.email,180),clean(merged.phone,60),clean(merged.company,160),clean(merged.country,100),clean(merged.source,80)||"manual",clean(merged.notes,4000),nowIso(),id).run();
+    await audit(env,session.id,"update","customer",id);
+    const row=await env.DB.prepare("SELECT * FROM norda_customers WHERE id=?").bind(id).first<Record<string,unknown>>();
+    return adminJson({data:row});
+  }
+  const customerArchive=path.match(/^\/admin\/customers\/([^/]+)\/delete$/);
+  if(method==="POST"&&customerArchive){
+    const id=decodeURIComponent(customerArchive[1]);
+    await env.DB.prepare("UPDATE norda_customers SET archived_at=?,updated_at=? WHERE id=? AND archived_at IS NULL").bind(nowIso(),nowIso(),id).run();
+    await audit(env,session.id,"archive","customer",id);
+    return adminJson({data:{id}});
+  }
+
+  const orderDetail=path.match(/^\/admin\/orders\/([^/]+)$/);
+  if(method==="GET"&&orderDetail){
+    const id=decodeURIComponent(orderDetail[1]);
+    const row=await env.DB.prepare("SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id WHERE o.id=?").bind(id).first<Record<string,unknown>>();
+    return row?adminJson({data:row}):adminJson({error:"not_found"},404);
+  }
+  if(method==="GET"&&path==="/admin/orders"){
+    const {perPage,offset}=pageParams(url),q=clean(url.searchParams.get("q"),120);
+    const where=q?"WHERE o.order_number LIKE ? OR c.name LIKE ? OR c.email LIKE ? OR o.product_name LIKE ? OR o.status LIKE ? OR o.payment_status LIKE ?":"";
+    const binds=q?Array(6).fill(`%${q}%`):[];
+    const order=orderClause(url,{id:"o.id",order_number:"o.order_number",customer_name:"c.name",product_name:"o.product_name",total_amount:"o.total_amount",status:"o.status",payment_status:"o.payment_status",created_at:"o.created_at"},"o.created_at");
+    const rows=await env.DB.prepare(`SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id ${where}`).bind(...binds).first<{total:number}>();
+    return adminJson({data:rows.results||[],total:Number(count?.total||0)});
+  }
+  if(method==="POST"&&path==="/admin/orders"){
+    const b=await bodyOf(request),customerId=clean(b.customer_id,80),productId=clean(b.product_id,80)||null;
+    const customer=await env.DB.prepare("SELECT id FROM norda_customers WHERE id=? AND archived_at IS NULL").bind(customerId).first();
+    if(!customer)return adminJson({error:"valid_customer_required"},400);
+    const product=productId?await env.DB.prepare("SELECT id,name,price FROM norda_products WHERE id=? AND status!='archived'").bind(productId).first<{id:string;name:string;price:number}>():null;
+    if(productId&&!product)return adminJson({error:"product_not_found"},400);
+    const quantity=Math.max(1,Math.min(10000,Math.floor(Number(b.quantity)||1)));
+    const unitPrice=Number(b.unit_price??product?.price??0),currency=clean(b.currency,3)||"EUR";
+    const status=clean(b.status,30)||"pending",payment=clean(b.payment_status,30)||"unpaid";
+    if(!Number.isFinite(unitPrice)||unitPrice<0||!["EUR","USD","DZD"].includes(currency)||!["draft","pending","confirmed","in_progress","completed","cancelled"].includes(status)||!["unpaid","pending","paid","refunded"].includes(payment))return adminJson({error:"invalid_order"},400);
+    const id=crypto.randomUUID(),stamp=nowIso(),orderNumber="ND-"+Date.now().toString(36).toUpperCase()+"-"+crypto.randomUUID().slice(0,5).toUpperCase();
+    const productName=clean(b.product_name,180)||product?.name||"Custom service";
+    await env.DB.prepare("INSERT INTO norda_orders(id,order_number,customer_id,product_id,product_name,quantity,unit_price,currency,total_amount,status,payment_status,payment_method,notes,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+      .bind(id,orderNumber,customerId,productId,productName,quantity,unitPrice,currency,quantity*unitPrice,status,payment,clean(b.payment_method,100),clean(b.notes,4000),stamp,stamp).run();
+    await audit(env,session.id,"create","order",id);
+    const row=await env.DB.prepare("SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id WHERE o.id=?").bind(id).first<Record<string,unknown>>();
+    return adminJson({data:row},201);
+  }
+  if(method==="POST"&&orderDetail){
+    const id=decodeURIComponent(orderDetail[1]),b=await bodyOf(request);
+    const current=await env.DB.prepare("SELECT * FROM norda_orders WHERE id=?").bind(id).first<Record<string,unknown>>();
+    if(!current)return adminJson({error:"not_found"},404);
+    const merged={...current,...b},customerId=clean(merged.customer_id,80),productId=clean(merged.product_id,80)||null;
+    const customer=await env.DB.prepare("SELECT id FROM norda_customers WHERE id=? AND archived_at IS NULL").bind(customerId).first();
+    if(!customer)return adminJson({error:"valid_customer_required"},400);
+    const product=productId?await env.DB.prepare("SELECT id,name,price FROM norda_products WHERE id=? AND status!='archived'").bind(productId).first<{id:string;name:string;price:number}>():null;
+    if(productId&&!product)return adminJson({error:"product_not_found"},400);
+    const quantity=Math.max(1,Math.min(10000,Math.floor(Number(merged.quantity)||1)));
+    const unitPrice=Number(merged.unit_price??0),currency=clean(merged.currency,3)||"EUR";
+    const status=clean(merged.status,30),payment=clean(merged.payment_status,30);
+    if(!Number.isFinite(unitPrice)||unitPrice<0||!["EUR","USD","DZD"].includes(currency)||!["draft","pending","confirmed","in_progress","completed","cancelled"].includes(status)||!["unpaid","pending","paid","refunded"].includes(payment))return adminJson({error:"invalid_order"},400);
+    const productName=clean(merged.product_name,180)||product?.name||"Custom service";
+    await env.DB.prepare("UPDATE norda_orders SET customer_id=?,product_id=?,product_name=?,quantity=?,unit_price=?,currency=?,total_amount=?,status=?,payment_status=?,payment_method=?,notes=?,updated_at=? WHERE id=?")
+      .bind(customerId,productId,productName,quantity,unitPrice,currency,quantity*unitPrice,status,payment,clean(merged.payment_method,100),clean(merged.notes,4000),nowIso(),id).run();
+    await audit(env,session.id,"update","order",id);
+    const row=await env.DB.prepare("SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id WHERE o.id=?").bind(id).first<Record<string,unknown>>();
+    return adminJson({data:row});
+  }
   return adminJson({error:"not_found"},404);
 }
