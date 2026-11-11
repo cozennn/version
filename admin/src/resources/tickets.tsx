@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import {
   Datagrid,
   DateField,
@@ -39,19 +40,25 @@ function TicketConversation() {
   useEffect(() => {
     if (!record?.id) return;
     let active = true;
-    adminRequest("/admin/tickets/" + encodeURIComponent(record.id) + "/messages")
-      .then(result => {
-        if (active) setMessages(Array.isArray(result.data) ? result.data : []);
-      })
-      .catch(error => {
-        if (active) notify(error instanceof Error ? error.message : "Could not load ticket messages", { type: "error" });
-      });
-    return () => { active = false; };
+    let firstLoad = true;
+    const loadMessages = () => {
+      adminRequest("/admin/tickets/" + encodeURIComponent(record.id) + "/messages")
+        .then(result => {
+          if (active) setMessages(Array.isArray(result.data) ? result.data : []);
+        })
+        .catch(error => {
+          if (active && firstLoad) notify(error instanceof Error ? error.message : "Could not load ticket messages", { type: "error" });
+        })
+        .finally(() => { firstLoad = false; });
+    };
+    loadMessages();
+    const timer = window.setInterval(loadMessages, 5000);
+    return () => { active = false; window.clearInterval(timer); };
   }, [record?.id, refreshKey, notify]);
 
   if (!record) return null;
 
-  async function sendReply(event: React.FormEvent<HTMLFormElement>) {
+  async function sendReply(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const message = draft.trim();
     if (!message || loading) return;
