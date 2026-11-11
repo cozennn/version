@@ -166,12 +166,60 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM contact_submissions ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
+  const ticketMessages = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/messages$/);
+  if (method === "GET" && ticketMessages) {
+    const publicId = decodeURIComponent(ticketMessages[1]);
+    const ticket = await env.DB.prepare("SELECT id FROM tickets WHERE public_id=? LIMIT 1").bind(publicId).first<{id:number}>();
+    if (!ticket) return adminJson({error:"not_found"},404);
+    const rows = await env.DB.prepare("SELECT id,sender_type,message_text,created_at FROM messages WHERE ticket_id=? ORDER BY id ASC")
+      .bind(ticket.id).all<Record<string,unknown>>();
+    return adminJson({data:rows.results||[]});
+  }
+  const ticketReply = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/reply$/);
+  if (method === "POST" && ticketReply) {
+    const publicId = decodeURIComponent(ticketReply[1]);
+    const message = clean((await bodyOf(request)).message,4000);
+    if (!message) return adminJson({error:"message_required"},400);
+    const ticket = await env.DB.prepare("SELECT id,status FROM tickets WHERE public_id=? LIMIT 1")
+      .bind(publicId).first<{id:number;status:string}>();
+    if (!ticket) return adminJson({error:"not_found"},404);
+    if (ticket.status !== "open") return adminJson({error:"ticket_closed"},409);
+    const stamp = nowIso();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE tickets SET support_mode='human',handoff_status='sent' WHERE id=? AND status='open'").bind(ticket.id),
+      env.DB.prepare("INSERT INTO messages(ticket_id,sender_type,message_text,created_at) SELECT id,'admin',?,? FROM tickets WHERE id=? AND status='open' AND support_mode='human'").bind(message,stamp,ticket.id)
+    ]);
+    await audit(env,session.id,"reply","ticket",publicId);
+    const rows = await env.DB.prepare("SELECT id,sender_type,message_text,created_at FROM messages WHERE ticket_id=? ORDER BY id ASC")
+      .bind(ticket.id).all<Record<string,unknown>>();
+    return adminJson({ok:true,support_mode:"human",data:rows.results||[]});
+  }
+  const ticketClose = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/close$/);
+  if (method === "POST" && ticketClose) {
+    const publicId = decodeURIComponent(ticketClose[1]);
+    const ticket = await env.DB.prepare("SELECT id,status FROM tickets WHERE public_id=? LIMIT 1")
+      .bind(publicId).first<{id:number;status:string}>();
+    if (!ticket) return adminJson({error:"not_found"},404);
+    if (ticket.status === "open") {
+      await env.DB.prepare("UPDATE tickets SET status='closed',closed_at=? WHERE id=? AND status='open'")
+        .bind(nowIso(),ticket.id).run();
+      await audit(env,session.id,"close","ticket",publicId);
+    }
+    return adminJson({ok:true,id:publicId,status:"closed"});
+  }
+  const ticketDetail = path.match(/^\\/admin\\/tickets\\/([^/]+)$/);
+  if (method === "GET" && ticketDetail) {
+    const publicId = decodeURIComponent(ticketDetail[1]);
+    const row = await env.DB.prepare("SELECT public_id AS id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets WHERE public_id=? LIMIT 1")
+      .bind(publicId).first<Record<string,unknown>>();
+    return row ? adminJson({data:row}) : adminJson({error:"not_found"},404);
+  }
   if(method==="GET"&&path==="/admin/tickets"){
     const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
     const where=q ? "WHERE public_id LIKE ? OR user_name LIKE ? OR status LIKE ? OR support_mode LIKE ?" : "";
     const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
-    const order=orderClause(url,{id:"id",public_id:"public_id",user_name:"user_name",status:"status",support_mode:"support_mode",created_at:"created_at",closed_at:"closed_at"},"created_at");
-    const rows=await env.DB.prepare(`SELECT id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const order=orderClause(url,{id:"public_id",public_id:"public_id",user_name:"user_name",status:"status",support_mode:"support_mode",created_at:"created_at",closed_at:"closed_at"},"created_at");
+    const rows=await env.DB.prepare(`SELECT public_id AS id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM tickets ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
