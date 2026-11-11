@@ -166,7 +166,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM contact_submissions ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
-  const ticketMessages = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/messages$/);
+  const ticketMessages = path.match(/^\/admin\/tickets\/([^/]+)\/messages$/);
   if (method === "GET" && ticketMessages) {
     const publicId = decodeURIComponent(ticketMessages[1]);
     const ticket = await env.DB.prepare("SELECT id FROM tickets WHERE public_id=? LIMIT 1").bind(publicId).first<{id:number}>();
@@ -175,7 +175,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
       .bind(ticket.id).all<Record<string,unknown>>();
     return adminJson({data:rows.results||[]});
   }
-  const ticketReply = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/reply$/);
+  const ticketReply = path.match(/^\/admin\/tickets\/([^/]+)\/reply$/);
   if (method === "POST" && ticketReply) {
     const publicId = decodeURIComponent(ticketReply[1]);
     const message = clean((await bodyOf(request)).message,4000);
@@ -194,7 +194,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
       .bind(ticket.id).all<Record<string,unknown>>();
     return adminJson({ok:true,support_mode:"human",data:rows.results||[]});
   }
-  const ticketClose = path.match(/^\\/admin\\/tickets\\/([^/]+)\\/close$/);
+  const ticketClose = path.match(/^\/admin\/tickets\/([^/]+)\/close$/);
   if (method === "POST" && ticketClose) {
     const publicId = decodeURIComponent(ticketClose[1]);
     const ticket = await env.DB.prepare("SELECT id,status FROM tickets WHERE public_id=? LIMIT 1")
@@ -207,7 +207,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     }
     return adminJson({ok:true,id:publicId,status:"closed"});
   }
-  const ticketDetail = path.match(/^\\/admin\\/tickets\\/([^/]+)$/);
+  const ticketDetail = path.match(/^\/admin\/tickets\/([^/]+)$/);
   if (method === "GET" && ticketDetail) {
     const publicId = decodeURIComponent(ticketDetail[1]);
     const row = await env.DB.prepare("SELECT public_id AS id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets WHERE public_id=? LIMIT 1")
