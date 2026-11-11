@@ -1,4 +1,4 @@
-import { Create, Datagrid, DateField, Edit, EmailField, EmailInput, List, SimpleForm, TextField, TextInput } from "react-admin";
+import { Create, Datagrid, DateField, Edit, EmailField, List, SimpleForm, TextField, TextInput } from "react-admin";
 
 export function CustomerList() {
   return <List perPage={25} sort={{ field: "created_at", order: "DESC" }} filters={[<TextInput source="q" label="Search customers" alwaysOn key="q" />]}>
@@ -15,7 +15,7 @@ export function CustomerList() {
 }
 const CustomerFields = () => <>
   <TextInput source="name" required fullWidth />
-  <EmailInput source="email" fullWidth />
+  <TextInput source="email" type="email" fullWidth />
   <TextInput source="phone" fullWidth />
   <TextInput source="company" fullWidth />
   <TextInput source="country" fullWidth />
