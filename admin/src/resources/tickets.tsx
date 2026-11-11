@@ -42,7 +42,7 @@ function TicketConversation() {
     let active = true;
     let firstLoad = true;
     const loadMessages = () => {
-      adminRequest("/admin/tickets/" + encodeURIComponent(record.id) + "/messages")
+      adminRequest("/admin/tickets/" + encodeURIComponent(ticketId) + "/messages")
         .then(result => {
           if (active) setMessages(Array.isArray(result.data) ? result.data : []);
         })
@@ -57,6 +57,8 @@ function TicketConversation() {
   }, [record?.id, refreshKey, notify]);
 
   if (!record) return null;
+  const ticketId = record.id;
+  const ticketStatus = record.status;
 
   async function sendReply(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,7 +66,7 @@ function TicketConversation() {
     if (!message || loading) return;
     setLoading(true);
     try {
-      const result = await adminRequest("/admin/tickets/" + encodeURIComponent(record.id) + "/reply", {
+      const result = await adminRequest("/admin/tickets/" + encodeURIComponent(ticketId) + "/reply", {
         method: "POST",
         body: JSON.stringify({ message })
       });
@@ -81,10 +83,10 @@ function TicketConversation() {
   }
 
   async function closeTicket() {
-    if (loading || record.status !== "open") return;
+    if (loading || ticketStatus !== "open") return;
     setLoading(true);
     try {
-      await adminRequest("/admin/tickets/" + encodeURIComponent(record.id) + "/close", { method: "POST", body: "{}" });
+      await adminRequest("/admin/tickets/" + encodeURIComponent(ticketId) + "/close", { method: "POST", body: "{}" });
       notify("Ticket closed", { type: "success" });
       refresh();
     } catch (error) {
