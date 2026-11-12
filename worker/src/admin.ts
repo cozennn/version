@@ -123,7 +123,8 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     await audit(env,session.id,body.enabled ? "enable" : "disable","ai_assistant","global");
     return adminJson({data:{enabled:body.enabled}});
   }
-\n  const productDetail = path.match(/^\/admin\/products\/([^/]+)$/);
+
+  const productDetail = path.match(/^\/admin\/products\/([^/]+)$/);
   if (method === "GET" && productDetail) {
     const id = decodeURIComponent(productDetail[1]);
     const row = await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
