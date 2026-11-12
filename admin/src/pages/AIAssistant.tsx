@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, Card, CardContent, CircularProgress, FormControlLabel, Stack, Switch, Typography } from "@mui/material";
+import { Alert, Box, Card, CardContent, CircularProgress, FormControlLabel, Stack, Switch, Typography } from "@mui/material";
 import { adminRequest } from "../providers/dataProvider";
 
 export function AIAssistantPage() {
