@@ -109,7 +109,21 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   const session = await adminSession(request, env);
   if (!session) return adminJson({ error: "unauthorized" }, 401);
 
-  const productDetail = path.match(/^\/admin\/products\/([^/]+)$/);
+
+  if (method === "GET" && path === "/admin/ai/settings") {
+    const row = await env.DB.prepare("SELECT value FROM norda_site_settings WHERE key='ai_enabled' LIMIT 1").first<{value:string}>();
+    return adminJson({data:{enabled:row ? row.value !== "false" : true}});
+  }
+  if (method === "POST" && path === "/admin/ai/settings") {
+    const body = await bodyOf(request);
+    if (typeof body.enabled !== "boolean") return adminJson({error:"invalid_ai_setting"},400);
+    const stamp = nowIso();
+    await env.DB.prepare("INSERT INTO norda_site_settings(key,value,updated_at,updated_by) VALUES('ai_enabled',?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at,updated_by=excluded.updated_by")
+      .bind(body.enabled ? "true" : "false",stamp,session.id).run();
+    await audit(env,session.id,body.enabled ? "enable" : "disable","ai_assistant","global");
+    return adminJson({data:{enabled:body.enabled}});
+  }
+\n  const productDetail = path.match(/^\/admin\/products\/([^/]+)$/);
   if (method === "GET" && productDetail) {
     const id = decodeURIComponent(productDetail[1]);
     const row = await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
