@@ -12,6 +12,8 @@ import { CustomerCreate, CustomerEdit, CustomerList } from "./resources/customer
 import { OrderCreate, OrderEdit, OrderList } from "./resources/orders";
 import { Dashboard } from "./pages/Dashboard";
 import { AIAssistantPage } from "./pages/AIAssistant";
+import { AnalyticsPage } from "./pages/Analytics";
+import { SettingsPage } from "./pages/Settings";
 import "./theme.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
  <React.StrictMode><Admin title="NORDA" dashboard={Dashboard} dataProvider={dataProvider} authProvider={authProvider} requireAuth>
@@ -22,5 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <Resource name="tickets" list={TicketList} show={TicketShow}/>
   <Resource name="activity" list={ActivityList}/>
   <Resource name="ai" options={{ label: "AI Assistant" }} list={AIAssistantPage}/>
+  <Resource name="analytics" options={{ label: "Analytics" }} list={AnalyticsPage}/>
+  <Resource name="settings" options={{ label: "Settings & status" }} list={SettingsPage}/>
  </Admin></React.StrictMode>
 );
