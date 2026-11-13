@@ -136,3 +136,36 @@ window.NORDA_CATEGORIES = {
 
 // Format price with currency
 window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
+
+ // Use the last managed catalog synchronously so page renderers never race
+ // the network request. Static data above remains the first-visit fallback.
+(function loadManagedCatalog() {
+  const cacheKey = "norda:managed-products";
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+    if (Array.isArray(cached) && cached.length) window.NORDA_PRODUCTS = cached;
+  } catch {}
+  const api = (window.NORDA_CONFIG && window.NORDA_CONFIG.TELEGRAM_API) ||
+    "https://norda-api.houda2004houdaa.workers.dev";
+  fetch(api.replace(/\\/+$/, "") + "/products/public", { headers: { Accept: "application/json" } })
+    .then(response => response.ok ? response.json() : null)
+    .then(result => {
+      if (!result || !Array.isArray(result.products) || !result.products.length) return;
+      const products = result.products.map(item => ({
+        ...item,
+        tags: Array.isArray(item.tags) ? item.tags : [],
+        includes: Array.isArray(item.includes) ? item.includes : [],
+        featured: item.featured === true,
+        subscription: item.subscription === true
+      }));
+      const signature = JSON.stringify(products);
+      let previous = "";
+      try { previous = localStorage.getItem(cacheKey) || ""; } catch {}
+      if (previous !== signature) {
+        try { localStorage.setItem(cacheKey, signature); } catch {}
+        window.NORDA_PRODUCTS = products;
+        location.reload();
+      }
+    })
+    .catch(() => {});
+})();

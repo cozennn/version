@@ -29,6 +29,24 @@ jobs:
         working-directory: worker
         run: npx wrangler deploy --dry-run --outdir=/tmp/norda-worker-build
 
+      - name: Smoke-test deployed Worker endpoints
+        run: |
+          API="https://norda-api.houda2004houdaa.workers.dev"
+          curl --fail --silent --show-error "$API/health" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('ok') is True and d.get('status') == 'ready' and d.get('database') == 'connected', d"
+          curl --fail --silent --show-error "$API/products/public" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('ok') is True and isinstance(d.get('products'), list), d"
+          for route in /admin/auth/me /admin/products /admin/inquiries /admin/tickets /admin/activity; do
+            code=$(curl --silent --output /dev/null --write-out '%{http_code}' "$API$route")
+            test "$code" = "401" || { echo "Expected 401 for $route, received $code"; exit 1; }
+          done
+
+      - name: Install NorDa Admin dependencies
+        working-directory: admin
+        run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Build NorDa Admin
+        working-directory: admin
+        run: npm run build
+
       - name: Check frontend JavaScript syntax
         run: |
           node --check assets/main.js
