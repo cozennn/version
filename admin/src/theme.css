@@ -1,1 +1,138 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');:root{font-family:Manrope,sans-serif;color:#f0eee9;background:#171615}body{margin:0;background:#171615}#root{min-height:100vh}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+:root {
+  font-family: "Manrope", "Tajawal", ui-sans-serif, system-ui, sans-serif;
+  color: #1a1730;
+  background: #ecebf2;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #1a1730;
+  background:
+    radial-gradient(60vmax 50vmax at 12% -10%, #e3dcff, transparent 70%),
+    radial-gradient(50vmax 40vmax at 100% 0%, #fde6d6, transparent 70%),
+    #ecebf2;
+  background-attachment: fixed;
+}
+button, input, textarea, select { font: inherit; }
+::selection { background: #5a46d64d; }
+
+/* NORDA shell */
+.RaLayout-root { background: transparent !important; }
+.RaLayout-appFrame { background: transparent !important; }
+.RaLayout-contentWithSidebar { background: transparent !important; }
+.RaLayout-content { background: transparent !important; }
+.RaAppBar-root,
+.MuiAppBar-root {
+  color: #1a1730 !important;
+  background: rgba(252, 252, 254, .82) !important;
+  border-bottom: 1px solid #201a4017;
+  box-shadow: 0 8px 24px -22px #1d193466 !important;
+  backdrop-filter: saturate(1.2) blur(14px);
+  -webkit-backdrop-filter: saturate(1.2) blur(14px);
+}
+.RaAppBar-toolbar,
+.MuiToolbar-root { min-height: 68px !important; }
+.RaAppBar-title { color: #1a1730 !important; font-weight: 800 !important; letter-spacing: -.045em; }
+.RaAppBar-menuButton { color: #5b5872 !important; }
+
+.RaSidebar-drawerPaper,
+.MuiDrawer-paper {
+  color: #1a1730 !important;
+  background: rgba(252, 252, 254, .94) !important;
+  border-right: 1px solid #201a4017 !important;
+  box-shadow: 8px 0 30px -28px #201a4047 !important;
+}
+.RaMenuItemLink-root {
+  min-height: 44px;
+  margin: 3px 10px;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  color: #5b5872 !important;
+  transition: background .18s ease, color .18s ease;
+}
+.RaMenuItemLink-root:hover {
+  background: #201a400b !important;
+  color: #1a1730 !important;
+}
+.RaMenuItemLink-active {
+  color: #5a46d6 !important;
+  background: #5a46d614 !important;
+  font-weight: 800 !important;
+}
+.RaMenuItemLink-active .MuiListItemIcon-root { color: #5a46d6 !important; }
+.MuiListItemIcon-root { color: #75728b; min-width: 38px !important; }
+
+/* Page headings and panels */
+.RaList-main, .RaShow-main, .RaEdit-main, .RaCreate-main { min-width: 0; }
+.MuiCard-root,
+.RaList-main .MuiPaper-root,
+.RaShow-main .MuiPaper-root,
+.RaEdit-main .MuiPaper-root,
+.RaCreate-main .MuiPaper-root {
+  border: 1px solid #201a4017 !important;
+  border-radius: 20px !important;
+  background: #fcfcfe !important;
+  box-shadow: 0 1px 2px #201a400d, 0 14px 32px -20px #201a4047 !important;
+}
+.MuiCardContent-root { padding: 22px !important; }
+.MuiTypography-h4 { letter-spacing: -.04em !important; }
+.MuiTypography-colorTextSecondary { color: #5b5872 !important; }
+
+/* Tables */
+.RaDatagrid-root,
+.MuiTable-root { background: #fcfcfe; }
+.RaDatagrid-headerCell,
+.MuiTableCell-head {
+  color: #5b5872 !important;
+  background: #f4f3f9 !important;
+  font-size: .76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #201a4017 !important;
+}
+.RaDatagrid-rowCell,
+.MuiTableCell-body {
+  color: #1a1730;
+  border-bottom: 1px solid #201a4010 !important;
+}
+.RaDatagrid-row:hover { background: #5a46d608 !important; }
+
+/* Controls */
+.MuiButton-root { font-weight: 700 !important; }
+.MuiButton-containedPrimary { background: #5a46d6 !important; }
+.MuiButton-containedPrimary:hover { background: #4d3bc2 !important; }
+.MuiButton-outlined { border-color: #201a402b !important; }
+.MuiIconButton-root { border-radius: 12px !important; }
+.MuiOutlinedInput-root { background: #fcfcfe; border-radius: 12px !important; }
+.MuiOutlinedInput-notchedOutline { border-color: #201a402b !important; }
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline { border-color: #5a46d680 !important; }
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline { border-color: #5a46d6 !important; border-width: 1.5px !important; }
+.MuiInputLabel-root { color: #5b5872 !important; }
+.MuiChip-root { border-radius: 999px !important; font-weight: 700; }
+
+/* Login screen */
+.RaLogin-root { background: transparent !important; }
+.RaLogin-card {
+  border: 1px solid #201a4017 !important;
+  border-radius: 24px !important;
+  background: #fcfcfe !important;
+  box-shadow: 0 24px 60px -30px #201a4057 !important;
+}
+
+/* Responsive spacing */
+@media (max-width: 600px) {
+  .RaLayout-content { padding: 12px !important; }
+  .MuiCardContent-root { padding: 17px !important; }
+  .RaAppBar-toolbar, .MuiToolbar-root { min-height: 58px !important; }
+}
