@@ -1,4 +1,4 @@
-interface AdminEnv { DB: D1Database; NORDA_ADMIN_SETUP_TOKEN?: string; }
+interface AdminEnv { DB: D1Database; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; NORDA_AI_URL?: string; NORDA_AI_TOKEN?: string; }
 
 const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -109,6 +109,50 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   const session = await adminSession(request, env);
   if (!session) return adminJson({ error: "unauthorized" }, 401);
 
+
+  if (method === "GET" && path === "/admin/analytics") {
+    const count = async (sql: string) => {
+      const row = await env.DB.prepare(sql).first<{ total: number }>();
+      return Number(row?.total ?? 0);
+    };
+    const [products, customers, orders, inquiries, tickets, openTickets, paidOrders, revenue, pendingNotifications, failedNotifications] = await Promise.all([
+      count("SELECT COUNT(*) AS total FROM norda_products WHERE status != 'archived'"),
+      count("SELECT COUNT(*) AS total FROM norda_customers WHERE archived_at IS NULL"),
+      count("SELECT COUNT(*) AS total FROM norda_orders"),
+      count("SELECT COUNT(*) AS total FROM contact_submissions"),
+      count("SELECT COUNT(*) AS total FROM tickets"),
+      count("SELECT COUNT(*) AS total FROM tickets WHERE status='open'"),
+      count("SELECT COUNT(*) AS total FROM norda_orders WHERE payment_status='paid'"),
+      env.DB.prepare("SELECT currency, SUM(total_amount) AS total FROM norda_orders WHERE payment_status='paid' GROUP BY currency").all<{currency:string;total:number}>(),
+      count("SELECT COUNT(*) AS total FROM notification_outbox WHERE status='pending'"),
+      count("SELECT COUNT(*) AS total FROM telegram_delivery_failures")
+    ]);
+    const orderStatuses = await env.DB.prepare("SELECT status, COUNT(*) AS total FROM norda_orders GROUP BY status ORDER BY total DESC").all<{status:string;total:number}>();
+    const paymentStatuses = await env.DB.prepare("SELECT payment_status AS status, COUNT(*) AS total FROM norda_orders GROUP BY payment_status ORDER BY total DESC").all<{status:string;total:number}>();
+    const recentOrders = await env.DB.prepare("SELECT substr(created_at,1,7) AS month, COUNT(*) AS orders, SUM(total_amount) AS value FROM norda_orders WHERE created_at >= date('now','-5 months','start of month') GROUP BY substr(created_at,1,7) ORDER BY month").all<{month:string;orders:number;value:number}>();
+    return adminJson({ data: {
+      totals: { products, customers, orders, inquiries, tickets, openTickets, paidOrders, pendingNotifications, failedNotifications },
+      revenue: revenue.results || [],
+      orderStatuses: orderStatuses.results || [],
+      paymentStatuses: paymentStatuses.results || [],
+      recentOrders: recentOrders.results || []
+    }});
+  }
+
+  if (method === "GET" && path === "/admin/settings") {
+    const aiRow = await env.DB.prepare("SELECT value,updated_at FROM norda_site_settings WHERE key='ai_enabled' LIMIT 1").first<{value:string;updated_at:string}>();
+    const [outbox, lastFailure, adminCount] = await Promise.all([
+      env.DB.prepare("SELECT status, COUNT(*) AS total FROM notification_outbox GROUP BY status").all<{status:string;total:number}>(),
+      env.DB.prepare("SELECT event_type,failed_at FROM telegram_delivery_failures ORDER BY id DESC LIMIT 1").first<{event_type:string;failed_at:string}>(),
+      env.DB.prepare("SELECT COUNT(*) AS total FROM norda_admin_users WHERE disabled_at IS NULL").first<{total:number}>()
+    ]);
+    return adminJson({ data: {
+      ai: { enabled: aiRow ? aiRow.value !== "false" : true, updatedAt: aiRow?.updated_at ?? null, endpointConfigured: Boolean(env.NORDA_AI_URL), tokenConfigured: Boolean(env.NORDA_AI_TOKEN) },
+      telegram: { botConfigured: Boolean(env.TELEGRAM_BOT_TOKEN), chatConfigured: Boolean(env.TELEGRAM_CHAT_ID), webhookSecretConfigured: Boolean(env.TELEGRAM_WEBHOOK_SECRET), ready: Boolean(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID && env.TELEGRAM_WEBHOOK_SECRET) },
+      notifications: { outbox: outbox.results || [], lastFailure: lastFailure ?? null },
+      security: { activeAdminAccounts: Number(adminCount?.total ?? 0), currentUser: { username: session.username, role: session.role } }
+    }});
+  }
 
   if (method === "GET" && path === "/admin/ai/settings") {
     const row = await env.DB.prepare("SELECT value FROM norda_site_settings WHERE key='ai_enabled' LIMIT 1").first<{value:string}>();
