@@ -8,7 +8,7 @@
     "crons": ["*/5 * * * *", "0 3 * * *"]
   },
   "vars": {
-    "ALLOWED_ORIGINS": "https://version-3y3.pages.dev,http://localhost:5174"
+    "ALLOWED_ORIGINS": "https://version-3y3.pages.dev,https://admin-e9v.pages.dev,http://localhost:5174"
   },
   "d1_databases": [
     {
