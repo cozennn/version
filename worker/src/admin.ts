@@ -52,6 +52,36 @@ function jsonArray(value: unknown) {
   try { const parsed = JSON.parse(String(value || "[]")); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
 }
 
+function paypalPaymentUrl(value: unknown): string | null {
+  const raw = clean(value, 500);
+  if (!raw) return "";
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:" || !/(^|\.)paypal\.com$/i.test(url.hostname) || !url.pathname.startsWith("/ncp/payment/")) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function canAccessAdmin(role: string, method: string, path: string): boolean {
+  if (role === "owner" || role === "admin") return true;
+
+  if (role === "editor") {
+    if (method === "GET" && /^\/admin\/(products|customers|orders|inquiries|analytics|activity)(\/|$)/.test(path)) return true;
+    if (method === "POST" && /^\/admin\/(products|customers|orders)(\/|$)/.test(path)) return true;
+    return false;
+  }
+
+  if (role === "support") {
+    if (method === "GET" && /^\/admin\/(tickets|inquiries)(\/|$)/.test(path)) return true;
+    if (method === "POST" && /^\/admin\/tickets\/[^/]+\/(reply|close)$/.test(path)) return true;
+    return false;
+  }
+
+  return false;
+}
+
 export async function handleAdminApi(request: Request, env: AdminEnv): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
@@ -59,7 +89,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   if (!path.startsWith("/admin/") && path !== "/products/public") return null;
 
   if (method === "GET" && path === "/products/public") {
-    const rows = await env.DB.prepare("SELECT id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval FROM norda_products WHERE status != 'archived' ORDER BY name").all<Record<string, unknown>>();
+    const rows = await env.DB.prepare("SELECT id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,paypal_url FROM norda_products WHERE status IN ('active','inquiry') ORDER BY name").all<Record<string, unknown>>();
     return adminJson({ ok: true, products: (rows.results || []).map(p => ({ ...p, tags: jsonArray(p.tags_json), includes: jsonArray(p.includes_json), featured: Boolean(p.featured), subscription: Boolean(p.subscription) })) });
   }
 
@@ -108,7 +138,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   if (!path.startsWith("/admin/")) return null;
   const session = await adminSession(request, env);
   if (!session) return adminJson({ error: "unauthorized" }, 401);
-
+  if (!canAccessAdmin(session.role, method, path)) return adminJson({ error: "forbidden", message: "Your role cannot perform this action." }, 403);
 
   if (method === "GET" && path === "/admin/analytics") {
     const count = async (sql: string) => {
@@ -187,10 +217,12 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   }
   if (method === "POST" && path === "/admin/products") {
     const b=await bodyOf(request), id=clean(b.id,80)||crypto.randomUUID(), name=clean(b.name,120), type=clean(b.type,20);
-    const price=Number(b.price);
-    if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0) return adminJson({error:"invalid_product"},400);
-    await env.DB.prepare("INSERT INTO norda_products(id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET type=excluded.type,name=excluded.name,tagline=excluded.tagline,price=excluded.price,category=excluded.category,image=excluded.image,tags_json=excluded.tags_json,description=excluded.description,includes_json=excluded.includes_json,featured=excluded.featured,status=excluded.status,subscription=excluded.subscription,interval=excluded.interval,updated_at=excluded.updated_at,updated_by=excluded.updated_by")
-      .bind(id,type,name,clean(b.tagline,240),price,clean(b.category,80),clean(b.image,1000),JSON.stringify(Array.isArray(b.tags)?b.tags:[]),clean(b.description,4000),JSON.stringify(Array.isArray(b.includes)?b.includes:[]),b.featured?1:0,clean(b.status,30)||"active",b.subscription?1:0,clean(b.interval,20)||"month",nowIso(),session.id).run();
+    const price=Number(b.price), status=clean(b.status,30)||"active", paypalUrl=paypalPaymentUrl(b.paypal_url);
+    if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0||!["draft","active","inquiry","archived"].includes(status)||paypalUrl===null) return adminJson({error:"invalid_product",message:"Check the product details and use a valid PayPal payment link."},400);
+    const duplicate=await env.DB.prepare("SELECT id FROM norda_products WHERE id=? LIMIT 1").bind(id).first();
+    if(duplicate) return adminJson({error:"product_id_already_exists",message:"Choose a different product ID. The existing product was not changed."},409);
+    await env.DB.prepare("INSERT INTO norda_products(id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,paypal_url,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+      .bind(id,type,name,clean(b.tagline,240),price,clean(b.category,80),clean(b.image,1000),JSON.stringify(Array.isArray(b.tags)?b.tags:[]),clean(b.description,4000),JSON.stringify(Array.isArray(b.includes)?b.includes:[]),b.featured?1:0,status,b.subscription?1:0,clean(b.interval,20)||"month",paypalUrl,nowIso(),session.id).run();
     await audit(env,session.id,"upsert","product",id);
     const row=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row},201);
@@ -208,10 +240,10 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const current=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     if(!current)return adminJson({error:"not_found"},404);
     const merged: Record<string, unknown> = {...current,...b,id};
-    const type=clean(merged.type,20),name=clean(merged.name,120),price=Number(merged.price);
-    if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0)return adminJson({error:"invalid_product"},400);
-    await env.DB.prepare("UPDATE norda_products SET type=?,name=?,tagline=?,price=?,category=?,image=?,tags_json=?,description=?,includes_json=?,featured=?,status=?,subscription=?,interval=?,updated_at=?,updated_by=? WHERE id=?")
-      .bind(type,name,clean(merged.tagline,240),price,clean(merged.category,80),clean(merged.image,1000),JSON.stringify(Array.isArray(merged.tags)?merged.tags:jsonArray(current.tags_json)),clean(merged.description,4000),JSON.stringify(Array.isArray(merged.includes)?merged.includes:jsonArray(current.includes_json)),merged.featured?1:0,clean(merged.status,30)||"active",merged.subscription?1:0,clean(merged.interval,20)||"month",nowIso(),session.id,id).run();
+    const type=clean(merged.type,20),name=clean(merged.name,120),price=Number(merged.price),status=clean(merged.status,30)||"active",paypalUrl=paypalPaymentUrl(merged.paypal_url);
+    if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0||!["draft","active","inquiry","archived"].includes(status)||paypalUrl===null)return adminJson({error:"invalid_product",message:"Check the product details and use a valid PayPal payment link."},400);
+    await env.DB.prepare("UPDATE norda_products SET type=?,name=?,tagline=?,price=?,category=?,image=?,tags_json=?,description=?,includes_json=?,featured=?,status=?,subscription=?,interval=?,paypal_url=?,updated_at=?,updated_by=? WHERE id=?")
+      .bind(type,name,clean(merged.tagline,240),price,clean(merged.category,80),clean(merged.image,1000),JSON.stringify(Array.isArray(merged.tags)?merged.tags:jsonArray(current.tags_json)),clean(merged.description,4000),JSON.stringify(Array.isArray(merged.includes)?merged.includes:jsonArray(current.includes_json)),merged.featured?1:0,status,merged.subscription?1:0,clean(merged.interval,20)||"month",paypalUrl,nowIso(),session.id,id).run();
     await audit(env,session.id,"update","product",id);
     const row=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row});
@@ -378,7 +410,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const merged={...current,...b},customerId=clean(merged.customer_id,80),productId=clean(merged.product_id,80)||null;
     const customer=await env.DB.prepare("SELECT id FROM norda_customers WHERE id=? AND archived_at IS NULL").bind(customerId).first();
     if(!customer)return adminJson({error:"valid_customer_required"},400);
-    const product=productId?await env.DB.prepare("SELECT id,name,price FROM norda_products WHERE id=? AND status!='archived'").bind(productId).first<{id:string;name:string;price:number}>():null;
+    const product=productId?await env.DB.prepare("SELECT id,name,price FROM norda_products WHERE id=? AND (status!='archived' OR id=?)").bind(productId,String(current.product_id||"")).first<{id:string;name:string;price:number}>():null;
     if(productId&&!product)return adminJson({error:"product_not_found"},400);
     const quantity=Math.max(1,Math.min(10000,Math.floor(Number(merged.quantity)||1)));
     const unitPrice=Number(merged.unit_price??0),currency=clean(merged.currency,3)||"EUR";
