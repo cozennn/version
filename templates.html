@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="prod__tags">${(p.tags || []).map(tag => `<span class="prod__tag">${esc(tag)}</span>`).join('')}</div>
           <div class="prod__actions">
             <a class="btn btn--ghost btn--sm" href="product.html?id=${encodeURIComponent(p.id)}">Details</a>
-            <button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>
+            ${p.paypal_url ? `<a class="btn btn--primary btn--sm" href="${esc(p.paypal_url)}" target="_blank" rel="noopener noreferrer">Pay with PayPal</a>` : `<button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>`}
           </div>
         </div>
       </article>`).join('');
