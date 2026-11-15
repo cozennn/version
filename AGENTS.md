@@ -1,7 +1,7 @@
 # NorDa project instructions
 
 ## Using project skills
-Before making a change, inspect the relevant code and read the matching skill file(s) under `.agents/skills/`.
+Before making a change, inspect the relevant code and read the matching skill file(s) under `agents/skills/`.
 Use only skills relevant to the current task; do not load every skill for a small change.
 
 Available skills:
