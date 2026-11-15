@@ -144,7 +144,7 @@ function aiResponseText(output: unknown, max = 3000): string {
     return text(content.map(part => {
       const item = parseBody(part);
       return typeof item.text === "string" ? item.text : "";
-    }).filter(Boolean).join("\\n"), max);
+    }).filter(Boolean).join("\n"), max);
   }
   return text(result.response ?? result.output_text, max);
 }
