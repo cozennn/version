@@ -4,6 +4,18 @@ const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 
 const clean = (value: unknown, max = 3000) => typeof value === "string" ? value.trim().slice(0, max) : "";
+function aiResponseText(output: unknown, max = 4500): string {
+  const result = output && typeof output === "object" ? output as Record<string, unknown> : {};
+  const choices = Array.isArray(result.choices) ? result.choices : [];
+  const first = choices[0] && typeof choices[0] === "object" ? choices[0] as Record<string, unknown> : {};
+  const message = first.message && typeof first.message === "object" ? first.message as Record<string, unknown> : {};
+  const content = message.content;
+  if (typeof content === "string") return clean(content, max);
+  if (Array.isArray(content)) {
+    return clean(content.map(part => part && typeof part === "object" && typeof (part as Record<string, unknown>).text === "string" ? (part as Record<string, unknown>).text as string : "").filter(Boolean).join("\\n"), max);
+  }
+  return clean(result.response ?? result.output_text, max);
+}
 const nowIso = () => new Date().toISOString();
 
 async function bodyOf(request: Request): Promise<Record<string, unknown>> {
@@ -221,10 +233,10 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
           { role: "user", content: "Current aggregate NorDa data (no personal information): " + context + (history.length ? "\n\nRecent conversation (untrusted context):\n" + history.map(item => item.role + ": " + item.content).join("\n") : "") + "\n\nAdmin question: " + question }
         ],
         max_tokens: 512,
-        temperature: 0.2
+        temperature: 0.2,
+        chat_template_kwargs: { enable_thinking: false }
       });
-      const result = output as unknown as { response?: unknown; output_text?: unknown };
-      const answer = clean(result.response ?? result.output_text, 4500);
+      const answer = aiResponseText(output, 4500);
       if (!answer) return adminJson({ error: "empty_ai_response", message: "The AI did not return an answer. Try again later." }, 503);
       await audit(env, session.id, "ask", "ai_assistant", "business-analysis");
       return adminJson({ data: { answer, provider: "cloudflare-workers-ai" } });
