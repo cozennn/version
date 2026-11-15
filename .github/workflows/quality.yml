@@ -100,6 +100,16 @@ jobs:
           assert db.execute("SELECT handoff_status FROM tickets WHERE id=1").fetchone()[0] == 'none'
           print('Migrations are valid and existing ticket/message rows are preserved.')
           worker = open('worker/src/index.ts', encoding='utf-8').read()
+          wrangler = open('worker/wrangler.jsonc', encoding='utf-8').read()
+          admin_worker = open('worker/src/admin.ts', encoding='utf-8').read()
+          assert '"ai": { "binding": "AI" }' in wrangler, 'Workers AI binding is required'
+          assert '@cf/google/gemma-4-26b-a4b-it' in worker and '@cf/google/gemma-4-26b-a4b-it' in admin_worker, 'Both customer support and admin assistant must use the Free-compatible model'
+          assert 'env.AI.run(' in worker and 'env.AI.run(' in admin_worker, 'Both AI routes must call the Cloudflare AI binding'
+          assert 'NORDA_AI_URL' not in worker and 'NORDA_AI_TOKEN' not in worker, 'The customer AI path must not depend on the local tunnel'
+          assert 'NORDA_AI_URL' not in admin_worker and 'NORDA_AI_TOKEN' not in admin_worker, 'The admin AI path must not depend on the local tunnel'
+          assert 'session.role !== "owner" && session.role !== "admin"' in admin_worker, 'Admin business analysis must be restricted to owner/admin'
+          assert 'Cloudflare Workers AI unavailable or free allocation exhausted' in worker, 'Free allocation failures must fail closed without paid fallback'
+          assert 'free allocation exhausted' in admin_worker, 'Admin AI must fail closed when the free allocation is exhausted'
           assert "support_mode = 'ai' AND handoff_status = 'none'" in worker, 'AI replies must be blocked once human handoff starts'
           assert 'const handoffPending = latest?.handoff_status === "pending"' in worker, 'API must expose pending handoff state'
           assert "SET claimed_at = ?, claim_token = ?" in worker, 'Outbox delivery must acquire an atomic lease'
