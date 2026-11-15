@@ -9,6 +9,7 @@ function ProductFields(){return <>
  <NumberInput source="price" min={0} validate={required()}/>
  <TextInput source="category"/>
  <TextInput source="image" fullWidth/>
+ <TextInput source="paypal_url" label="PayPal payment link" helperText="Paste the HTTPS PayPal Payment Link created for this product. Leave blank to keep the current manual/contact flow." fullWidth/>
  <TextInput source="tags" helperText="Comma-separated tags" format={v=>Array.isArray(v)?v.join(", "):v} parse={v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean)}/>
  <TextInput source="description" multiline minRows={4} fullWidth/>
  <TextInput source="includes" helperText="Comma-separated included items" format={v=>Array.isArray(v)?v.join(", "):v} parse={v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean)}/>
