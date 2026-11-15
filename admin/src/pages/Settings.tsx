@@ -3,7 +3,7 @@ import { Alert, Box, Card, CardContent, Chip, CircularProgress, Grid, Stack, Typ
 import { adminRequest } from "../providers/dataProvider";
 
 type Status = {
-  ai: { enabled: boolean; updatedAt: string | null; endpointConfigured: boolean; tokenConfigured: boolean };
+  ai: { enabled: boolean; updatedAt: string | null; endpointConfigured: boolean; provider: string };
   telegram: { botConfigured: boolean; chatConfigured: boolean; webhookSecretConfigured: boolean; ready: boolean };
   notifications: { outbox: { status: string; total: number }[]; lastFailure: { event_type: string; failed_at: string } | null };
   security: { activeAdminAccounts: number; currentUser: { username: string; role: string } };
@@ -31,8 +31,8 @@ export function SettingsPage() {
       <Grid size={{ xs: 12, md: 6 }}><Card variant="outlined"><CardContent>
         <Typography variant="h6">AI service</Typography>
         <State label="Automatic replies" ok={data.ai.enabled}/>
-        <State label="AI endpoint" ok={data.ai.endpointConfigured}/>
-        <State label="AI access token" ok={data.ai.tokenConfigured}/>
+        <State label="Cloudflare Workers AI binding" ok={data.ai.endpointConfigured}/>
+        <Typography variant="caption" color="text.secondary">Provider: {data.ai.provider}. Free-plan daily allocation only; no paid-provider fallback.</Typography>
         {data.ai.updatedAt && <Typography variant="caption" color="text.secondary">Last setting update: {new Date(data.ai.updatedAt).toLocaleString()}</Typography>}
       </CardContent></Card></Grid>
       <Grid size={{ xs: 12, md: 6 }}><Card variant="outlined"><CardContent>

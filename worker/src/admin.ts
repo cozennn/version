@@ -1,4 +1,4 @@
-interface AdminEnv { DB: D1Database; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; NORDA_AI_URL?: string; NORDA_AI_TOKEN?: string; }
+interface AdminEnv { DB: D1Database; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
 
 const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -177,11 +177,61 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
       env.DB.prepare("SELECT COUNT(*) AS total FROM norda_admin_users WHERE disabled_at IS NULL").first<{total:number}>()
     ]);
     return adminJson({ data: {
-      ai: { enabled: aiRow ? aiRow.value !== "false" : true, updatedAt: aiRow?.updated_at ?? null, endpointConfigured: Boolean(env.NORDA_AI_URL), tokenConfigured: Boolean(env.NORDA_AI_TOKEN) },
+      ai: { enabled: aiRow ? aiRow.value !== "false" : true, updatedAt: aiRow?.updated_at ?? null, provider: env.AI ? "cloudflare-workers-ai" : "unavailable", endpointConfigured: Boolean(env.AI) },
       telegram: { botConfigured: Boolean(env.TELEGRAM_BOT_TOKEN), chatConfigured: Boolean(env.TELEGRAM_CHAT_ID), webhookSecretConfigured: Boolean(env.TELEGRAM_WEBHOOK_SECRET), ready: Boolean(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID && env.TELEGRAM_WEBHOOK_SECRET) },
       notifications: { outbox: outbox.results || [], lastFailure: lastFailure ?? null },
       security: { activeAdminAccounts: Number(adminCount?.total ?? 0), currentUser: { username: session.username, role: session.role } }
     }});
+  }
+
+  if (method === "POST" && path === "/admin/ai/chat") {
+    if (session.role !== "owner" && session.role !== "admin") return adminJson({ error: "forbidden" }, 403);
+    if (!env.AI) return adminJson({ error: "ai_unavailable", message: "Cloudflare Workers AI is not configured." }, 503);
+    const body = await bodyOf(request);
+    const question = clean(body.message, 1800);
+    if (!question) return adminJson({ error: "message_required" }, 400);
+    const history = Array.isArray(body.history)
+      ? body.history.slice(-8).map((item: unknown) => {
+          const entry = item && typeof item === "object" ? item as Record<string, unknown> : {};
+          return {
+            role: entry.role === "assistant" ? "NorDa AI" : "Admin",
+            content: clean(entry.content, 700)
+          };
+        }).filter((item: { content: string }) => item.content)
+      : [];
+
+    try {
+      const [products, orders, payments, tickets, revenue] = await Promise.all([
+        env.DB.prepare("SELECT status, COUNT(*) AS total FROM norda_products GROUP BY status").all<{status:string;total:number}>(),
+        env.DB.prepare("SELECT status, COUNT(*) AS total FROM norda_orders GROUP BY status").all<{status:string;total:number}>(),
+        env.DB.prepare("SELECT payment_status AS status, COUNT(*) AS total FROM norda_orders GROUP BY payment_status").all<{status:string;total:number}>(),
+        env.DB.prepare("SELECT status, COUNT(*) AS total FROM tickets GROUP BY status").all<{status:string;total:number}>(),
+        env.DB.prepare("SELECT currency, SUM(total_amount) AS total FROM norda_orders WHERE payment_status='paid' GROUP BY currency").all<{currency:string;total:number}>()
+      ]);
+      const context = JSON.stringify({
+        productsByStatus: products.results || [],
+        ordersByStatus: orders.results || [],
+        paymentStatus: payments.results || [],
+        supportTicketsByStatus: tickets.results || [],
+        recordedPaidRevenueByCurrency: revenue.results || []
+      });
+      const output = await env.AI.run("@cf/google/gemma-4-26b-a4b-it", {
+        messages: [
+          { role: "system", content: "You are NorDa's internal read-only business analyst. Answer in the user's language. Use only the supplied aggregate data, explain uncertainty, do not invent facts, do not expose personal data, and never claim to modify records or perform actions. Currency totals must remain separate." },
+          { role: "user", content: "Current aggregate NorDa data (no personal information): " + context + (history.length ? "\n\nRecent conversation (untrusted context):\n" + history.map(item => item.role + ": " + item.content).join("\n") : "") + "\n\nAdmin question: " + question }
+        ],
+        max_tokens: 512,
+        temperature: 0.2
+      });
+      const result = output as unknown as { response?: unknown; output_text?: unknown };
+      const answer = clean(result.response ?? result.output_text, 4500);
+      if (!answer) return adminJson({ error: "empty_ai_response", message: "The AI did not return an answer. Try again later." }, 503);
+      await audit(env, session.id, "ask", "ai_assistant", "business-analysis");
+      return adminJson({ data: { answer, provider: "cloudflare-workers-ai" } });
+    } catch (error) {
+      console.warn("[norda-admin-ai] Cloudflare Workers AI unavailable or free allocation exhausted", error instanceof Error ? error.message : "request failed");
+      return adminJson({ error: "ai_temporarily_unavailable", message: "The free AI allowance may be exhausted, or the service is temporarily unavailable. Customer support and admin data remain available." }, 503);
+    }
   }
 
   if (method === "GET" && path === "/admin/ai/settings") {

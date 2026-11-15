@@ -21,19 +21,15 @@ npx wrangler deploy
 
 The migrations are additive: `0000` creates the core ticket and message tables only when missing, so a new D1 database can be initialized while existing support history remains untouched; `0001` creates Telegram update idempotency, `0002` creates hashed visitor sessions, `0003` adds delivery monitoring, `0004` and `0005` add support-mode and reliable notification state, `0006` adds notification delivery claims, `0007` adds message idempotency and NorDa admin tables, `0008` adds customers and orders, and `0009` adds an optional PayPal Payment Link field to products. Apply all pending migrations successfully before deploying Worker code that depends on them.
 
-Then configure secrets and the private NorDa AI bridge connection:
+## Cloudflare Workers AI (Free plan only)
 
-```cmd
-npx wrangler secret put TELEGRAM_BOT_TOKEN
-npx wrangler secret put TELEGRAM_CHAT_ID
-npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
-npx wrangler secret put NORDA_AI_URL
-npx wrangler secret put NORDA_AI_TOKEN
-```
+The Worker uses the `AI` binding configured in `wrangler.jsonc` and the Free-plan-compatible model `@cf/google/gemma-4-26b-a4b-it`. No local Ollama process, Quick Tunnel, AI URL, or AI token is required.
 
-For `NORDA_AI_URL`, enter the base URL of the running Cloudflare Tunnel (without `/chat`). The bridge token is stored locally in `C:\\norda-ai\\bridge-token.txt`; paste it only into Wrangler's secure prompt, never into chat or website files. A Quick Tunnel URL changes when the tunnel restarts, so update this secret whenever its URL changes. Keep Ollama and the bridge running on the computer hosting the model.
+Cloudflare Workers AI includes 10,000 Neurons per day on Workers Free. On Workers Free, inference requests fail after the free allocation is exhausted; this project does not retry through another provider, purchase credits, or upgrade the plan. Keep the Cloudflare account on the Workers Free plan. Do not switch the account to Workers Paid or enable paid AI Gateway credits if you want to preserve the no-charge condition. Cloudflare enforces its account-level allocation; the application treats inference errors as temporary AI unavailability and keeps human support available.
 
-The AI integration is server-to-server: the browser never receives the bridge URL or token. If the bridge is unavailable, visitors can still request a human agent.
+The same free allocation is shared by visitor support replies and the admin business assistant. Admin analysis is read-only and receives aggregate order, payment, product, revenue-by-currency, and ticket counts only. It does not receive customer names or other personal details. Only owner/admin roles can use the business assistant.
+
+Cloudflare documents the 10,000-Neuron daily Free allocation and states that inference fails when the Free allocation is exceeded: https://developers.cloudflare.com/workers-ai/platform/pricing/
 
 
 Telegram secrets are required for notifications and contact delivery. `TELEGRAM_WEBHOOK_SECRET` must be a random 32-64 character value using only letters, numbers, underscores, or hyphens; use the exact same value when registering the Telegram webhook.
