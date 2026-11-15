@@ -1,6 +1,6 @@
 import { Create, Edit, SimpleForm, TextInput, NumberInput, SelectInput, BooleanInput, required } from "react-admin";
 const typeChoices=[{id:"template",name:"Template"},{id:"digital",name:"Digital"}];
-const statusChoices=[{id:"active",name:"Active"},{id:"inquiry",name:"Inquiry only"},{id:"archived",name:"Archived"}];
+const statusChoices=[{id:"draft",name:"Draft — hidden from the public site"},{id:"active",name:"Active"},{id:"inquiry",name:"Inquiry only"},{id:"archived",name:"Archived"}];
 function ProductFields(){return <>
  <TextInput source="id" helperText="Stable product ID, e.g. tpl-new" disabled />
  <SelectInput source="type" choices={typeChoices} validate={required()}/>
