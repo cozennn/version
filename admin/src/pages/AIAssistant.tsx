@@ -52,7 +52,10 @@ export function AIAssistantPage() {
     try {
       const result = await adminRequest("/admin/ai/chat", {
         method: "POST",
-        body: JSON.stringify({ message })
+        body: JSON.stringify({
+          message,
+          history: messages.slice(-8)
+        })
       });
       setMessages(current => [...current, { role: "assistant", content: result.data?.answer || "No answer was returned." }]);
     } catch (reason) {
