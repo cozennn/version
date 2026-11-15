@@ -57,7 +57,7 @@ function paypalPaymentUrl(value: unknown): string | null {
   if (!raw) return "";
   try {
     const url = new URL(raw);
-    if (url.protocol !== "https:" || !/(^|\\.)paypal\\.com$/i.test(url.hostname) || !url.pathname.startsWith("/ncp/payment/")) return null;
+    if (url.protocol !== "https:" || !/(^|\.)paypal\.com$/i.test(url.hostname) || !url.pathname.startsWith("/ncp/payment/")) return null;
     return url.toString();
   } catch {
     return null;
