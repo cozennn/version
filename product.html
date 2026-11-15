@@ -203,6 +203,11 @@ window.NORDA_RENDER_PRODUCT = function () {
   const priceSuffix = product.subscription
     ? '<small>per ' + esc(product.interval || 'month') + '</small>'
     : '';
+  let paypalUrl = '';
+  try {
+    const paymentUrl = new URL(product.paypal_url || '');
+    if (paymentUrl.protocol === 'https:' && /(^|\.)paypal\.com$/i.test(paymentUrl.hostname) && paymentUrl.pathname.startsWith('/ncp/payment/')) paypalUrl = paymentUrl.href;
+  } catch {}
 
   root.innerHTML = `
     <nav style="padding:24px 0;font-size:.875rem;color:var(--muted)" aria-label="Breadcrumb">
@@ -232,7 +237,9 @@ window.NORDA_RENDER_PRODUCT = function () {
         <div class="prod-page__actions">
           ${product.status === 'inquiry'
             ? `<a class="btn btn--primary btn--lg" href="contact.html?product=${encodeURIComponent(product.id)}">Request access</a>`
-            : `<button class="btn btn--primary btn--lg" data-add-to-cart="${esc(product.id)}">Add to bag — ${formatPrice(product.price)}</button>`}
+            : paypalUrl
+              ? `<a class="btn btn--primary btn--lg" href="${esc(paypalUrl)}" target="_blank" rel="noopener noreferrer">Pay with PayPal</a>`
+              : `<button class="btn btn--primary btn--lg" data-add-to-cart="${esc(product.id)}">Add to bag — ${formatPrice(product.price)}</button>`}
           <a class="btn btn--ghost btn--lg" href="contact.html">Ask a question</a>
         </div>
         <p style="font-size:.8125rem;color:var(--muted)">Delivery is arranged after your order is confirmed. No account needed.</p>
