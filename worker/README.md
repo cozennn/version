@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0001` creates the `telegram_updates` idempotency table, `0002` creates `visitor_auth_sessions` for hashed server-issued bearer tokens, `0003` adds Telegram delivery-failure monitoring and retention indexes, `0004` adds a default-`ai` `support_mode`, and `0005` adds recoverable handoff state, durable contact submissions, and a Telegram notification outbox. Existing ticket and message rows are preserved. Apply all pending migrations successfully before deploying the updated Worker.
+The migrations are additive: `0001` creates Telegram update idempotency, `0002` creates hashed visitor sessions, `0003` adds delivery monitoring, `0004` and `0005` add support-mode and reliable notification state, `0006` adds notification delivery claims, `0007` adds message idempotency and NorDa admin tables, `0008` adds customers and orders, and `0009` adds an optional PayPal Payment Link field to products. Existing ticket and message rows are preserved. Apply all pending migrations successfully before deploying Worker code that depends on them.
 
 Then configure secrets and the private NorDa AI bridge connection:
 
