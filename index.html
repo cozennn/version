@@ -315,7 +315,7 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   
-  document.addEventListener('DOMContentLoaded', () => {
+  function renderFeaturedProducts() {
     const P = window.NORDA_PRODUCTS || [];
     const fmt = window.NORDA_FMT;
     const esc = (v) => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -342,7 +342,9 @@
     const dEl = document.getElementById('featured-digital');
     if (tEl) tEl.innerHTML = P.filter(p=>p.type==='template'&&p.featured).map(card).join('');
     if (dEl) dEl.innerHTML = P.filter(p=>p.type==='digital'&&p.featured).map(card).join('');
-  });
+  }
+  window.NORDA_RENDER_PRODUCTS = renderFeaturedProducts;
+  document.addEventListener('DOMContentLoaded', renderFeaturedProducts);
 </script>
 </body>
 </html>
