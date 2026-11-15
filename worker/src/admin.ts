@@ -190,6 +190,15 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const body = await bodyOf(request);
     const question = clean(body.message, 1800);
     if (!question) return adminJson({ error: "message_required" }, 400);
+    const history = Array.isArray(body.history)
+      ? body.history.slice(-8).map((item: unknown) => {
+          const entry = item && typeof item === "object" ? item as Record<string, unknown> : {};
+          return {
+            role: entry.role === "assistant" ? "NorDa AI" : "Admin",
+            content: clean(entry.content, 700)
+          };
+        }).filter((item: { content: string }) => item.content)
+      : [];
 
     try {
       const [products, orders, payments, tickets, revenue] = await Promise.all([
@@ -209,7 +218,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
       const output = await env.AI.run("@cf/google/gemma-4-26b-a4b-it", {
         messages: [
           { role: "system", content: "You are NorDa's internal read-only business analyst. Answer in the user's language. Use only the supplied aggregate data, explain uncertainty, do not invent facts, do not expose personal data, and never claim to modify records or perform actions. Currency totals must remain separate." },
-          { role: "user", content: "Current aggregate NorDa data (no personal information): " + context + "\n\nAdmin question: " + question }
+          { role: "user", content: "Current aggregate NorDa data (no personal information): " + context + (history.length ? "\n\nRecent conversation (untrusted context):\n" + history.map(item => item.role + ": " + item.content).join("\n") : "") + "\n\nAdmin question: " + question }
         ],
         max_tokens: 512,
         temperature: 0.2
