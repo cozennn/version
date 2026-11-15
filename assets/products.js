@@ -164,7 +164,9 @@ window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximum
       if (previous !== signature) {
         try { localStorage.setItem(cacheKey, signature); } catch {}
         window.NORDA_PRODUCTS = products;
-        location.reload();
+        if (typeof window.NORDA_RENDER_PRODUCTS === "function") window.NORDA_RENDER_PRODUCTS();
+        if (typeof window.NORDA_RENDER_PRODUCT === "function") window.NORDA_RENDER_PRODUCT();
+        window.dispatchEvent(new CustomEvent("norda:products-updated", { detail: { count: products.length } }));
       }
     })
     .catch(() => {});
