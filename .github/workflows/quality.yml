@@ -85,7 +85,7 @@ jobs:
           # Upgrade installation: preserve existing visitor and support history.
           db = sqlite3.connect(':memory:')
           db.executescript('''
-            CREATE TABLE tickets (id INTEGER PRIMARY KEY, public_id TEXT, visitor_id TEXT);
+            CREATE TABLE tickets (id INTEGER PRIMARY KEY, public_id TEXT, visitor_id TEXT, status TEXT NOT NULL DEFAULT 'open');
             CREATE TABLE messages (id INTEGER PRIMARY KEY, ticket_id INTEGER, sender_type TEXT, message_text TEXT, created_at TEXT);
             INSERT INTO tickets (id, public_id, visitor_id) VALUES (1, 'legacy-ticket', 'legacy-user');
             INSERT INTO messages (id, ticket_id, message_text) VALUES (1, 1, 'preserve this');
