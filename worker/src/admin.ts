@@ -12,7 +12,7 @@ function aiResponseText(output: unknown, max = 4500): string {
   const content = message.content;
   if (typeof content === "string") return clean(content, max);
   if (Array.isArray(content)) {
-    return clean(content.map(part => part && typeof part === "object" && typeof (part as Record<string, unknown>).text === "string" ? (part as Record<string, unknown>).text as string : "").filter(Boolean).join("\\n"), max);
+    return clean(content.map(part => part && typeof part === "object" && typeof (part as Record<string, unknown>).text === "string" ? (part as Record<string, unknown>).text as string : "").filter(Boolean).join("\n"), max);
   }
   return clean(result.response ?? result.output_text, max);
 }
