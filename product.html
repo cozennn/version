@@ -163,7 +163,7 @@
 <script src="assets/products.js"></script>
 <script src="assets/main.js?v=20261108-1"></script>
 <script>
-(function () {
+window.NORDA_RENDER_PRODUCT = function () {
   const root = document.getElementById('productRoot');
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -248,7 +248,8 @@
 
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
-})();
+};
+window.NORDA_RENDER_PRODUCT();
 </script>
 <script src="assets/script.js?v=20261108-4"></script>
 </body>
