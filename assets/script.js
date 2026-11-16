@@ -204,7 +204,7 @@ function renderMessages(msgs,force){
   shown=msgs.length;if(typing)clog.appendChild(typingEl());scrollLog();
 }
 function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=setTimeout(function(){typing=false;var tp=clog.querySelector('.typing');if(tp)tp.remove()},12000)}
-function updateSupportMode(){if(!currentTicket)return;var human=currentTicket.supportMode==='human',button=$1('#btnHumanHandoff');if(button)button.hidden=human||!currentTicket.handoffAvailable;var prompt=$1('#handoffNamePrompt');if(prompt&&human)prompt.hidden=true}
+function updateSupportMode(){if(!currentTicket)return;var human=currentTicket.supportMode==='human',available=!human&&currentTicket.handoffAvailable===true,button=$1('#btnHumanHandoff');if(button){button.hidden=!available;button.setAttribute('aria-hidden',available?'false':'true');button.setAttribute('aria-label',available?'طلب التحدث مع موظف':'طلب التحدث مع موظف')}var prompt=$1('#handoffNamePrompt');if(prompt&&human)prompt.hidden=true}
 function renderChat(){if(!hasOpen())return;updateSupportMode();renderMessages(currentTicket.messages||[],true)}
 async function createTicket(name,forceNew){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
