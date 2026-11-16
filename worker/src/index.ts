@@ -569,7 +569,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       if (!saved) return json({ ok: false, error: "visitor_session_already_active" }, 409);
     }
 
-    const existing = await env.DB.prepare(
+    const existing = body.forceNew === true ? null : await env.DB.prepare(
       "SELECT public_id, public_ref, support_mode FROM tickets WHERE visitor_id = ? AND status = 'open' ORDER BY id DESC LIMIT 1"
     ).bind(visitorId).first<{ public_id: string; public_ref: string; support_mode: string }>();
 
@@ -691,12 +691,17 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     if (ticket.status !== "open") return json({ ok: false, error: "ticket_closed" }, 409);
     if (ticket.support_mode === "human") return json({ ok: true, supportMode: "human", alreadyHuman: true, notificationSent: true });
 
+    const parsed = await readJsonBody(request, 2 * 1024);
+    if (parsed.error) return bodyErrorResponse(parsed.error);
+    const requestedName = text(parsed.body.userName, 100);
+    if (!requestedName) return json({ ok: false, error: "name_required" }, 400);
+    await env.DB.prepare("UPDATE tickets SET user_name = ? WHERE id = ?").bind(requestedName, ticket.id).run();
     const dedupeKey = "handoff:" + ticketId;
     const now = new Date().toISOString();
     const outboxId = crypto.randomUUID();
     const payload = "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + String(ticket.public_ref ?? "------") +
       "\nTicket Key: " + ticketId +
-      "\nVisitor: " + String(ticket.user_name ?? "Visitor") +
+      "\nVisitor: " + requestedName +
       "\n\nThe visitor requested a human support agent. Please reply directly to this message to answer in the website chat.";
     await env.DB.batch([
       env.DB.prepare("UPDATE tickets SET handoff_status = 'pending' WHERE id = ? AND status = 'open' AND support_mode = 'ai' AND handoff_status = 'none'").bind(ticket.id),
