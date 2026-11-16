@@ -24,6 +24,7 @@
 .digital-checkout__hint{font-size:.82rem;color:var(--muted);margin:0}
 .digital-checkout__result{font-size:.88rem;line-height:1.6;overflow-wrap:anywhere}
 .digital-checkout__result a{font-weight:700}
+.prod__placeholder{display:grid;place-items:center;width:100%;height:100%;min-height:180px;background:var(--surface,var(--card));color:var(--muted);font-size:3rem;font-weight:700}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script>(function(){var d=document.documentElement,t='light',l='en';try{var raw=localStorage.getItem('norda:theme');t=raw?JSON.parse(raw):'light';if(t!=='light'&&t!=='dark'&&t!=='system')t='light';}catch(e){}try{l=localStorage.getItem('norda_lang')||'en';}catch(e){}if(t==='system')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('js');})();</script>
@@ -226,20 +227,19 @@
     }
     grid.innerHTML = list.map(p => `
       <article class="prod">
-        <a href="product.html?id=${encodeURIComponent(p.id)}" class="prod__img">
-          <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+        <div class="prod__img" role="img" aria-label="${esc(p.name)}">
+          ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">` : `<span class="prod__placeholder">${esc(p.icon || '✦')}</span>`}
           <span class="prod__badge">${esc(catNames[p.category]||p.category)}</span>
-          ${p.subscription ? '<span class="prod__badge prod__badge--sub">Subscription · ' + (p.interval === 'year' ? 'Yearly' : 'Monthly') + '</span>' : ''}
-        </a>
+        </div>
         <div class="prod__body">
           <div class="prod__head">
-            <h3 class="prod__name"><a href="product.html?id=${p.id}">${esc(p.name)}</a></h3>
-            <span class="prod__price">${window.NORDA_FMT(p.price)}${p.subscription ? '<small style="color:var(--muted);font-size:.75rem;font-weight:600">/' + (p.interval === 'year' ? 'yr' : 'mo') + '</small>' : ''}</span>
+            <h3 class="prod__name">${esc(p.name)}</h3>
+            <span class="prod__price">${window.NORDA_FMT(p.price)}</span>
           </div>
-          <p class="prod__tagline">${esc(p.tagline)}</p>
-          <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
+          <p class="prod__tagline">${esc(p.tagline || p.description || '')}</p>
+          <div class="prod__tags">${(Array.isArray(p.tags) ? p.tags : []).map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
           <div class="prod__actions">
-            <a class="btn btn--ghost btn--sm" href="product.html?id=${p.id}">Details</a>
+            ${p.slug ? '' : `<a class="btn btn--ghost btn--sm" href="product.html?id=${encodeURIComponent(p.id)}">Details</a>`}
             ${p.available === false ? `<button class="btn btn--ghost btn--sm" disabled>Out of stock</button>` : p.ggsoma_slug || p.slug ? `<button class="btn btn--primary btn--sm" data-digital-order="${esc(p.id)}">Order now</button>` : `<a class="btn btn--ghost btn--sm" href="contact.html?product=${encodeURIComponent(p.id)}">Ask about this item</a>`}
           </div>
         </div>
@@ -267,6 +267,10 @@
   const checkoutForm = document.getElementById('digitalCheckoutForm');
   const checkoutResult = document.getElementById('digitalCheckoutResult');
   let selectedDigitalProduct = null;
+  const paymentSelect = checkoutForm.elements.paymentMethod;
+  const paypalOption = paymentSelect.querySelector('option[value="paypal"]');
+  if (paypalOption) { paypalOption.disabled = true; paypalOption.hidden = true; }
+  paymentSelect.value = 'manual';
   document.getElementById('digitalCheckoutClose').addEventListener('click', () => checkout.close());
   grid.addEventListener('click', (event) => {
     const button = event.target.closest('[data-digital-order]');
