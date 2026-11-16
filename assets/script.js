@@ -203,7 +203,7 @@ async function createTicket(name,forceNew){
     var body={userId:userId,userName:name,forceNew:!!forceNew};
     var r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(body)});
     var j=await r.json();
-    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userId:userId,userName:name})});j=await r.json()}
+    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userId:userId,userName:name,forceNew:!!forceNew})});j=await r.json()}
     if(j.ok&&j.ticket){
       if(j.sessionToken)saveSession(j.sessionToken);
       currentTicket=j.ticket;currentTicket.supportMode=currentTicket.supportMode||'ai';persist();lastCount=(currentTicket.messages||[]).length;updateTabs();renderChat();return j;
@@ -321,8 +321,6 @@ if(fileInput)fileInput.addEventListener('change',function(){
 var fr=$1('#fileRemove');if(fr)fr.addEventListener('click',function(){pendingFile=null;clearFile()});
 
 function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}}
-var topicButtons=d.querySelectorAll('#nordaChat [data-topic]');
-topicButtons.forEach(function(b){b.addEventListener('click',function(){var topic=b.getAttribute('data-topic')||'';startNew(topic)})});
 var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',function(){startNew('',false)});var newConversation=$1('#chatNewConversation');if(newConversation)newConversation.addEventListener('click',function(){retryPayload=null;startNew('',true)});
 var chatPreviousOverflow='',chatSavedScrollY=0;
 function chatOpen(o){
