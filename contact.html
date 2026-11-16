@@ -143,6 +143,12 @@
       <div class="mark" aria-hidden="true">N</div>
       <div class="nd-heading t"><strong id="chatTitle">NORDA Support</strong><span class="nd-status st"><i></i><small>نرد عادة في غضون دقائق</small></span></div>
       <div class="nd-header-actions">
+        <button id="chatBack" class="nd-icon-btn nd-header-back" type="button" aria-label="رجوع" title="رجوع" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button id="soundToggle" class="nd-icon-btn nd-sound-toggle" type="button" aria-pressed="true" aria-label="إيقاف الصوت" title="إيقاف الصوت">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        </button>
         <button id="chatMenuToggle" class="nd-icon-btn ib" type="button" aria-label="خيارات" aria-expanded="false" aria-controls="chatActionsMenu">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
         </button>
@@ -153,8 +159,6 @@
           <button id="tabNew" class="nd-menu-item mi tk-tab" type="button" data-tab="new"><span class="nd-menu-icon ic">＋</span><span>محادثة جديدة</span></button>
           <button id="tabChat" class="nd-menu-item mi tk-tab" type="button" data-tab="chat" hidden><span class="nd-menu-icon ic">‹</span><span>العودة للمحادثة</span></button>
           <button id="tabClosed" class="nd-menu-item mi tk-tab" type="button" data-tab="closed"><span class="nd-menu-icon ic">▤</span><span>المحادثات المغلقة</span><span id="closedCount" class="nd-count cnt tab-count" data-n="0"></span></button>
-          <div class="nd-menu-divider hr"></div>
-          <button id="soundToggle" class="nd-menu-item mi" type="button" aria-pressed="true" aria-label="صوت الإشعارات"><span class="nd-menu-icon ic">♪</span><span>صوت الإشعارات</span><span class="nd-menu-state sw on"></span></button>
           <div class="nd-menu-divider hr"></div>
           <div class="nd-menu-label">شكل طلب الموظف</div>
           <button id="handoffLayoutBar" class="nd-menu-item mi nd-layout-option on" type="button" aria-pressed="true"><span class="nd-menu-icon ic">▤</span><span>زر في شريط المحادثة</span><span class="nd-layout-check">✓</span></button>
