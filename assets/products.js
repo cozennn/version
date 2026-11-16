@@ -143,14 +143,14 @@ window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximum
   const cacheKey = "norda:managed-products";
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-    if (Array.isArray(cached) && cached.length) window.NORDA_PRODUCTS = cached;
+    if (Array.isArray(cached)) window.NORDA_PRODUCTS = cached;
   } catch {}
   const api = (window.NORDA_CONFIG && window.NORDA_CONFIG.TELEGRAM_API) ||
     "https://norda-api.houda2004houdaa.workers.dev";
   fetch(api.replace(/\\/+$/, "") + "/products/public", { headers: { Accept: "application/json" } })
     .then(response => response.ok ? response.json() : null)
     .then(result => {
-      if (!result || !Array.isArray(result.products) || !result.products.length) return;
+      if (!result || !Array.isArray(result.products)) return;
       const products = result.products.map(item => ({
         ...item,
         tags: Array.isArray(item.tags) ? item.tags : [],
