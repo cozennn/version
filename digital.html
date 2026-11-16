@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261108-1">
+<link rel="stylesheet" href="assets/style.css?v=20261117-1">
 <link rel="stylesheet" href="assets/chat.css?v=20261108-1">
 <style>
 .digital-checkout{width:min(460px,calc(100% - 28px));max-width:none;padding:0;border:1px solid var(--line);border-radius:18px;background:var(--surface,var(--card));color:var(--text);box-shadow:0 24px 80px #0004}
@@ -65,9 +65,9 @@
 
 <main class="page">
   <section class="store-head">
-    <span class="eyebrow">Store · Digital goods</span>
-    <h1 class="h1">Digital goods</h1>
-    <p class="lead">Icon sets, presets and subscriptions. Digital items are delivered after order confirmation. Any subscription terms are confirmed before ordering.</p>
+    <span class="eyebrow">NORDA / Digital</span>
+    <h1 class="h1">Digital products</h1>
+    <p class="lead">Browse software access, creative resources and digital tools. Product availability and delivery are confirmed before an order is processed.</p>
   </section>
 
   <div class="filters digital-filter-bar" id="filters" role="toolbar" aria-label="Filter digital goods"></div>
@@ -230,13 +230,13 @@
   function render() {
     const list = current === 'all' ? all : all.filter(p => p.category === current);
     if (!list.length) {
-      grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center;padding:48px 0">Nothing here yet.</p>`;
+      grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center;padding:48px 0">No products are available in this category right now.</p>`;
       return;
     }
     grid.innerHTML = list.map(p => `
       <article class="prod">
         <div class="prod__img" role="img" aria-label="${esc(p.name)}">
-          ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" decoding="async">` : `<span class="prod__placeholder">${esc(p.icon || '✦')}</span>`}
+          ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)} product image" loading="lazy" decoding="async">` : `<span class="prod__placeholder">${esc(p.icon || '✦')}</span>`}
           <span class="prod__badge">${esc(catNames[p.category]||p.category)}</span>
         </div>
         <div class="prod__body">
