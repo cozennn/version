@@ -32,6 +32,18 @@ function isTicketId(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+async function createPublicTicketRef(env: Env): Promise<string> {
+  for (let attempt = 0; attempt < 24; attempt += 1) {
+    const bytes = new Uint32Array(1);
+    crypto.getRandomValues(bytes);
+    const reference = String(bytes[0] % 1_000_000).padStart(6, "0");
+    const exists = await env.DB.prepare("SELECT 1 AS found FROM tickets WHERE public_ref = ? LIMIT 1")
+      .bind(reference).first<{ found: number }>();
+    if (!exists) return reference;
+  }
+  throw new Error("ticket_reference_space_temporarily_unavailable");
+}
+
 function constantTimeEqual(left: string, right: string): boolean {
   if (left.length !== right.length) return false;
   let difference = 0;
@@ -365,7 +377,8 @@ async function handleTelegramWebhook(request: Request, env: Env): Promise<Respon
     return json({ ok: true, ignored: true, reason: "reply_must_target_support_bot_notification" });
   }
   const repliedText = text(replyTo.text, 5000);
-  const ticketMatch = repliedText.match(/Ticket ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})/i);
+  const ticketMatch = repliedText.match(/Ticket Key:\s*([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})/i)
+    ?? repliedText.match(/Ticket ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})/i);
   const replyText = text(message.text, 4000);
   if (!ticketMatch || !replyText) {
     console.warn("[telegram] ignored: replied message has no ticket ID or reply text");
@@ -450,7 +463,7 @@ async function saveVisitorSession(env: Env, visitorId: string, token: string, re
 async function ticketOwner(env: Env, ticketId: string, visitorId: string) {
   if (!visitorId) return null;
   return env.DB.prepare(
-    "SELECT id, public_id, visitor_id, user_name, status, support_mode, handoff_status, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
+    "SELECT id, public_id, public_ref, visitor_id, user_name, status, support_mode, handoff_status, created_at, closed_at FROM tickets WHERE public_id = ? AND visitor_id = ? LIMIT 1"
   ).bind(ticketId, visitorId).first<Record<string, unknown>>();
 }
 
@@ -557,14 +570,15 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     }
 
     const existing = await env.DB.prepare(
-      "SELECT public_id, support_mode FROM tickets WHERE visitor_id = ? AND status = 'open' ORDER BY id DESC LIMIT 1"
-    ).bind(visitorId).first<{ public_id: string; support_mode: string }>();
+      "SELECT public_id, public_ref, support_mode FROM tickets WHERE visitor_id = ? AND status = 'open' ORDER BY id DESC LIMIT 1"
+    ).bind(visitorId).first<{ public_id: string; public_ref: string; support_mode: string }>();
 
     const ticketId = existing?.public_id ?? crypto.randomUUID();
+    const publicRef = existing?.public_ref ?? await createPublicTicketRef(env);
     if (!existing) {
       await env.DB.prepare(
-        "INSERT INTO tickets (public_id, visitor_id, user_name, status, created_at, support_mode) VALUES (?, ?, ?, 'open', ?, 'ai')"
-      ).bind(ticketId, visitorId, userName, new Date().toISOString()).run();
+        "INSERT INTO tickets (public_id, public_ref, visitor_id, user_name, status, created_at, support_mode) VALUES (?, ?, ?, ?, 'open', ?, 'ai')"
+      ).bind(ticketId, publicRef, visitorId, userName, new Date().toISOString()).run();
     }
 
     const rows = await env.DB.prepare(
@@ -575,7 +589,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       ok: true,
       existing: Boolean(existing),
       ...(sessionToken ? { sessionToken, expiresInDays: SESSION_TTL_DAYS } : {}),
-      ticket: { ticketId, supportMode: existing?.support_mode === "human" ? "human" : "ai", messages: (rows.results ?? []).map(messageRow) }
+      ticket: { ticketId, publicId: publicRef, supportMode: existing?.support_mode === "human" ? "human" : "ai", messages: (rows.results ?? []).map(messageRow) }
     });
   }
 
@@ -618,7 +632,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     }
     if (supportMode === "human") {
       const notificationSent = await enqueueAndDeliver(env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
-        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
+        `NORDA Support Ticket\nTicket ID: ${String(ticket.public_ref ?? "------")}\nTicket Key: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
       return json({ ok: true, supportMode: "human", notificationSent, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
 
@@ -627,7 +641,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     ).bind(ticket.id).first<{ support_mode: string; handoff_status: string }>();
     if (latestBeforeAI?.support_mode === "human") {
       const notificationSent = await enqueueAndDeliver(env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
-        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
+        `NORDA Support Ticket\nTicket ID: ${String(ticket.public_ref ?? "------")}\nTicket Key: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`);
       return json({ ok: true, supportMode: "human", notificationSent, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
     if (latestBeforeAI?.handoff_status === "pending") {
@@ -637,7 +651,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       const becameHuman = refreshed?.support_mode === "human";
       const notificationSent = becameHuman ? await enqueueAndDeliver(
         env, "ticket_message", ticketId, "ticket-message:" + crypto.randomUUID(),
-        `NORDA Support Ticket\nTicket ID: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`
+        `NORDA Support Ticket\nTicket ID: ${String(ticket.public_ref ?? "------")}\nTicket Key: ${ticketId}\nVisitor: ${String(ticket.user_name ?? "Visitor")}\n\n${message}\n\n↩ Reply directly to this message to answer the visitor.`
       ) : false;
       return json({ ok: true, supportMode: becameHuman ? "human" : "ai", handoffPending: !becameHuman, notificationSent, aiUnavailable: false, messages: await readTicketMessages(env, Number(ticket.id)) });
     }
@@ -680,7 +694,8 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const dedupeKey = "handoff:" + ticketId;
     const now = new Date().toISOString();
     const outboxId = crypto.randomUUID();
-    const payload = "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + ticketId +
+    const payload = "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + String(ticket.public_ref ?? "------") +
+      "\nTicket Key: " + ticketId +
       "\nVisitor: " + String(ticket.user_name ?? "Visitor") +
       "\n\nThe visitor requested a human support agent. Please reply directly to this message to answer in the website chat.";
     await env.DB.batch([
@@ -706,7 +721,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const rows = await env.DB.prepare(
       "SELECT sender_type, message_text, created_at FROM messages WHERE ticket_id = ? ORDER BY id ASC"
     ).bind(ticket.id).all<Record<string, unknown>>();
-    return json({ ok: true, ticketId, status: ticket.status, supportMode: ticket.support_mode === "human" ? "human" : "ai", messages: (rows.results ?? []).map(messageRow) });
+    return json({ ok: true, ticketId, publicId: String(ticket.public_ref ?? ""), status: ticket.status, supportMode: ticket.support_mode === "human" ? "human" : "ai", messages: (rows.results ?? []).map(messageRow) });
   }
 
   const closeMatch = path.match(/^\/ticket\/([^/]+)\/close$/);
@@ -727,7 +742,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const session = await getVisitorSession(request, env);
     if (!session) return json({ ok: false, error: "unauthorized" }, 401);
     const rows = await env.DB.prepare(
-      "SELECT public_id AS ticketId, user_name AS userName, status, created_at AS createdAt, closed_at AS closedAt FROM tickets WHERE visitor_id = ? AND status = 'closed' ORDER BY id DESC LIMIT 50"
+      "SELECT public_id AS ticketId, public_ref AS publicId, user_name AS userName, status, created_at AS createdAt, closed_at AS closedAt FROM tickets WHERE visitor_id = ? AND status = 'closed' ORDER BY id DESC LIMIT 50"
     ).bind(session.visitor_id).all<Record<string, unknown>>();
     return json({ ok: true, tickets: rows.results ?? [] });
   }
