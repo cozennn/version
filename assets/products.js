@@ -137,13 +137,26 @@ window.NORDA_CATEGORIES = {
 // Format price with currency
 window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
- // Use the last managed catalog synchronously so page renderers never race
- // the network request. Static data above remains the first-visit fallback.
+ // Merge managed products into the built-in catalog. Never let an empty or
+// partial database response erase the built-in templates or live supplier items.
+function mergeManagedCatalog(items) {
+  const merged = new Map(
+    (Array.isArray(window.NORDA_PRODUCTS) ? window.NORDA_PRODUCTS : [])
+      .filter(item => item && item.id != null)
+      .map(item => [String(item.id), item])
+  );
+  for (const item of (Array.isArray(items) ? items : [])) {
+    if (item && item.id != null) merged.set(String(item.id), item);
+  }
+  window.NORDA_PRODUCTS = [...merged.values()];
+}
+
+// Use the last managed catalog synchronously while the network request loads.
 (function loadManagedCatalog() {
   const cacheKey = "norda:managed-products";
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-    if (Array.isArray(cached)) window.NORDA_PRODUCTS = cached;
+    if (Array.isArray(cached)) mergeManagedCatalog(cached);
   } catch {}
   const api = (window.NORDA_CONFIG && window.NORDA_CONFIG.TELEGRAM_API) ||
     "https://norda-api.houda2004houdaa.workers.dev";
@@ -163,7 +176,7 @@ window.NORDA_FMT = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximum
       try { previous = localStorage.getItem(cacheKey) || ""; } catch {}
       if (previous !== signature) {
         try { localStorage.setItem(cacheKey, signature); } catch {}
-        window.NORDA_PRODUCTS = products;
+        mergeManagedCatalog(products);
         if (typeof window.NORDA_RENDER_PRODUCTS === "function") window.NORDA_RENDER_PRODUCTS();
         if (typeof window.NORDA_RENDER_PRODUCT === "function") window.NORDA_RENDER_PRODUCT();
         window.dispatchEvent(new CustomEvent("norda:products-updated", { detail: { count: products.length } }));
