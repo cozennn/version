@@ -218,6 +218,10 @@ function setView(v){
   var k=v==='detail'?'closed':v;Object.keys(tabs).forEach(function(x){var active=x===k;tabs[x].classList.toggle('on',active);tabs[x].setAttribute('aria-selected',String(active))});
   if(v==='chat'||v==='closed'||v==='detail'){unread=0;setBadge()}if(v==='chat')scrollLog();
   syncMenu();
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&window.gsap){
+    var activeView=d.querySelector('.tk-v.on');
+    if(activeView){gsap.killTweensOf(activeView);gsap.fromTo(activeView,{autoAlpha:0,y:9},{autoAlpha:1,y:0,duration:.28,ease:'power2.out',clearProps:'transform'})}
+  }
 }
 function scrollLog(){if(clog)setTimeout(function(){clog.scrollTop=clog.scrollHeight},40)}
 function buildBub(m){
@@ -239,7 +243,12 @@ function typingEl(){var e=d.createElement('div');e.className='typing';e.setAttri
 function renderMessages(msgs,force){
   if(!clog)return;msgs=msgs||[];var tp=clog.querySelector('.typing');if(tp)tp.remove();
   if(force||!shown||msgs.length<shown){clog.innerHTML='';shown=0;if(!msgs.length)clog.appendChild(buildBub({from:'bot',text:t('chat_hello'),time:Date.now()}))}
-  for(var i=shown;i<msgs.length;i++)clog.appendChild(buildBub(msgs[i]));
+  for(var i=shown;i<msgs.length;i++){
+    var bubble=buildBub(msgs[i]);clog.appendChild(bubble);
+    if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      gsap.fromTo(bubble,{autoAlpha:0,y:12,scale:.975},{autoAlpha:1,y:0,scale:1,duration:.32,ease:'power2.out',clearProps:'transform'});
+    }
+  }
   shown=msgs.length;if(typing)clog.appendChild(typingEl());scrollLog();
 }
 function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=setTimeout(function(){typing=false;var tp=clog.querySelector('.typing');if(tp)tp.remove()},12000)}
@@ -471,11 +480,14 @@ var chn=$1('#ch-name');if(chn)chn.addEventListener('keydown',function(e){if(e.ke
 var chatPreviousOverflow='',chatSavedScrollY=0;
 function chatOpen(o){
   if(!cp||!fab)return;
-  cp.classList.toggle('open',o);
-  cp.setAttribute('aria-hidden',o?'false':'true');
-  fab.setAttribute('aria-expanded',o?'true':'false');
-  fab.classList.toggle('hidden',o);
+  var gs=window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches?window.gsap:null;
+  if(gs)gs.killTweensOf(cp);
   if(o){
+    cp.classList.add('open');
+    cp.setAttribute('aria-hidden','false');
+    fab.setAttribute('aria-expanded','true');
+    fab.classList.add('hidden');
+    if(gs)gs.fromTo(cp,{autoAlpha:0,y:18,scale:.965},{autoAlpha:1,y:0,scale:1,duration:.38,ease:'power3.out',clearProps:'transform,opacity,visibility'});
     if(window.innerWidth<=520){
       chatSavedScrollY=window.pageYOffset||d.documentElement.scrollTop||0;
       if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',true);
@@ -485,10 +497,26 @@ function chatOpen(o){
     if(hasOpen()){loadMessages();if(view==='new')setView('chat')}
     setTimeout(function(){if(view==='chat'&&ta)ta.focus();else if(view==='new'&&nm)nm.focus()},150);
   }else{
+    cp.setAttribute('aria-hidden','true');
+    fab.setAttribute('aria-expanded','false');
+    fab.classList.remove('hidden');
+    var finish=function(){cp.classList.remove('open');if(gs)gs.set(cp,{clearProps:'all'})};
+    if(gs&&cp.classList.contains('open')){
+      gs.to(cp,{autoAlpha:0,y:12,scale:.975,duration:.22,ease:'power2.in',onComplete:finish});
+    }else{finish()}
     if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',false);
     else d.body.style.overflow=chatPreviousOverflow;
     if(window.innerWidth<=520)window.requestAnimationFrame(function(){window.scrollTo(0,chatSavedScrollY)});
   }
+}
+if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  cp.addEventListener('pointerdown',function(e){
+    var b=e.target.closest('button');if(!b||b.disabled)return;
+    gsap.to(b,{scale:.965,duration:.09,ease:'power1.out',overwrite:true});
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(function(type){
+    cp.addEventListener(type,function(e){var b=e.target.closest('button');if(b)gsap.to(b,{scale:1,duration:.18,ease:'power2.out',overwrite:true})},true);
+  });
 }
 if(fab)fab.addEventListener('click',function(){chatOpen(!cp.classList.contains('open'))});
 var cx=$1('#chatX');if(cx)cx.addEventListener('click',function(){chatOpen(false);fab.focus()});
