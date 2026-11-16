@@ -81,6 +81,7 @@ Object.assign(DICT,{"آخر تحديث: 22 أكتوبر 2026":["Last updated: Oc
 Object.assign(D.ar,{handoff_short:"تم طلب موظف دعم"});
 Object.assign(D.en,{handoff_short:"Human agent requested"});
 Object.assign(D.fr,{handoff_short:"Agent humain demandé"});
+Object.assign(D.ar,{handoff_name_required:'يرجى إدخال اسمك'});Object.assign(D.en,{handoff_name_required:'Please enter your name'});Object.assign(D.fr,{handoff_name_required:'Veuillez saisir votre nom'});
 var LANGS=['ar','en','fr'],LI={en:0,fr:1};
 function detect(){var u=new URLSearchParams(location.search).get('lang');if(u&&LANGS.indexOf(u)>-1){sset('norda_lang',u);return u;}var s=sget('norda_lang');if(s&&LANGS.indexOf(s)>-1)return s;var n=String((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();if(n.indexOf('ar')===0)return 'ar';if(n.indexOf('fr')===0)return 'fr';if(n.indexOf('en')===0)return 'en';return 'ar'}
 var lang=detect();
@@ -135,62 +136,8 @@ async function ensureSession(){
 }
 function apiHeaders(json){var h={};if(json)h['Content-Type']='application/json';if(sessionToken)h.Authorization='Bearer '+sessionToken;return h}
 function apiTicketUrl(path){return API+path+(sessionMode==='legacy'?'?userId='+encodeURIComponent(userId):'')}
-var currentTicket=null,pendingFile=null,retryPayload=null,lastCount=0,shown=0,typing=false,typingTimer=null,sending=false,closedCache=[],detailTicket=null,unread=0,view='new',remoteReady=false;
+var currentTicket=null,pendingFile=null,retryPayload=null,lastCount=0,shown=0,typing=false,typingTimer=null,sending=false,unread=0,view='new',remoteReady=false;
             
-var CLOSED_ARCHIVE_KEY='norda_closed_archive';
-
-function archiveClosed(ticket){
-  if(!ticket||!ticket.ticketId)return;
-  var archived=[];
-  try{
-    archived=JSON.parse(sget(CLOSED_ARCHIVE_KEY)||'[]');
-    if(!Array.isArray(archived))archived=[];
-  }catch(e){archived=[]}
-
-  var saved=JSON.parse(JSON.stringify(ticket));
-  saved.status='closed';
-  saved.closedAt=saved.closedAt||Date.now();
-
-  // حفظ معلومات الملفات دون بياناتها الكبيرة
-  (saved.messages||[]).forEach(function(m){
-    if(m.file){
-      m.file={name:m.file.name||'',type:m.file.type||''};
-    }
-  });
-
-  var id=String(saved.ticketId);
-  var index=archived.findIndex(function(t){
-    return String(t.ticketId)===id;
-  });
-
-  if(index>=0){
-    var existing=archived[index]||{};
-    var combined=[],seen=Object.create(null);
-    [existing.messages,saved.messages].forEach(function(group){
-      (Array.isArray(group)?group:[]).forEach(function(message){
-        if(!message||typeof message!=='object')return;
-        var fileName=message.file&&message.file.name?String(message.file.name):'';
-        var timeKey=typeof message.time==='number'?message.time:Date.parse(message.time||'')||0;
-        var key=[message.from||'',timeKey,message.text||'',fileName].join('\\u001f');
-        if(seen[key])return;
-        seen[key]=true;
-        combined.push(message);
-      });
-    });
-    combined.sort(function(a,b){
-      var at=typeof a.time==='number'?a.time:Date.parse(a.time||'')||0;
-      var bt=typeof b.time==='number'?b.time:Date.parse(b.time||'')||0;
-      return at-bt;
-    });
-    saved.messages=combined.slice(-200);
-    saved.closedAt=existing.closedAt||saved.closedAt;
-    saved.createdAt=existing.createdAt||saved.createdAt;
-    saved.userName=existing.userName||saved.userName;
-    archived[index]=saved;
-  }else archived.unshift(saved);
-  archived=archived.slice(0,20);
-  if(sset(CLOSED_ARCHIVE_KEY,JSON.stringify(archived)))closedCache=archived;
-}
 var cp=$1('#chatPanel'),fab=$1('#chatFab'),clog=$1('#chatLog'),cf=$1('#chatForm'),badge=$1('#fabBadge'),ta=$1('#ch-msg'),fileInput=$1('#fileInput'),charCount=$1('#chatCharCount');
 var tabs={'new':$1('#tabNew'),'chat':$1('#tabChat'),'closed':$1('#tabClosed')};
 var soundToggle=$1('#soundToggle'),soundOn=sget('norda_chat_sound')!=='off',ac=null;
@@ -215,26 +162,8 @@ function toast(k){var el=$1('#chatToast');if(!el)return;el.textContent=t(k);el.c
 function toastRaw(message){var el=$1('#chatToast');if(!el)return;el.textContent=message;el.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){el.classList.remove('show')},4200)}
 function setBadge(){if(!badge)return;badge.textContent=unread>9?'9+':unread;badge.classList.toggle('show',unread>0)}
 function persist(){if(!currentTicket)return;var c=JSON.parse(JSON.stringify(currentTicket));c.messages=(c.messages||[]).slice(-200);c.messages.forEach(function(m){if(m.file)m.file={name:m.file.name||'',type:m.file.type||''}});sset('norda_last_ticket',JSON.stringify(c))}
-function syncMenu(){
-  var open=hasOpen(),c=$1('#btnCloseTicket'),dv=$1('#menuTicketDivider'),back=$1('#chatBack');
-  if(back)back.hidden=!(view==='chat'||view==='closed'||view==='detail');
-  if(tabs['new'])tabs['new'].hidden=open;
-  if(tabs.chat)tabs.chat.hidden=!(open&&view!=='chat');
-  if(c)c.hidden=!open;
-  if(dv)dv.hidden=!open;
-}
-function updateTabs(){if(tabs.chat)tabs.chat.setAttribute('aria-disabled',hasOpen()?'false':'true');syncMenu()}
-function setView(v){
-  if(v==='chat'&&!hasOpen())v='new';view=v;
-  $('.tk-v').forEach(function(el){var active=el.getAttribute('data-view')===v;el.classList.toggle('on',active);el.setAttribute('aria-hidden',active?'false':'true')});
-  var k=v==='detail'?'closed':v;Object.keys(tabs).forEach(function(x){var active=x===k;tabs[x].classList.toggle('on',active);tabs[x].setAttribute('aria-selected',String(active))});
-  if(v==='chat'||v==='closed'||v==='detail'){unread=0;setBadge()}if(v==='chat')scrollLog();
-  syncMenu();
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&window.gsap){
-    var activeView=d.querySelector('.tk-v.on');
-    if(activeView){gsap.killTweensOf(activeView);gsap.fromTo(activeView,{autoAlpha:0,y:9},{autoAlpha:1,y:0,duration:.28,ease:'power2.out',clearProps:'transform'})}
-  }
-}
+function updateTabs(){}
+function setView(v){if(v==='chat'&&!hasOpen())v='new';view=v;$('.tk-v').forEach(function(el){var active=el.getAttribute('data-view')===v;el.classList.toggle('on',active);el.setAttribute('aria-hidden',active?'false':'true')});if(v==='chat'){unread=0;setBadge();scrollLog()}if(window.gsap&&!reduce){var activeView=d.querySelector('.tk-v.on');if(activeView){gsap.killTweensOf(activeView);gsap.fromTo(activeView,{autoAlpha:0,y:7},{autoAlpha:1,y:0,duration:.2,ease:'power2.out',clearProps:'transform'})}}}
 function scrollLog(){if(clog)setTimeout(function(){clog.scrollTop=clog.scrollHeight},40)}
 function buildBub(m){
   var b=d.createElement('div');b.className='bub '+(m.from==='user'?'me':'bot');
@@ -264,21 +193,14 @@ function renderMessages(msgs,force){
   shown=msgs.length;if(typing)clog.appendChild(typingEl());scrollLog();
 }
 function setTyping(on){typing=on;clearTimeout(typingTimer);if(on)typingTimer=setTimeout(function(){typing=false;var tp=clog.querySelector('.typing');if(tp)tp.remove()},12000)}
-function updateSupportMode(){
-  if(!currentTicket)return;
-  var human=currentTicket.supportMode==='human',label=$1('#supportModeLabel'),button=$1('#btnHumanHandoff');
-  if(label){label.textContent=human?t('handoff_short'):'';label.hidden=!human}
-  if(button)button.hidden=human;
-  var slot=$1('.nd-handoff-slot');if(slot)slot.hidden=human||getHandoffLayout()!=='composer';
-}
-function ticketDisplayId(ticket){return String(ticket&&(ticket.publicId||ticket.public_id||ticket.ticketId)||'')}
-function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+ticketDisplayId(currentTicket);updateSupportMode();renderMessages(currentTicket.messages||[],true)}
-async function createTicket(name){
+function updateSupportMode(){if(!currentTicket)return;var human=currentTicket.supportMode==='human',button=$1('#btnHumanHandoff');if(button)button.hidden=human||!currentTicket.handoffAvailable;var prompt=$1('#handoffNamePrompt');if(prompt&&human)prompt.hidden=true}
+function renderChat(){if(!hasOpen())return;updateSupportMode();renderMessages(currentTicket.messages||[],true)}
+async function createTicket(name,forceNew){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
   var mode=await ensureSession();if(mode==='error')return null;
   if(mode==='blocked'){userId=makeVisitorId();sset('norda_uid',userId);mode='fresh';sessionMode='fresh';}
   try{
-    var body={userId:userId,userName:name};
+    var body={userId:userId,userName:name,forceNew:!!forceNew};
     var r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify(body)});
     var j=await r.json();
     if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error')return null;r=await fetch(API+'/ticket/new',{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userId:userId,userName:name})});j=await r.json()}
@@ -289,16 +211,7 @@ async function createTicket(name){
   }catch(e){}
   return null;
 }
-async function startNew(firstMessage){
-  if(firstMessage&&typeof firstMessage!=='string')firstMessage='';
-  var nm=$1('#ch-name'),btn=$1('#btnNewTicket'),custom=(nm.value||'').trim()||sget('norda_name')||'';if(custom)sset('norda_name',custom);
-  setBusy(btn,true);var j=await createTicket(custom||t('guest'));setBusy(btn,false);
-  if(j){
-    setView('chat');if(!j.existing)toast('ticket_new_msg');
-    if(firstMessage){ta.value=firstMessage;grow();if(cf.requestSubmit)cf.requestSubmit();else cf.dispatchEvent(new Event('submit',{cancelable:true}))}
-    else setTimeout(function(){ta.focus()},120);
-  }else toast('msg_err');
-}
+async function startNew(firstMessage,forceNew){var btn=$1('#btnNewTicket'),headerBtn=$1('#chatNewConversation');setBusy(btn,true);setBusy(headerBtn,true);var j=await createTicket(sget('norda_name')||t('guest'),!!forceNew);setBusy(btn,false);setBusy(headerBtn,false);if(j){setView('chat');if(!j.existing)toast('ticket_new_msg');if(firstMessage){ta.value=firstMessage;grow();if(cf.requestSubmit)cf.requestSubmit();else cf.dispatchEvent(new Event('submit',{cancelable:true}))}else setTimeout(function(){if(ta)ta.focus()},120)}else toast('msg_err')}
 function createClientMessageId(){
   if(window.crypto&&typeof window.crypto.randomUUID==='function')return window.crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16)});
@@ -334,7 +247,6 @@ async function loadMessages(){
     var was=remoteReady;
     if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId}
     if(j.publicId)ticket.publicId=String(j.publicId);
-    $1('#ticketIdLabel').textContent='#'+ticketDisplayId(ticket);
     if(j.status==='closed'){onClosedRemote();return}
     ticket.supportMode=j.supportMode==='human'?'human':'ai';updateSupportMode();persist();
     var ms=j.messages||[];
@@ -343,8 +255,7 @@ async function loadMessages(){
     remoteReady=true;return true;}catch(e){return false}
 }
 
-function finishClosed(ticket,messageKey){archiveClosed(ticket);currentTicket=null;sdel('norda_last_ticket');setTyping(false);shown=0;updateTabs();setView('closed');loadClosed();toast(messageKey)}
-function onClosedRemote(){finishClosed(currentTicket,'ticket_closed_msg')}
+function onClosedRemote(){currentTicket=null;sdel('norda_last_ticket');setTyping(false);shown=0;updateTabs();setView('new');toast('ticket_closed_msg')}
 var pollBusy=false,pollTimer=null;
 var pollDelay=1500;
 function schedulePoll(){
@@ -390,78 +301,15 @@ if(cf)cf.addEventListener('submit',async function(e){
   try{
     var j=await apiSend(payload,ticket,tid);
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
-    if(j&&j.ok){retryPayload=null;ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);if(ticket.supportMode!=='human'&&ticket.messages.length&&ticket.messages[ticket.messages.length-1].from==='user'){setTyping(true);renderMessages(ticket.messages)}updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
+    if(j&&j.ok){retryPayload=null;ticket.handoffAvailable=!!(j.aiUnavailable||j.handoffAvailable);ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);if(ticket.supportMode!=='human'&&ticket.messages.length&&ticket.messages[ticket.messages.length-1].from==='user'){setTyping(true);renderMessages(ticket.messages)}updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
   }catch(err){restoreFailedMessage()}
   finally{sending=false;setBusy(btn,false);if(currentTicket===ticket&&ta)ta.focus()}
 });
 if(ta){ta.addEventListener('input',grow);ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(cf.requestSubmit)cf.requestSubmit();else cf.dispatchEvent(new Event('submit',{cancelable:true}))}})}
-var bh=$1('#btnHumanHandoff');
-var HANDOFF_LAYOUT_KEY='norda_handoff_layout';
-function getHandoffLayout(){return sget(HANDOFF_LAYOUT_KEY)==='composer'?'composer':'bar'}
-function setHandoffLayout(layout,save){
-  layout=layout==='composer'?'composer':'bar';
-  var ticketbar=cp&&cp.querySelector('.nd-ticketbar.tk-info'),slot=$1('.nd-handoff-slot');
-  if(!bh||!ticketbar||!cf)return;
-  if(!slot){slot=d.createElement('div');slot.className='nd-handoff-slot';cf.parentNode.insertBefore(slot,cf)}
-  if(layout==='composer'){slot.appendChild(bh);slot.hidden=bh.hidden}
-  else{ticketbar.insertBefore(bh,$1('#supportModeLabel')||null);slot.hidden=true}
-  bh.classList.toggle('nd-agent-btn--chip',layout==='composer');
-  ['handoffLayoutBar','handoffLayoutComposer'].forEach(function(id){
-    var button=$1('#'+id);if(!button)return;
-    var active=(id==='handoffLayoutComposer')===(layout==='composer');
-    button.classList.toggle('on',active);button.setAttribute('aria-pressed',active?'true':'false');
-    var check=button.querySelector('.nd-layout-check');if(check)check.textContent=active?'✓':'';
-  });
-  if(save!==false)sset(HANDOFF_LAYOUT_KEY,layout);
-}
-function replayChatPreview(){
-  if(hasOpen()){scrollLog()}else setView('new');
-  if(window.gsap&&!reduce){gsap.killTweensOf(cp);gsap.fromTo(cp,{y:9,scale:window.innerWidth<=520?1:.985,autoAlpha:.88},{y:0,scale:1,autoAlpha:1,duration:.3,ease:'power2.out',clearProps:'transform,opacity,visibility'})}
-}
-setHandoffLayout(getHandoffLayout(),false);
-['handoffLayoutBar','handoffLayoutComposer'].forEach(function(id){
-  var button=$1('#'+id);if(button)button.addEventListener('click',function(){setHandoffLayout(id==='handoffLayoutComposer'?'composer':'bar',true)});
-});
-var replayButton=$1('#chatReplayPreview');if(replayButton)replayButton.addEventListener('click',replayChatPreview);
-var ticketIdButton=$1('#ticketIdLabel');
-if(ticketIdButton)ticketIdButton.addEventListener('click',function(){
-  if(!currentTicket)return;
-  var reference=ticketDisplayId(currentTicket);
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(reference).then(function(){toastRaw('تم نسخ رقم التذكرة #'+reference)}).catch(function(){toast('msg_err')});
-});
-if(bh)bh.addEventListener('click',async function(){
-  if(!hasOpen()||sending||currentTicket.supportMode==='human')return;
-  var ticket=currentTicket,tid=String(ticket.ticketId);
-  setBusy(bh,true);toastRaw(t('handoff_pending'));
-  try{
-    var mode=await ensureSession();
-    if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('session');
-    var response=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/handoff'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify({})});
-    if(response.status===401&&sessionToken){saveSession('');sessionMode='unknown';await ensureSession();response=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/handoff'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify({})})}
-    var result=await response.json();
-    if(!response.ok||!result.ok)throw new Error('handoff');
-    if(currentTicket!==ticket)return;
-    ticket.supportMode=result.supportMode==='human'?'human':'ai';updateSupportMode();persist();
-    toastRaw(result.handoffPending?t('handoff_pending'):(result.notificationSent===false?t('handoff_failed'):t('handoff_requested')));
-    loadMessages();
-  }catch(e){toast('msg_err')}
-  finally{setBusy(bh,false)}
-});
-var bc=$1('#btnCloseTicket');
-if(bc)bc.addEventListener('click',async function(){
-  if(!hasOpen())return;
-  if(!confirm(t('ticket_close_confirm')))return;
-  var ticket=currentTicket,tid=String(ticket.ticketId);
-  if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');toast('msg_err');return}
-  try{
-    var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh'){toast('msg_err');return}
-    var r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/close'),{method:'POST',headers:apiHeaders(false)});
-    if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh'){toast('msg_err');return}r=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/close'),{method:'POST',headers:apiHeaders(false)})}
-    var j=await r.json();
-    if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
-    if(j.ok){finishClosed(ticket,'ticket_closed_ok')}else toast('msg_err')
-}catch(e){toast('msg_err')}
-});
+var bh=$1('#btnHumanHandoff'),handoffForm=$1('#handoffNameForm'),handoffName=$1('#handoffName'),handoffPrompt=$1('#handoffNamePrompt');
+if(bh)bh.addEventListener('click',function(){if(!hasOpen()||currentTicket.supportMode==='human'||!currentTicket.handoffAvailable)return;if(handoffPrompt){handoffPrompt.hidden=false;if(handoffName){handoffName.value='';handoffName.focus()}}});
+var handoffCancel=$1('#handoffCancel');if(handoffCancel)handoffCancel.addEventListener('click',function(){if(handoffPrompt)handoffPrompt.hidden=true});
+if(handoffForm)handoffForm.addEventListener('submit',async function(e){e.preventDefault();var name=(handoffName&&handoffName.value||'').trim();if(!name){if(handoffName){handoffName.setCustomValidity(t('handoff_name_required'));handoffName.reportValidity();handoffName.focus()}return}if(handoffName)handoffName.setCustomValidity('');var ticket=currentTicket,tid=String(ticket.ticketId),submit=$1('#handoffSubmit');setBusy(submit,true);setBusy(bh,true);toastRaw(t('handoff_pending'));try{var mode=await ensureSession();if(mode==='blocked'||mode==='error'||mode==='fresh')throw new Error('session');var response=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/handoff'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userName:name})});if(response.status===401&&sessionToken){saveSession('');sessionMode='unknown';await ensureSession();response=await fetch(apiTicketUrl('/ticket/'+encodeURIComponent(tid)+'/handoff'),{method:'POST',headers:apiHeaders(true),body:JSON.stringify({userName:name})})}var result=await response.json();if(!response.ok||!result.ok)throw new Error('handoff');if(currentTicket!==ticket)return;ticket.supportMode=result.supportMode==='human'?'human':'ai';ticket.handoffAvailable=false;updateSupportMode();persist();if(handoffPrompt)handoffPrompt.hidden=true;toastRaw(result.handoffPending?t('handoff_pending'):(result.notificationSent===false?t('handoff_failed'):t('handoff_requested')));loadMessages()}catch(e){toast('msg_err')}finally{setBusy(submit,false);setBusy(bh,false)}});
 /* إرفاق ملف: PDF وصور فقط، الحد 2 ميغا */
 var ba=$1('#btnAttach');if(ba)ba.addEventListener('click',function(){fileInput.click()});
 if(fileInput)fileInput.addEventListener('change',function(){
@@ -472,59 +320,10 @@ if(fileInput)fileInput.addEventListener('change',function(){
 });
 var fr=$1('#fileRemove');if(fr)fr.addEventListener('click',function(){pendingFile=null;clearFile()});
 
-async function loadClosed(){
-  try{
-    var archived=JSON.parse(sget(CLOSED_ARCHIVE_KEY)||'[]');
-    if(!Array.isArray(archived))archived=[];
-    closedCache=archived;
-
-    if(!API){renderClosed();return}
-    var mode=await ensureSession();
-    if(mode==='secure'||mode==='legacy'){
-      var r=await fetch(apiTicketUrl('/ticket/closed/closed'),{headers:apiHeaders(false)});
-      if(r.status===401&&sessionToken){saveSession('');sessionMode='unknown';await ensureSession();renderClosed();return}
-      var j=await r.json();
-
-    if(j.ok&&Array.isArray(j.tickets)){
-      j.tickets.forEach(function(ticket){
-        archiveClosed(ticket);
-      });
-      }
-    }
-  }catch(e){}
-  renderClosed();
-}
-function renderClosed(){
-  var list=$1('#closedList'),cnt=$1('#closedCount');if(!list)return;list.innerHTML='';
-  var past=$1('#btnPastChats');if(past)past.hidden=!closedCache.length;
-  if(!closedCache.length){list.innerHTML='<p style="text-align:center;color:#6d6862;margin:auto">'+esc(t('no_closed'))+'</p>';if(cnt)cnt.classList.remove('show');return}
-  if(cnt){cnt.textContent=closedCache.length;cnt.classList.add('show')}
-  closedCache.forEach(function(tk){
-    var ms=tk.messages||[],prev='';for(var i=ms.length-1;i>=0;i--){if(ms[i].text){prev=ms[i].text;break}if(ms[i].file){prev=ms[i].file.name||'';break}}
-    var el=d.createElement('div');el.className='ci';
-    el.innerHTML='<b>#'+esc(ticketDisplayId(tk))+'</b><small>'+esc(fmtDate(tk.closedAt||tk.updatedAt||Date.now()))+' · '+ms.length+'</small>'+(prev?'<span>'+esc(prev.slice(0,70))+'</span>':'')+'<button class="tk-link" type="button">'+esc(t('view_ticket'))+'</button>';
-    el.querySelector('button').addEventListener('click',function(){detailTicket=tk;renderDetail();setView('detail')});list.appendChild(el);
-  });
-}
-function renderDetail(){if(!detailTicket)return;$1('#detailTicketId').textContent='#'+ticketDisplayId(detailTicket);var log=$1('#detailLog');log.innerHTML='';(detailTicket.messages||[]).forEach(function(m){log.appendChild(buildBub(m))});setTimeout(function(){log.scrollTop=log.scrollHeight},40)}
-function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}renderClosed();if(detailTicket&&view==='detail')renderDetail()}
-var bb=$1('#btnBack');if(bb)bb.addEventListener('click',function(){setView('closed')});
-var chatBack=$1('#chatBack');
-if(chatBack)chatBack.addEventListener('click',function(){
-  if(view==='detail'){setView('closed');return}
-  if(view==='closed'){setView(hasOpen()?'chat':'new');return}
-  if(view==='chat'){setView('new');return}
-  setView('new');
-});
-if(tabs['new'])tabs['new'].addEventListener('click',function(){if(hasOpen())setView('chat');else if(sget('norda_name'))startNew();else{setView('new');$1('#ch-name').focus()}});
-if(tabs.chat)tabs.chat.addEventListener('click',function(){if(hasOpen())setView('chat')});
-if(tabs.closed)tabs.closed.addEventListener('click',function(){setView('closed');loadClosed()});
-var addName=$1('#addName'),nameField=$1('#ch-name');
-if(addName&&nameField)addName.addEventListener('click',function(){addName.hidden=true;nameField.hidden=false;nameField.focus()});
+function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}}
 var topicButtons=d.querySelectorAll('#nordaChat [data-topic]');
 topicButtons.forEach(function(b){b.addEventListener('click',function(){var topic=b.getAttribute('data-topic')||'';startNew(topic)})});
-var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',function(){startNew()});
-var chn=$1('#ch-name');if(chn)chn.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();startNew()}});
+var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',function(){startNew('',false)});var newConversation=$1('#chatNewConversation');if(newConversation)newConversation.addEventListener('click',function(){retryPayload=null;startNew('',true)});
 var chatPreviousOverflow='',chatSavedScrollY=0;
 function chatOpen(o){
   if(!cp||!fab)return;
@@ -644,6 +443,5 @@ applyLang(lang);
 var csj=$1('#cf-subject');
 if(csj){var params=new URLSearchParams(location.search),pl=params.get('plan'),productId=params.get('product'),PN={basic:'الأساسية',standard:'القياسية',premium:'البريميوم',custom:'المخصصة'};if(PN[pl]&&!csj.value)csj.value=t('plan_req')+': '+tr(PN[pl],lang);if(productId&&!csj.value){var product=(window.NORDA_PRODUCTS||[]).find(function(p){return p.id===productId});if(product)csj.value='Product access request: '+product.name}}
 var last=sget('norda_last_ticket');
-if(cp&&last){try{var tk=JSON.parse(last);if(tk&&typeof tk==='object'&&tk.status==='open'&&/^[A-Za-z0-9_-]{1,64}$/.test(String(tk.ticketId||''))){tk.supportMode=tk.supportMode==='human'?'human':'ai';tk.messages=Array.isArray(tk.messages)?tk.messages.slice(-200).filter(function(m){return m&&typeof m==='object'&&(typeof m.text==='string'||(m.file&&typeof m.file==='object'))&&typeof m.time==='number'}):[];currentTicket=tk;lastCount=tk.messages.length;remoteReady=lastCount>0;updateTabs();renderChat();setView('chat');loadMessages()}else{sdel('norda_last_ticket')}}catch(e){sdel('norda_last_ticket')}}
-if(cp){renderClosed();poll()}
+if(cp&&last){try{var tk=JSON.parse(last);if(tk&&typeof tk==='object'&&tk.status==='open'&&/^[A-Za-z0-9_-]{1,64}$/.test(String(tk.ticketId||''))){tk.supportMode=tk.supportMode==='human'?'human':'ai';tk.handoffAvailable=!!tk.handoffAvailable;tk.messages=Array.isArray(tk.messages)?tk.messages.slice(-200).filter(function(m){return m&&typeof m==='object'&&(typeof m.text==='string'||(m.file&&typeof m.file==='object'))&&typeof m.time==='number'}):[];currentTicket=tk;lastCount=tk.messages.length;remoteReady=lastCount>0;updateTabs();renderChat();setView('chat');loadMessages()}else{sdel('norda_last_ticket')}}catch(e){sdel('norda_last_ticket')}}sdel('norda_closed_archive');if(cp)poll();
 })();
