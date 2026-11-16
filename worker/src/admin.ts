@@ -363,16 +363,16 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   const ticketDetail = path.match(/^\/admin\/tickets\/([^/]+)$/);
   if (method === "GET" && ticketDetail) {
     const publicId = decodeURIComponent(ticketDetail[1]);
-    const row = await env.DB.prepare("SELECT public_id AS id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets WHERE public_id=? LIMIT 1")
+    const row = await env.DB.prepare("SELECT public_id AS id,public_id,public_ref AS publicId,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets WHERE public_id=? LIMIT 1")
       .bind(publicId).first<Record<string,unknown>>();
     return row ? adminJson({data:row}) : adminJson({error:"not_found"},404);
   }
   if(method==="GET"&&path==="/admin/tickets"){
     const {perPage,offset}=pageParams(url), q=clean(url.searchParams.get("q"),120);
-    const where=q ? "WHERE public_id LIKE ? OR user_name LIKE ? OR status LIKE ? OR support_mode LIKE ?" : "";
-    const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
-    const order=orderClause(url,{id:"public_id",public_id:"public_id",user_name:"user_name",status:"status",support_mode:"support_mode",created_at:"created_at",closed_at:"closed_at"},"created_at");
-    const rows=await env.DB.prepare(`SELECT public_id AS id,public_id,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
+    const where=q ? "WHERE public_ref LIKE ? OR public_id LIKE ? OR user_name LIKE ? OR status LIKE ? OR support_mode LIKE ?" : "";
+    const binds=q ? [`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`,`%${q}%`] : [];
+    const order=orderClause(url,{id:"public_id",public_id:"public_id",public_ref:"public_ref",user_name:"user_name",status:"status",support_mode:"support_mode",created_at:"created_at",closed_at:"closed_at"},"created_at");
+    const rows=await env.DB.prepare(`SELECT public_id AS id,public_id,public_ref AS publicId,user_name,status,support_mode,handoff_status,created_at,closed_at FROM tickets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...binds,perPage,offset).all<Record<string,unknown>>();
     const count=await env.DB.prepare(`SELECT COUNT(*) AS total FROM tickets ${where}`).bind(...binds).first<{total:number}>();
     return adminJson({data:rows.results||[],total:Number(count?.total||0)});
   }
