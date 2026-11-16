@@ -276,7 +276,7 @@
     const button = event.target.closest('[data-digital-order]');
     if (!button) return;
     selectedDigitalProduct = all.find(p => String(p.id) === String(button.dataset.digitalOrder));
-    if (!selectedDigitalProduct) return;
+    if (!selectedDigitalProduct || selectedDigitalProduct.available === false) return;
     document.getElementById('digitalCheckoutTitle').textContent = 'Place your order';
     document.getElementById('digitalCheckoutProduct').textContent = selectedDigitalProduct.name + ' · ' + window.NORDA_FMT(selectedDigitalProduct.price);
     checkoutResult.textContent = '';
@@ -316,22 +316,64 @@
     } catch (error) {
       checkoutResult.textContent = error.message || 'Could not create order. Please try again.';
     } finally {
-      submit.disabled = false;
+      submit.disabled = selectedDigitalProduct?.available === false;
       submit.textContent = 'Create order';
     }
   });
-  fetch(digitalApi + '/digital/catalog', { headers:{accept:'application/json'} })
-    .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog_unavailable')))
-    .then(result => {
-      if (!result.ok || !Array.isArray(result.products)) return;
-      window.NORDA_PRODUCTS = (window.NORDA_PRODUCTS || []).filter(p => p.type !== 'digital').concat(result.products.map(p => ({...p,type:'digital',tags:[p.provider].filter(Boolean),subscription:false,featured:false,ggsoma_slug:p.slug})));
-      all = result.products.map(p => ({...p,type:'digital',tags:[p.provider].filter(Boolean),subscription:false,featured:false,ggsoma_slug:p.slug}));
-      cats = [...new Set(all.map(p => p.category))];
-      counts = cats.reduce((o,c)=>(o[c]=all.filter(p=>p.category===c).length,o),{});
-      current = 'all';
-      filtersEl.innerHTML = '<button class="chip" data-cat="all" aria-pressed="true">All <small>'+all.length+'</small></button>' + cats.map(c=>'<button class="chip" data-cat="'+esc(c)+'" aria-pressed="false">'+esc(catNames[c]||c)+' <small>'+counts[c]+'</small></button>').join('');
-      render();
-    }).catch(() => {});
+  let catalogRequestRunning = false;
+  async function refreshDigitalCatalog() {
+    if (catalogRequestRunning || !digitalApi) return;
+    catalogRequestRunning = true;
+    try {
+      const response = await fetch(digitalApi + '/digital/catalog', {
+        headers: { accept: 'application/json' },
+        cache: 'no-store'
+      });
+      if (!response.ok) throw new Error('catalog_unavailable');
+      const result = await response.json();
+      if (!result.ok || !Array.isArray(result.products)) throw new Error('invalid_catalog');
+
+      const liveProducts = result.products.map(p => ({
+        ...p,
+        type: 'digital',
+        tags: [p.provider].filter(Boolean),
+        subscription: false,
+        featured: false,
+        ggsoma_slug: p.slug
+      }));
+      window.NORDA_PRODUCTS = (window.NORDA_PRODUCTS || [])
+        .filter(p => p.type !== 'digital')
+        .concat(liveProducts);
+      window.NORDA_RENDER_PRODUCTS();
+
+      // Keep an open checkout in sync with the latest supplier stock and price.
+      if (selectedDigitalProduct) {
+        const latest = liveProducts.find(p => String(p.id) === String(selectedDigitalProduct.id));
+        if (!latest || latest.available === false) {
+          selectedDigitalProduct = latest || selectedDigitalProduct;
+          document.getElementById('digitalCheckoutSubmit').disabled = true;
+          checkoutResult.textContent = 'This product is currently out of stock. Please choose another product.';
+        } else {
+          selectedDigitalProduct = latest;
+          document.getElementById('digitalCheckoutProduct').textContent =
+            latest.name + ' · ' + window.NORDA_FMT(latest.price);
+          document.getElementById('digitalCheckoutSubmit').disabled = false;
+        }
+      }
+    } catch (error) {
+      // Keep the last successfully loaded catalog visible if the supplier is temporarily unavailable.
+      console.warn('[digital-catalog-refresh]', error);
+    } finally {
+      catalogRequestRunning = false;
+    }
+  }
+
+  refreshDigitalCatalog();
+  // Refresh supplier products, prices and stock while the store is open.
+  window.setInterval(refreshDigitalCatalog, 60000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshDigitalCatalog();
+  });
 
 
   filtersEl.addEventListener('click', (e) => {
