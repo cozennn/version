@@ -19,7 +19,7 @@ npx wrangler d1 migrations apply norda-db --remote
 npx wrangler deploy
 ```
 
-The migrations are additive: `0000` creates the core ticket and message tables only when missing, so a new D1 database can be initialized while existing support history remains untouched; `0001` creates Telegram update idempotency, `0002` creates hashed visitor sessions, `0003` adds delivery monitoring, `0004` and `0005` add support-mode and reliable notification state, `0006` adds notification delivery claims, `0007` adds message idempotency and NorDa admin tables, `0008` adds customers and orders, and `0009` adds an optional PayPal Payment Link field to products. Apply all pending migrations successfully before deploying Worker code that depends on them.
+The migrations are additive: `0000` creates the core ticket and message tables only when missing, so a new D1 database can be initialized while existing support history remains untouched; `0001` creates Telegram update idempotency, `0002` creates hashed visitor sessions, `0003` adds delivery monitoring, `0004` and `0005` add support-mode and reliable notification state, `0006` adds notification delivery claims, `0007` adds message idempotency and NorDa admin tables, `0008` adds customers and orders, `0009` adds an optional PayPal Payment Link field to products, and `0010` adds six-digit public ticket references while preserving internal UUIDs. Apply all pending migrations successfully before deploying Worker code that depends on them.
 
 ## Cloudflare Workers AI (Free plan only)
 
