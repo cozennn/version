@@ -80,6 +80,15 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
     if (paymentMethod === "paypal" && !clean(product.paypal_url, 500)) return json({ ok: false, error: "paypal_not_configured_for_product" }, 400);
     const unitPrice = Number(product.price), currency = clean(product.currency, 3) || "USD";
     if (!Number.isFinite(unitPrice) || unitPrice <= 0) return json({ ok: false, error: "invalid_product_price" }, 400);
+    try {
+      const supplierProduct = await partnerFetch(env, "/catalog/products/" + encodeURIComponent(product.ggsoma_slug));
+      const stock = supplierProduct.stock || {};
+      if (stock.inStock !== true || (Number.isFinite(Number(stock.maxQuantity)) && quantity > Number(stock.maxQuantity))) return json({ ok: false, error: "product_out_of_stock" }, 409);
+      if (currency === "USD" && Number.isFinite(Number(supplierProduct.yourPrice)) && unitPrice < Number(supplierProduct.yourPrice)) return json({ ok: false, error: "retail_price_below_supplier_cost" }, 409);
+    } catch (error) {
+      console.error("[digital-order-precheck]", error instanceof Error ? error.message : "request_failed");
+      return json({ ok: false, error: "supplier_precheck_unavailable" }, 503);
+    }
     const customer = await env.DB.prepare("SELECT id FROM norda_customers WHERE email=? AND archived_at IS NULL ORDER BY created_at DESC LIMIT 1").bind(email).first<{id:string}>();
     const customerId = customer?.id || crypto.randomUUID(), now = stamp();
     if (!customer) await env.DB.prepare("INSERT INTO norda_customers(id,name,email,source,created_at,updated_at) VALUES(?,?,?,'digital-store',?,?)").bind(customerId, name, email, now, now).run();
