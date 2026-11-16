@@ -1,4 +1,6 @@
-interface AdminEnv { DB: D1Database; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
+import { fulfillPaidDigitalOrder } from "./digital";
+
+interface AdminEnv { DB: D1Database; GGSOMA_API_KEY?: string; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
 
 const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -481,6 +483,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const productName=clean(merged.product_name,180)||product?.name||"Custom service";
     await env.DB.prepare("UPDATE norda_orders SET customer_id=?,product_id=?,product_name=?,quantity=?,unit_price=?,currency=?,total_amount=?,status=?,payment_status=?,payment_method=?,notes=?,updated_at=? WHERE id=?")
       .bind(customerId,productId,productName,quantity,unitPrice,currency,quantity*unitPrice,status,payment,clean(merged.payment_method,100),clean(merged.notes,4000),nowIso(),id).run();
+    if (payment === "paid" && current.ggsoma_product_slug && !current.partner_order_code) await fulfillPaidDigitalOrder(env, id);
     await audit(env,session.id,"update","order",id);
     const row=await env.DB.prepare("SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id WHERE o.id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row});

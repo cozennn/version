@@ -1,5 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
 import { handleAdminApi } from "./admin";
+import { handleDigitalApi } from "./digital";
 
 interface Env {
   DB: D1Database;
@@ -11,6 +12,7 @@ interface Env {
   TELEGRAM_WEBHOOK_SECRET?: string;
   AI?: Ai;
   NORDA_ADMIN_SETUP_TOKEN?: string;
+  GGSOMA_API_KEY?: string;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -473,6 +475,9 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   const method = request.method.toUpperCase();
 
   if (path === "/telegram/webhook") return handleTelegramWebhook(request, env);
+
+  const digitalResponse = await handleDigitalApi(request, env);
+  if (digitalResponse) return digitalResponse;
 
   const adminResponse = await handleAdminApi(request, env);
   if (adminResponse) return adminResponse;
