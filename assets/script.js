@@ -197,7 +197,17 @@ function archiveClosed(ticket){
 var cp=$1('#chatPanel'),fab=$1('#chatFab'),clog=$1('#chatLog'),cf=$1('#chatForm'),badge=$1('#fabBadge'),ta=$1('#ch-msg'),fileInput=$1('#fileInput'),charCount=$1('#chatCharCount');
 var tabs={'new':$1('#tabNew'),'chat':$1('#tabChat'),'closed':$1('#tabClosed')};
 var soundToggle=$1('#soundToggle'),soundOn=sget('norda_chat_sound')!=='off',ac=null;
-function paintSound(){if(!soundToggle)return;soundToggle.setAttribute('aria-pressed',soundOn?'true':'false');soundToggle.setAttribute('aria-label',t(soundOn?'sound_on':'sound_off'));soundToggle.style.opacity=soundOn?1:.55}
+function paintSound(){
+  if(!soundToggle)return;
+  soundToggle.setAttribute('aria-pressed',soundOn?'true':'false');
+  soundToggle.setAttribute('aria-label',t(soundOn?'sound_on':'sound_off'));
+  soundToggle.setAttribute('title',t(soundOn?'sound_on':'sound_off'));
+  soundToggle.innerHTML=soundOn
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>';
+  soundToggle.style.opacity=soundOn?1:.62;
+}
+paintSound();
 function unlock(){if(!soundOn)return;var A=window.AudioContext||window.webkitAudioContext;if(!A)return;try{if(!ac)ac=new A();if(ac.state==='suspended')ac.resume()}catch(e){}}
 function tone(f,dl){if(!soundOn||!ac||ac.state!=='running')return;try{var n=ac.currentTime+dl,o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(f,n);g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.12,n+.025);g.gain.exponentialRampToValueAtTime(.0001,n+.2);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+.21)}catch(e){}}
 function ding(){tone(880,0);tone(1174,.1)}
@@ -209,7 +219,8 @@ function toastRaw(message){var el=$1('#chatToast');if(!el)return;el.textContent=
 function setBadge(){if(!badge)return;badge.textContent=unread>9?'9+':unread;badge.classList.toggle('show',unread>0)}
 function persist(){if(!currentTicket)return;var c=JSON.parse(JSON.stringify(currentTicket));c.messages=(c.messages||[]).slice(-200);c.messages.forEach(function(m){if(m.file)m.file={name:m.file.name||'',type:m.file.type||''}});sset('norda_last_ticket',JSON.stringify(c))}
 function syncMenu(){
-  var open=hasOpen(),c=$1('#btnCloseTicket'),dv=$1('#menuTicketDivider');
+  var open=hasOpen(),c=$1('#btnCloseTicket'),dv=$1('#menuTicketDivider'),back=$1('#chatBack');
+  if(back)back.hidden=!(view==='chat'||view==='closed'||view==='detail');
   if(tabs['new'])tabs['new'].hidden=open;
   if(tabs.chat)tabs.chat.hidden=!(open&&view!=='chat');
   if(c)c.hidden=!open;
@@ -517,6 +528,13 @@ function renderClosed(){
 function renderDetail(){if(!detailTicket)return;$1('#detailTicketId').textContent='#'+ticketDisplayId(detailTicket);var log=$1('#detailLog');log.innerHTML='';(detailTicket.messages||[]).forEach(function(m){log.appendChild(buildBub(m))});setTimeout(function(){log.scrollTop=log.scrollHeight},40)}
 function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}renderClosed();if(detailTicket&&view==='detail')renderDetail()}
 var bb=$1('#btnBack');if(bb)bb.addEventListener('click',function(){setView('closed')});
+var chatBack=$1('#chatBack');
+if(chatBack)chatBack.addEventListener('click',function(){
+  if(view==='detail'){setView('closed');return}
+  if(view==='closed'){setView(hasOpen()?'chat':'new');return}
+  if(view==='chat'){setView('new');return}
+  setView('new');
+});
 if(tabs['new'])tabs['new'].addEventListener('click',function(){if(hasOpen())setView('chat');else if(sget('norda_name'))startNew();else{setView('new');$1('#ch-name').focus()}});
 if(tabs.chat)tabs.chat.addEventListener('click',function(){if(hasOpen())setView('chat')});
 if(tabs.closed)tabs.closed.addEventListener('click',function(){setView('closed');loadClosed()});
