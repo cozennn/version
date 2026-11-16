@@ -52,15 +52,40 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
   const method = request.method.toUpperCase();
   if (path === "/digital/catalog" && method === "GET") {
     try {
-      const [remote, local] = await Promise.all([
-        partnerFetch(env, "/catalog/products"),
-        env.DB.prepare("SELECT id,name,tagline,price,currency,category,image,description,includes_json,ggsoma_slug FROM norda_products WHERE type='digital' AND status='active' AND ggsoma_slug IS NOT NULL AND ggsoma_slug!='' ORDER BY name").all<Record<string, any>>()
-      ]);
-      const bySlug = new Map((local.results || []).map(p => [String(p.ggsoma_slug), p]));
-      const products = (Array.isArray(remote.data) ? remote.data : []).filter((p: any) => bySlug.has(String(p.slug))).map((p: any) => {
-        const localProduct = bySlug.get(String(p.slug))!;
-        return { id: localProduct.id, name: localProduct.name || p.name, tagline: localProduct.tagline || "", price: Number(localProduct.price), currency: localProduct.currency || "USD", category: localProduct.category || p.provider?.key || "digital", image: localProduct.image || "", description: localProduct.description || p.description || "", includes: (() => { try { return JSON.parse(localProduct.includes_json || "[]"); } catch { return []; } })(), provider: p.provider?.name || "", slug: p.slug, deliveryType: p.deliveryType, stock: p.stock || { inStock: false, count: 0 }, maxQuantity: Number(p.stock?.maxQuantity || 1), available: Boolean(p.stock?.inStock) };
-      });
+      const remote = await partnerFetch(env, "/catalog/products");
+      const products = (Array.isArray(remote.data) ? remote.data : [])
+        .filter((p: any) => clean(p.slug, 160) && clean(p.name, 200))
+        .map((p: any) => {
+          const slug = clean(p.slug, 160);
+          const provider = clean(p.provider?.name, 100);
+          const stock = p.stock && typeof p.stock === "object" ? p.stock : {};
+          const price = Number(p.catalogPrice ?? p.pricing?.catalogPrice ?? p.yourPrice ?? p.pricing?.yourUnitPrice ?? 0);
+          const rawCurrency = clean(p.currency, 3).toUpperCase();
+          const currency = rawCurrency === "USDT" ? "USD" : rawCurrency || "USD";
+          const duration = Number(p.durationDays);
+          const deliveryType = clean(p.deliveryType, 40);
+          const maxQuantity = Math.max(0, Math.floor(Number(stock.maxQuantity ?? 0)));
+          const available = stock.inStock === true && maxQuantity > 0 && Number.isFinite(price) && price > 0;
+          return {
+            id: slug,
+            name: clean(p.name, 200),
+            tagline: [provider, Number.isFinite(duration) && duration > 0 ? (duration % 30 === 0 ? (duration / 30) + " month" + (duration / 30 === 1 ? "" : "s") : duration + " days") : ""].filter(Boolean).join(" · "),
+            price: Number.isFinite(price) ? price : 0,
+            currency,
+            category: clean(p.provider?.key, 80) || provider.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "digital",
+            image: "",
+            icon: clean(p.emoji?.normal, 16) || "✦",
+            description: [provider, deliveryType ? "Delivery: " + deliveryType.replace(/_/g, " ") : "", Number.isFinite(duration) && duration > 0 ? "Duration: " + duration + " days" : "", p.warranty?.enabled ? "Warranty: " + Number(p.warranty.days || 0) + " days" : ""].filter(Boolean).join(" · "),
+            includes: [deliveryType ? "Delivery: " + deliveryType.replace(/_/g, " ") : "", Number.isFinite(duration) && duration > 0 ? duration + " days" : "", p.warranty?.enabled ? "Warranty: " + Number(p.warranty.days || 0) + " days" : ""].filter(Boolean),
+            provider,
+            slug,
+            deliveryType,
+            stock: { inStock: stock.inStock === true, count: Math.max(0, Number(stock.count || 0)) },
+            maxQuantity,
+            available,
+            supplierPrice: Number(p.yourPrice ?? p.pricing?.yourUnitPrice ?? price)
+          };
+        });
       return json({ ok: true, products });
     } catch (error) {
       console.error("[digital-catalog]", error instanceof Error ? error.message : "request_failed");
@@ -75,28 +100,36 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
     const productId = clean(body.productId, 80), paymentMethod = clean(body.paymentMethod, 20);
     const quantity = Math.floor(Number(body.quantity || 1));
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !productId || !["paypal", "manual"].includes(paymentMethod) || !Number.isInteger(quantity) || quantity < 1 || quantity > 50) return json({ ok: false, error: "invalid_order_details" }, 400);
-    const product = await env.DB.prepare("SELECT id,name,price,currency,paypal_url,ggsoma_slug FROM norda_products WHERE id=? AND type='digital' AND status='active' LIMIT 1").bind(productId).first<Record<string, any>>();
-    if (!product || !product.ggsoma_slug) return json({ ok: false, error: "product_unavailable" }, 404);
-    if (paymentMethod === "paypal" && !clean(product.paypal_url, 500)) return json({ ok: false, error: "paypal_not_configured_for_product" }, 400);
-    const unitPrice = Number(product.price), currency = clean(product.currency, 3) || "USD";
-    if (!Number.isFinite(unitPrice) || unitPrice <= 0) return json({ ok: false, error: "invalid_product_price" }, 400);
+    if (paymentMethod === "paypal") return json({ ok: false, error: "paypal_not_configured_for_supplier_products" }, 400);
+    let supplierProduct: Record<string, any>;
     try {
-      const supplierProduct = await partnerFetch(env, "/catalog/products/" + encodeURIComponent(product.ggsoma_slug));
-      const stock = supplierProduct.stock || {};
-      if (stock.inStock !== true || (Number.isFinite(Number(stock.maxQuantity)) && quantity > Number(stock.maxQuantity))) return json({ ok: false, error: "product_out_of_stock" }, 409);
-      if (currency === "USD" && Number.isFinite(Number(supplierProduct.yourPrice)) && unitPrice < Number(supplierProduct.yourPrice)) return json({ ok: false, error: "retail_price_below_supplier_cost" }, 409);
+      const response = await partnerFetch(env, "/catalog/products/" + encodeURIComponent(productId));
+      supplierProduct = response.data && !Array.isArray(response.data) && typeof response.data === "object"
+        ? response.data
+        : response.product && typeof response.product === "object" ? response.product : response;
     } catch (error) {
       console.error("[digital-order-precheck]", error instanceof Error ? error.message : "request_failed");
       return json({ ok: false, error: "supplier_precheck_unavailable" }, 503);
     }
+    const productSlug = clean(supplierProduct.slug, 160) || productId;
+    const productName = clean(supplierProduct.name, 200);
+    const stock = supplierProduct.stock && typeof supplierProduct.stock === "object" ? supplierProduct.stock : {};
+    const maxQuantity = Math.max(0, Math.floor(Number(stock.maxQuantity ?? 0)));
+    if (!productName) return json({ ok: false, error: "product_unavailable" }, 404);
+    if (stock.inStock !== true || maxQuantity < 1 || quantity > maxQuantity) return json({ ok: false, error: "product_out_of_stock" }, 409);
+    const unitPrice = Number(supplierProduct.catalogPrice ?? supplierProduct.pricing?.catalogPrice ?? supplierProduct.yourPrice ?? supplierProduct.pricing?.yourUnitPrice);
+    const supplierPrice = Number(supplierProduct.yourPrice ?? supplierProduct.pricing?.yourUnitPrice ?? unitPrice);
+    const rawCurrency = clean(supplierProduct.currency, 3).toUpperCase();
+    const currency = rawCurrency === "USDT" ? "USD" : rawCurrency || "USD";
+    if (!Number.isFinite(unitPrice) || unitPrice <= 0 || !Number.isFinite(supplierPrice) || unitPrice < supplierPrice) return json({ ok: false, error: "invalid_product_price" }, 409);
     const customer = await env.DB.prepare("SELECT id FROM norda_customers WHERE email=? AND archived_at IS NULL ORDER BY created_at DESC LIMIT 1").bind(email).first<{id:string}>();
     const customerId = customer?.id || crypto.randomUUID(), now = stamp();
     if (!customer) await env.DB.prepare("INSERT INTO norda_customers(id,name,email,source,created_at,updated_at) VALUES(?,?,?,'digital-store',?,?)").bind(customerId, name, email, now, now).run();
     const id = crypto.randomUUID(), orderNumber = "ND-" + Date.now().toString(36).toUpperCase() + "-" + crypto.randomUUID().slice(0, 6).toUpperCase();
     const accessToken = randomToken(), accessHash = await hash(accessToken);
-    await env.DB.prepare("INSERT INTO norda_orders(id,order_number,customer_id,product_id,product_name,quantity,unit_price,currency,total_amount,status,payment_status,payment_method,notes,created_at,updated_at,digital_access_hash,ggsoma_product_slug) VALUES(?,?,?,?,?,?,?,?,?,'pending','pending',?,'Digital Products checkout',?,?,?,?)")
-      .bind(id, orderNumber, customerId, product.id, product.name, quantity, unitPrice, currency, quantity * unitPrice, paymentMethod, now, now, accessHash, product.ggsoma_slug).run();
-    return json({ ok: true, orderNumber, accessToken, paymentMethod, paymentUrl: paymentMethod === "paypal" ? product.paypal_url : null, total: quantity * unitPrice, currency, message: paymentMethod === "manual" ? "Submit your payment, then contact NorDa with this order number for confirmation." : "Complete PayPal payment. Your order will be processed after payment is verified by NorDa." }, 201);
+    await env.DB.prepare("INSERT INTO norda_orders(id,order_number,customer_id,product_id,product_name,quantity,unit_price,currency,total_amount,status,payment_status,payment_method,notes,created_at,updated_at,digital_access_hash,ggsoma_product_slug) VALUES(?,?,?,NULL,?,?,?,?,?,'pending','pending',?,'Digital Products checkout',?,?,?,?)")
+      .bind(id, orderNumber, customerId, productName, quantity, unitPrice, currency, quantity * unitPrice, paymentMethod, now, now, accessHash, productSlug).run();
+    return json({ ok: true, orderNumber, accessToken, paymentMethod, paymentUrl: null, total: quantity * unitPrice, currency, message: "Submit your payment, then contact NorDa with this order number for confirmation." }, 201);
   }
 
   const match = path.match(/^\/digital\/orders\/([A-Za-z0-9-]+)$/);
