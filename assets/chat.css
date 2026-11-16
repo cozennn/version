@@ -415,3 +415,11 @@ body.cart-open .nd-chat{opacity:0!important;visibility:hidden!important;pointer-
  [dir=rtl] .nd-chat .nd-window{inset-inline:0 auto}
  .nd-chat .nd-log>.bub.me,.nd-chat .nd-log>.bub.bot{max-width:90%}
 }
+
+
+/* Mobile window must be positioned above the launcher, never stretched from the top edge. */
+@media(max-width:520px){
+ .nd-chat .nd-window{inset:auto 0 76px auto!important;top:auto!important;left:auto!important;right:0!important;position:absolute!important;width:min(356px,calc(100vw - 28px))!important;height:min(594px,calc(100dvh - 110px))!important;max-height:calc(100dvh - 110px)!important;border:1px solid rgba(23,22,21,.08);border-radius:20px;box-shadow:0 0 0 1px rgba(23,22,21,.04),0 22px 56px rgba(23,22,21,.22),0 6px 16px rgba(23,22,21,.1)}
+ [dir=rtl] .nd-chat .nd-window{inset:auto auto 76px 0!important;left:0!important;right:auto!important}
+}
+.nd-chat .nd-ticketbar .nd-agent-btn:not([hidden]){display:inline-flex!important;visibility:visible!important;opacity:1!important}
