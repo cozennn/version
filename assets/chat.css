@@ -151,3 +151,29 @@ body.cart-open .nd-chat{opacity:0!important;visibility:hidden!important;pointer-
 .nd-count{margin-inline-start:auto;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--nd-primary);color:#fff;font-size:10px;display:inline-grid;place-items:center}
 .nd-count:empty{display:none}
 @media(max-width:520px){.nd-actions-menu{top:calc(100% + 8px);inset-inline-end:0;width:min(285px,calc(100vw - 34px))}}
+
+
+/* ===== NORDA Support layout refinement ===== */
+.nd-header{padding-inline:14px 10px}
+.nd-header-actions{gap:2px}
+.nd-actions-menu{width:min(250px,calc(100vw - 42px))}
+.nd-menu-divider[hidden]{display:none!important}
+.nd-ticketbar.tk-info{min-height:50px;padding:8px 12px;gap:10px;background:#fff;border-bottom:1px solid var(--nd-line)}
+.nd-ticket-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nd-ticket-id{font-size:12.5px;font-weight:800;color:var(--nd-ink);letter-spacing:.02em;unicode-bidi:isolate}
+.nd-ticket-live{display:inline-flex;align-items:center;gap:6px;color:#6b6776;font-size:11px;font-weight:700;letter-spacing:0}
+.nd-ticket-live i{width:7px;height:7px;border-radius:50%;background:#25a56a;box-shadow:0 0 0 3px rgba(37,165,106,.12);flex:none}
+.nd-agent-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid rgba(90,70,214,.28);border-radius:10px;background:#fff;color:var(--nd-primary);font-size:12px;font-weight:800;white-space:nowrap;transition:background .15s}
+.nd-agent-btn:hover{background:var(--nd-primary-soft)}
+.nd-agent-btn svg{width:15px;height:15px;flex:none}
+.nd-agent-badge{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 11px;border-radius:99px;background:var(--nd-primary-soft);color:var(--nd-primary);font-size:11.5px;font-weight:800;white-space:nowrap}
+.nd-agent-btn[hidden],.nd-agent-badge[hidden]{display:none!important}
+.nd-composer-meta{display:none;justify-content:center;font-size:12px;padding:6px 4px 0}
+.nd-composer-meta .tk-char-count{display:none;font-size:12px}
+.nd-composer-meta .tk-char-count.is-near-limit{display:inline}
+.nd-composer-meta:has(.is-near-limit){display:flex;justify-content:space-between}
+.nd-hint{display:none}
+@media (hover:hover) and (min-width:521px){.nd-composer-meta{display:flex}.nd-hint{display:inline}}
+.nd-link-btn{margin-top:4px;padding:8px 0;border:0;background:none;color:var(--nd-primary);font-size:12.5px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.nd-link-btn[hidden]{display:none!important}
+@media(max-width:520px){.nd-icon-btn,.nd-header-actions>.nd-icon-btn{width:44px;height:44px}.nd-agent-btn{min-height:44px}.nd-menu-item{min-height:48px;font-size:13px}}
