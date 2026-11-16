@@ -185,9 +185,18 @@ function renderMessages(msgs,force){
   if(!clog)return;msgs=msgs||[];var tp=clog.querySelector('.typing');if(tp)tp.remove();
   if(force||!shown||msgs.length<shown){clog.innerHTML='';shown=0;if(!msgs.length)clog.appendChild(buildBub({from:'bot',text:t('chat_hello'),time:Date.now()}))}
   for(var i=shown;i<msgs.length;i++){
-    var bubble=buildBub(msgs[i]);clog.appendChild(bubble);
+    var message=msgs[i],bubble=buildBub(message),node=bubble;
+    if(message.from!=='user'){
+      var row=d.createElement('div');row.className='nd-bot-row';
+      var avatar=d.createElement('span');avatar.className='nd-bot-avatar '+(currentTicket&&currentTicket.supportMode==='human'?'is-human':'is-ai');avatar.setAttribute('aria-label',currentTicket&&currentTicket.supportMode==='human'?'Human agent':'AI assistant');
+      avatar.innerHTML=currentTicket&&currentTicket.supportMode==='human'
+        ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12v-1a9 9 0 0 1 18 0v1"/><path d="M3 12h3v6H5a2 2 0 0 1-2-2v-4Zm18 0h-3v6h1a2 2 0 0 0 2-2v-4Z"/><path d="M8 5.5 12 3l4 2.5M8 5.5h8"/></svg>'
+        :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6M2 12h2m16 0h2"/><path d="m18 3 .5 1.5L20 5l-1.5.5L18 7l-.5-1.5L16 5l1.5-.5L18 3Z"/></svg>';
+      row.appendChild(avatar);row.appendChild(bubble);node=row;
+    }
+    clog.appendChild(node);
     if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-      gsap.fromTo(bubble,{autoAlpha:0,y:12,scale:.975},{autoAlpha:1,y:0,scale:1,duration:.32,ease:'power2.out',clearProps:'transform'});
+      gsap.fromTo(node,{autoAlpha:0,y:12,scale:.975},{autoAlpha:1,y:0,scale:1,duration:.32,ease:'power2.out',clearProps:'transform'});
     }
   }
   shown=msgs.length;if(typing)clog.appendChild(typingEl());scrollLog();
