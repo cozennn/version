@@ -726,7 +726,10 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const rows = await env.DB.prepare(
       "SELECT sender_type, message_text, created_at FROM messages WHERE ticket_id = ? ORDER BY id ASC"
     ).bind(ticket.id).all<Record<string, unknown>>();
-    return json({ ok: true, ticketId, publicId: String(ticket.public_ref ?? ""), status: ticket.status, supportMode: ticket.support_mode === "human" ? "human" : "ai", messages: (rows.results ?? []).map(messageRow) });
+    const messages = (rows.results ?? []).map(messageRow);
+    const lastMessage = messages[messages.length - 1];
+    const handoffAvailable = ticket.support_mode !== "human" && ticket.handoff_status === "none" && lastMessage?.from === "user";
+    return json({ ok: true, ticketId, publicId: String(ticket.public_ref ?? ""), status: ticket.status, supportMode: ticket.support_mode === "human" ? "human" : "ai", handoffAvailable, messages });
   }
 
   const closeMatch = path.match(/^\/ticket\/([^/]+)\/close$/);
