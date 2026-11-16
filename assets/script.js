@@ -341,9 +341,9 @@ function chatOpen(o){
       if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',true);
       else{chatPreviousOverflow=d.body.style.overflow;d.body.style.overflow='hidden'}
     }
-    unread=0;setBadge();var nm=$1('#ch-name');if(!nm.value)nm.value=sget('norda_name')||'';
+    unread=0;setBadge();
     if(hasOpen()){loadMessages();if(view==='new')setView('chat')}
-    setTimeout(function(){if(view==='chat'&&ta)ta.focus();else if(view==='new'&&nm)nm.focus()},150);
+    setTimeout(function(){if(view==='chat'&&ta)ta.focus()},150);
   }else{
     cp.setAttribute('aria-hidden','true');
     fab.setAttribute('aria-expanded','false');
