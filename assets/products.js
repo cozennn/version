@@ -160,7 +160,7 @@ function mergeManagedCatalog(items) {
   } catch {}
   const api = (window.NORDA_CONFIG && window.NORDA_CONFIG.TELEGRAM_API) ||
     "https://norda-api.houda2004houdaa.workers.dev";
-  fetch(api.replace(/\\/+$/, "") + "/products/public", { headers: { Accept: "application/json" } })
+  fetch(api.replace(/\/+$/, "") + "/products/public", { headers: { Accept: "application/json" } })
     .then(response => response.ok ? response.json() : null)
     .then(result => {
       if (!result || !Array.isArray(result.products)) return;
