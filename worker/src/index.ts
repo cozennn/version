@@ -746,15 +746,6 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     return json({ ok: true });
   }
 
-  if (method === "GET" && path === "/ticket/closed/closed") {
-    const session = await getVisitorSession(request, env);
-    if (!session) return json({ ok: false, error: "unauthorized" }, 401);
-    const rows = await env.DB.prepare(
-      "SELECT public_id AS ticketId, public_ref AS publicId, user_name AS userName, status, created_at AS createdAt, closed_at AS closedAt FROM tickets WHERE visitor_id = ? AND status = 'closed' ORDER BY id DESC LIMIT 50"
-    ).bind(session.visitor_id).all<Record<string, unknown>>();
-    return json({ ok: true, tickets: rows.results ?? [] });
-  }
-
 
 
   return json({ ok: false, error: "not_found" }, 404);
