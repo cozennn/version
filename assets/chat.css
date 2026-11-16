@@ -400,3 +400,18 @@ body.cart-open .nd-chat{opacity:0!important;visibility:hidden!important;pointer-
 [dir=rtl] .nd-chat .nd-actions-menu .nd-menu-state.on:after{transform:translateX(-14px)}
 @media(max-width:520px){.nd-chat .nd-header-actions>.nd-menu-toggle{width:42px;height:42px}.nd-chat .nd-actions-menu{top:calc(100% + 7px);width:min(270px,calc(100vw - 34px))}}
 @media(prefers-reduced-motion:reduce){.nd-chat .nd-actions-menu,.nd-chat .nd-actions-menu .nd-menu-state,.nd-chat .nd-actions-menu .nd-menu-state:after{animation:none!important;transition:none!important}}
+
+
+/* Prevent message bubbles from shrinking or clipping their text */
+.nd-chat .nd-log>.bub.me,.nd-chat .nd-log>.bub.bot,.nd-chat .nd-log .nd-bot-row>.bub.bot{flex:0 0 auto;min-width:0;min-height:0;height:auto;overflow:visible;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.nd-chat .nd-log>.bub.me{width:fit-content;max-width:min(86%,420px)}
+.nd-chat .nd-log>.bub.bot{width:fit-content;max-width:min(86%,420px)}
+
+/* Compact chat window anchored to the launcher */
+.nd-chat .nd-window{width:min(356px,calc(100vw - 28px));height:min(594px,calc(100dvh - 110px));max-height:calc(100dvh - 110px);bottom:76px;transform-origin:bottom right}
+[dir=rtl] .nd-chat .nd-window{transform-origin:bottom left}
+@media(max-width:520px){
+ .nd-chat .nd-window{position:absolute;inset-inline:auto 0;bottom:76px;width:min(356px,calc(100vw - 28px));height:min(594px,calc(100dvh - 110px));max-height:calc(100dvh - 110px);border:1px solid rgba(23,22,21,.08);border-radius:20px;box-shadow:0 0 0 1px rgba(23,22,21,.04),0 22px 56px rgba(23,22,21,.22),0 6px 16px rgba(23,22,21,.1);transform:none}
+ [dir=rtl] .nd-chat .nd-window{inset-inline:0 auto}
+ .nd-chat .nd-log>.bub.me,.nd-chat .nd-log>.bub.bot{max-width:90%}
+}
