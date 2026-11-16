@@ -380,3 +380,23 @@ body.cart-open .nd-chat{opacity:0!important;visibility:hidden!important;pointer-
  .nd-chat .nd-log .nd-bot-row>.bub.bot{max-width:calc(100vw - 105px)}
  .nd-chat .nd-bot-avatar{width:40px;height:40px;flex-basis:40px}
 }
+
+
+/* Accessible compact header actions menu */
+.nd-chat .nd-header-actions{gap:4px}
+.nd-chat .nd-header-actions>.nd-menu-toggle{width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:11px;background:rgba(255,255,255,.12);color:#fff}
+.nd-chat .nd-header-actions>.nd-menu-toggle:hover,.nd-chat .nd-header-actions>.nd-menu-toggle[aria-expanded=true]{background:rgba(255,255,255,.24)}
+.nd-chat .nd-header-actions>.nd-menu-toggle svg{width:21px;height:21px}
+.nd-chat .nd-actions-menu{position:absolute;top:calc(100% + 9px);inset-inline-end:0;width:min(248px,calc(100vw - 42px));padding:7px;background:#fff;border:1px solid rgba(23,22,21,.1);border-radius:15px;box-shadow:0 16px 42px rgba(23,22,21,.2);display:flex;flex-direction:column;gap:3px;z-index:40;transform-origin:top right;animation:nd-menu-in .16s ease-out}
+.nd-chat .nd-actions-menu[hidden]{display:none!important}
+.nd-chat .nd-actions-menu .nd-menu-item{width:100%;min-height:46px;padding:8px 10px;display:flex;align-items:center;gap:10px;border:0;border-radius:10px;background:transparent;color:#302d3b;text-align:start;font-size:12.5px;font-weight:700}
+.nd-chat .nd-actions-menu .nd-menu-item:hover,.nd-chat .nd-actions-menu .nd-menu-item:focus-visible{background:#f1eff9;color:#5A46D6}
+.nd-chat .nd-actions-menu .nd-menu-icon{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:9px;background:#f1eff7;color:#5A46D6}
+.nd-chat .nd-actions-menu .nd-menu-icon svg{width:18px;height:18px}
+.nd-chat .nd-actions-menu .nd-menu-state{position:relative;width:34px;height:20px;margin-inline-start:auto;border-radius:99px;background:#cfccdc;transition:background .15s}
+.nd-chat .nd-actions-menu .nd-menu-state:after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.nd-chat .nd-actions-menu .nd-menu-state.on{background:#5A46D6}
+.nd-chat .nd-actions-menu .nd-menu-state.on:after{transform:translateX(14px)}
+[dir=rtl] .nd-chat .nd-actions-menu .nd-menu-state.on:after{transform:translateX(-14px)}
+@media(max-width:520px){.nd-chat .nd-header-actions>.nd-menu-toggle{width:42px;height:42px}.nd-chat .nd-actions-menu{top:calc(100% + 7px);width:min(270px,calc(100vw - 34px))}}
+@media(prefers-reduced-motion:reduce){.nd-chat .nd-actions-menu,.nd-chat .nd-actions-menu .nd-menu-state,.nd-chat .nd-actions-menu .nd-menu-state:after{animation:none!important;transition:none!important}}
