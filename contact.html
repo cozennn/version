@@ -133,142 +133,20 @@
 </aside>
 
 <div id="nordaChat" class="nd-chat">
-  <button id="chatFab" class="nd-launch fab" type="button" aria-label="فتح الدردشة" aria-expanded="false" aria-controls="chatPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.8 8.8 0 0 1-4-.95L3 21l1.95-5.1A8.5 8.5 0 1 1 21 11.5Z"/></svg>
-    <span id="fabBadge" class="nd-badge fab-badge"></span>
-  </button>
-
-  <section id="chatPanel" class="nd-window win" role="dialog" aria-modal="true" aria-labelledby="chatTitle" aria-hidden="true">
-    <header class="nd-header hd">
-      <div class="mark" aria-hidden="true">N</div>
-      <div class="nd-heading t"><strong id="chatTitle">NORDA Support</strong><span class="nd-status st"><i></i><small>نرد عادة في غضون دقائق</small></span></div>
-      <div class="nd-header-actions">
-        <button id="chatBack" class="nd-icon-btn nd-header-back" type="button" aria-label="رجوع" title="رجوع" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button id="soundToggle" class="nd-icon-btn nd-sound-toggle" type="button" aria-pressed="true" aria-label="إيقاف الصوت" title="إيقاف الصوت">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
-        </button>
-        <button id="chatMenuToggle" class="nd-icon-btn ib" type="button" aria-label="خيارات" aria-expanded="false" aria-controls="chatActionsMenu">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
-        </button>
-        <button id="chatX" class="nd-icon-btn ib" type="button" aria-label="تصغير">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div id="chatActionsMenu" class="nd-actions-menu menu" hidden>
-          <button id="tabNew" class="nd-menu-item mi tk-tab" type="button" data-tab="new"><span class="nd-menu-icon ic">＋</span><span>محادثة جديدة</span></button>
-          <button id="tabChat" class="nd-menu-item mi tk-tab" type="button" data-tab="chat" hidden><span class="nd-menu-icon ic">‹</span><span>العودة للمحادثة</span></button>
-          <button id="tabClosed" class="nd-menu-item mi tk-tab" type="button" data-tab="closed"><span class="nd-menu-icon ic">▤</span><span>المحادثات المغلقة</span><span id="closedCount" class="nd-count cnt tab-count" data-n="0"></span></button>
-          <div class="nd-menu-divider hr"></div>
-          <div class="nd-menu-label">شكل طلب الموظف</div>
-          <button id="handoffLayoutBar" class="nd-menu-item mi nd-layout-option on" type="button" aria-pressed="true"><span class="nd-menu-icon ic">▤</span><span>زر في شريط المحادثة</span><span class="nd-layout-check">✓</span></button>
-          <button id="handoffLayoutComposer" class="nd-menu-item mi nd-layout-option" type="button" aria-pressed="false"><span class="nd-menu-icon ic">＋</span><span>اقتراح فوق حقل الكتابة</span><span class="nd-layout-check"></span></button>
-          <div class="nd-menu-divider hr"></div>
-          <button id="chatReplayPreview" class="nd-menu-item mi" type="button"><span class="nd-menu-icon ic">↻</span><span>إعادة المعاينة</span></button>
-          <div class="nd-menu-divider hr" id="menuTicketDivider" hidden></div>
-          <button id="btnCloseTicket" class="nd-menu-item mi danger nd-menu-danger tk-link" type="button" hidden><span class="nd-menu-icon ic">×</span><span>إغلاق التذكرة</span></button>
-        </div>
-      </div>
-    </header>
-
-    <div class="nd-content body">
-      <section class="tk-v nd-welcome welcome v on" data-view="new" aria-hidden="false">
-        <div class="nd-welcome-icon wi" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none"><path d="M40 23.5c0 9.1-7.4 16.5-16.5 16.5-3 0-5.8-.8-8.2-2.2L7 40l2.2-7.8A16.4 16.4 0 1 1 40 23.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 22h16M16 28h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-        </div>
-        <h2>كيف نساعدك؟</h2>
-        <p class="nd-intro">اختر موضوعًا أو اكتب سؤالك، وسيساعدك المساعد. يمكنك طلب موظف دعم في أي وقت.</p>
-        <div class="lbl">مواضيع سريعة</div>
-        <div class="topics">
-          <button class="topic" type="button" data-topic="أسعار القوالب">القوالب والأسعار</button>
-          <button class="topic" type="button" data-topic="طريقة الدفع">طريقة الدفع</button>
-          <button class="topic" type="button" data-topic="أريد مشروعًا مخصصًا">مشروع مخصص</button>
-          <button class="topic" type="button" data-topic="">سؤال آخر</button>
-        </div>
-        <button class="lnk" id="addName" type="button">إضافة اسمي (اختياري)</button>
-        <input id="ch-name" class="nm nd-name-input tk-in" type="text" placeholder="اسمك" autocomplete="name" maxlength="80" hidden>
-        <button id="btnNewTicket" class="nd-primary-btn" type="button">ابدأ المحادثة <span aria-hidden="true">→</span></button>
-        <button id="btnPastChats" class="lnk nd-link-btn" type="button" hidden>محادثاتي السابقة</button>
-      </section>
-
-      <section class="tk-v nd-conversation v" data-view="chat" aria-hidden="true">
-        <div class="nd-ticketbar tb tk-info">
-          <div class="nd-ticket-meta m">
-            <button class="nd-ticket-id tid" id="ticketIdLabel" type="button" title="انقر لنسخ رقم التذكرة">#</button>
-            <span class="nd-ticket-live tl"><i></i><span>نشطة</span></span>
-          </div>
-          <button id="btnHumanHandoff" class="nd-agent-btn ag tk-human-handoff" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>تحدث مع موظف
-          </button>
-          <span id="supportModeLabel" class="nd-agent-badge badge" hidden></span>
-        </div>
-        <div id="chatLog" class="nd-log log tk-log" role="log" aria-live="polite" aria-relevant="additions text"></div>
-        <div id="filePreview" class="nd-file-preview tk-file" style="display:none">
-          <span id="fileNamePreview"></span><span id="fileSizePreview"></span>
-          <button id="fileRemove" class="nd-remove-file tk-ib" type="button" aria-label="إزالة الملف">×</button>
-        </div>
-        <form id="chatForm" class="nd-composer cp tk-form">
-          <div class="nd-compose-row row2 tk-row">
-            <button type="button" id="btnAttach" class="nd-attach at tk-ib" aria-label="إرفاق ملف" title="إرفاق ملف"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11.5-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
-            <textarea id="ch-msg" placeholder="اكتب رسالتك…" rows="1" maxlength="3500" aria-label="اكتب رسالتك" aria-describedby="chatCharCount"></textarea>
-            <button type="submit" id="chBtn" class="nd-send sd tk-send" aria-label="إرسال" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/></svg></button>
-          </div>
-          <div class="nd-composer-meta"><small id="chatCharCount" class="tk-char-count">0 / 3500</small><small class="nd-hint hint">Enter للإرسال · Shift + Enter لسطر جديد</small></div>
-          <input id="fileInput" type="file" accept="image/*,application/pdf" hidden>
-        </form>
-      </section>
-
-      <section class="tk-v nd-closed v" data-view="closed" aria-hidden="true">
-        <div class="nd-section-heading cl"><h3>المحادثات السابقة</h3><small>يمكنك الرجوع إلى محادثات الدعم السابقة.</small>
-          <div id="closedList" class="nd-closed-list"></div>
-        </div>
-      </section>
-      <section class="tk-v nd-detail v" data-view="detail" aria-hidden="true">
-        <div class="nd-ticketbar back"><button id="btnBack" class="nd-back-btn" type="button" aria-label="رجوع">›</button><strong id="detailTicketId" style="direction:ltr;unicode-bidi:isolate"></strong><span class="sys" style="margin-inline-start:auto">مغلقة · قراءة فقط</span></div>
-        <div id="detailLog" class="nd-log log tk-log"></div>
-      </section>
-    </div>
-    <div id="chatToast" class="nd-toast toast tk-toast" role="status" aria-live="polite"></div>
-  </section>
-</div>
-
+<button id="chatFab" class="nd-launch fab" type="button" aria-label="فتح دعم نوردا" aria-expanded="false" aria-controls="chatPanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="2.5" y="12" width="4" height="7" rx="2"/><rect x="17.5" y="12" width="4" height="7" rx="2"/><path d="M21.5 18a4 4 0 0 1-4 4h-2"/></svg><span id="fabBadge" class="nd-badge fab-badge"></span></button>
+<section id="chatPanel" class="nd-window win" role="dialog" aria-modal="true" aria-labelledby="chatTitle" aria-hidden="true">
+<header class="nd-header hd"><div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="2.5" y="12" width="4" height="7" rx="2"/><rect x="17.5" y="12" width="4" height="7" rx="2"/><path d="M21.5 18a4 4 0 0 1-4 4h-2"/></svg></div><div class="nd-heading t"><strong id="chatTitle">دعم نوردا</strong><span class="nd-status st"><i></i><small>نحن هنا لمساعدتك</small></span></div><div class="nd-header-actions"><button id="chatNewConversation" class="nd-new-chat" type="button">محادثة جديدة</button><button id="chatX" class="nd-icon-btn ib" type="button" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div></header>
+<div class="nd-content body">
+<section class="tk-v nd-welcome welcome v on" data-view="new" aria-hidden="false"><div class="nd-welcome-icon wi" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 26v-4a17 17 0 0 1 34 0v4"/><rect x="4" y="24" width="8" height="14" rx="4"/><rect x="36" y="24" width="8" height="14" rx="4"/><path d="M40 36a8 8 0 0 1-8 7h-4"/></svg></div><h2>كيف نساعدك؟</h2><p class="nd-intro">ابدأ محادثة وسنساعدك في استفسارك.</p><button id="btnNewTicket" class="nd-primary-btn" type="button">محادثة جديدة</button></section>
+<section class="tk-v nd-conversation v" data-view="chat" aria-hidden="true"><div class="nd-ticketbar tk-info"><span class="nd-chat-caption">محادثتك مع دعم نوردا</span><button id="btnHumanHandoff" class="nd-agent-btn ag tk-human-handoff" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/><path d="M20 19a4 4 0 0 1-4 3h-2"/></svg>وكيل بشري</button></div><div id="chatLog" class="nd-log log tk-log" role="log" aria-live="polite" aria-relevant="additions text"></div>
+<div id="handoffNamePrompt" class="nd-handoff-name" hidden><form id="handoffNameForm"><label for="handoffName">ما اسمك؟</label><input id="handoffName" type="text" maxlength="100" autocomplete="name" placeholder="أدخل اسمك" required><div class="nd-handoff-actions"><button id="handoffSubmit" type="submit">إرسال الطلب</button><button id="handoffCancel" type="button">إلغاء</button></div></form></div>
+<div id="filePreview" class="nd-file-preview tk-file" style="display:none"><span id="fileNamePreview"></span><span id="fileSizePreview"></span><button id="fileRemove" class="nd-remove-file tk-ib" type="button" aria-label="إزالة الملف">×</button></div>
+<form id="chatForm" class="nd-composer cp tk-form"><div class="nd-compose-row row2 tk-row"><button type="button" id="btnAttach" class="nd-attach at tk-ib" aria-label="إرفاق ملف" title="إرفاق ملف"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11.5-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button><textarea id="ch-msg" placeholder="اكتب رسالتك…" rows="1" maxlength="3500" aria-label="اكتب رسالتك" aria-describedby="chatCharCount"></textarea><button type="submit" id="chBtn" class="nd-send sd tk-send" aria-label="إرسال" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/></svg></button></div><div class="nd-composer-meta"><small id="chatCharCount" class="tk-char-count">0 / 3500</small><small class="nd-hint hint">Enter للإرسال · Shift + Enter لسطر جديد</small></div><input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,application/pdf" hidden></form></section>
+</div><div id="chatToast" class="nd-toast toast tk-toast" role="status" aria-live="polite"></div></section></div>
 <script src="assets/config.js"></script>
 <script src="assets/products.js"></script>
 <script src="assets/main.js?v=20261108-1"></script>
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-<script src="assets/script.js?v=20261116-6"></script>
-<script>
-(function(){
-  var toggle=document.getElementById('chatMenuToggle'),menu=document.getElementById('chatActionsMenu');
-  if(!toggle||!menu)return;
-  var sound=document.getElementById('soundToggle'),state=sound&&sound.querySelector('.nd-menu-state');
-  var L={ar:['تشغيل','إيقاف'],en:['On','Off'],fr:['Activé','Désactivé']};
-  function sync(){if(!state||!sound)return;var a=L[document.documentElement.lang]||L.ar;state.textContent=sound.getAttribute('aria-pressed')==='true'?a[0]:a[1]}
-  function setMenu(open){
-    if(open){
-      menu.hidden=false;toggle.setAttribute('aria-expanded','true');sync();
-      if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-        window.gsap.killTweensOf(menu);
-        window.gsap.fromTo(menu,{autoAlpha:0,y:-7,scale:.98},{autoAlpha:1,y:0,scale:1,duration:.22,ease:'power2.out',clearProps:'transform,opacity,visibility'});
-      }
-      var first=menu.querySelector('button:not([hidden]):not([aria-disabled="true"])');if(first)first.focus();
-    }else{
-      toggle.setAttribute('aria-expanded','false');
-      if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!menu.hidden){
-        window.gsap.killTweensOf(menu);
-        window.gsap.to(menu,{autoAlpha:0,y:-5,scale:.985,duration:.14,ease:'power1.in',onComplete:function(){menu.hidden=true;window.gsap.set(menu,{clearProps:'all'})}});
-      }else menu.hidden=true;
-    }
-  }
-  toggle.addEventListener('click',function(e){e.stopPropagation();setMenu(menu.hidden)});
-  menu.addEventListener('click',function(e){var b=e.target.closest('button');if(b&&b!==sound){setMenu(false);toggle.focus()}});
-  document.addEventListener('click',function(e){if(!menu.hidden&&!menu.contains(e.target)&&!toggle.contains(e.target))setMenu(false)});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!menu.hidden){setMenu(false);toggle.focus()}});
-  if(sound)sound.addEventListener('click',function(){setTimeout(sync,0)});
-  sync();
-  var past=document.getElementById('btnPastChats');
-  if(past)past.addEventListener('click',function(){document.getElementById('tabClosed').click()});
-})();
-</script>
+<script src="assets/script.js?v=20261116-7"></script>
 </body>
 </html>
