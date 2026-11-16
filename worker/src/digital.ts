@@ -72,7 +72,7 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
             tagline: [provider, Number.isFinite(duration) && duration > 0 ? (duration % 30 === 0 ? (duration / 30) + " month" + (duration / 30 === 1 ? "" : "s") : duration + " days") : ""].filter(Boolean).join(" · "),
             price: Number.isFinite(price) ? price : 0,
             currency,
-            category: clean(p.provider?.key, 80) || provider.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "digital",
+            category: provider.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "digital",
             image: "",
             icon: clean(p.emoji?.normal, 16) || "✦",
             description: [provider, deliveryType ? "Delivery: " + deliveryType.replace(/_/g, " ") : "", Number.isFinite(duration) && duration > 0 ? "Duration: " + duration + " days" : "", p.warranty?.enabled ? "Warranty: " + Number(p.warranty.days || 0) + " days" : ""].filter(Boolean).join(" · "),
@@ -97,7 +97,7 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
     let body: Record<string, any>;
     try { body = await request.json() as Record<string, any>; } catch { return json({ ok: false, error: "invalid_json" }, 400); }
     const name = clean(body.name, 100), email = clean(body.email, 180).toLowerCase();
-    const productId = clean(body.productId, 80), paymentMethod = clean(body.paymentMethod, 20);
+    const productId = clean(body.productId, 160), paymentMethod = clean(body.paymentMethod, 20);
     const quantity = Math.floor(Number(body.quantity || 1));
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !productId || !["paypal", "manual"].includes(paymentMethod) || !Number.isInteger(quantity) || quantity < 1 || quantity > 50) return json({ ok: false, error: "invalid_order_details" }, 400);
     if (paymentMethod === "paypal") return json({ ok: false, error: "paypal_not_configured_for_supplier_products" }, 400);
