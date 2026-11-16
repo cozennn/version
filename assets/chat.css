@@ -121,7 +121,7 @@ body.cart-open .nd-chat{opacity:0!important;visibility:hidden!important;pointer-
  .nd-log .bub{max-width:90%;font-size:14px}
  .nd-compose-row textarea{font-size:16px}
 }
-@media(prefers-reduced-motion:reduce){.nd-chat *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){}
 
 
 /* Header actions menu: keep the conversation area clean and put secondary actions in one place. */
