@@ -538,3 +538,25 @@ img { height: auto; }
 .cart__empty-actions .btn {
   flex: 1 1 130px;
 }
+
+/* NorDa brand image */
+.brand__mark--image {
+  background: transparent;
+  overflow: hidden;
+}
+.brand__mark--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.splash__logo--image {
+  background: transparent;
+  overflow: hidden;
+}
+.splash__logo--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
