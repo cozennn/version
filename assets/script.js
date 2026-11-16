@@ -257,7 +257,7 @@ async function loadMessages(){
     if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId}
     if(j.publicId)ticket.publicId=String(j.publicId);
     if(j.status==='closed'){onClosedRemote();return}
-    ticket.supportMode=j.supportMode==='human'?'human':'ai';ticket.handoffAvailable=!!j.handoffAvailable;updateSupportMode();persist();
+    ticket.supportMode=j.supportMode==='human'?'human':'ai';var pollLast=j.messages&&j.messages[j.messages.length-1];ticket.handoffAvailable=ticket.supportMode!=='human'&&(j.handoffAvailable===true||!!(pollLast&&pollLast.from==='user'&&j.status==='open'&&!ticket.handoffPending));updateSupportMode();persist();
     var ms=j.messages||[];
     if(ms.length!==lastCount){var added=ms.length-lastCount,last=ms[ms.length-1];lastCount=ms.length;currentTicket.messages=ms;if(last&&last.from!=='user')typing=false;renderMessages(ms);persist();
       if(last&&last.from!=='user'&&added>0){if(!cp.classList.contains('open')||view!=='chat'){unread+=Math.max(added,1);setBadge()}if(was)ding()}}
@@ -310,7 +310,7 @@ if(cf)cf.addEventListener('submit',async function(e){
   try{
     var j=await apiSend(payload,ticket,tid);
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
-    if(j&&j.ok){retryPayload=null;ticket.handoffAvailable=!!(j.aiUnavailable||j.handoffAvailable);ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);if(ticket.supportMode!=='human'&&ticket.messages.length&&ticket.messages[ticket.messages.length-1].from==='user'){setTyping(true);renderMessages(ticket.messages)}updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
+    if(j&&j.ok){retryPayload=null;ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;var lastReply=ticket.messages[ticket.messages.length-1];ticket.handoffAvailable=ticket.supportMode!=='human'&&!j.handoffPending&&(j.aiUnavailable===true||j.handoffAvailable===true||!!(lastReply&&lastReply.from==='user'&&!j.duplicate));lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);if(ticket.supportMode!=='human'&&ticket.messages.length&&ticket.messages[ticket.messages.length-1].from==='user'){setTyping(true);renderMessages(ticket.messages)}updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
   }catch(err){restoreFailedMessage()}
   finally{sending=false;setBusy(btn,false);if(currentTicket===ticket&&ta)ta.focus()}
 });
