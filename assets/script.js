@@ -340,7 +340,7 @@ async function loadMessages(){
     var ms=j.messages||[];
     if(ms.length!==lastCount){var added=ms.length-lastCount,last=ms[ms.length-1];lastCount=ms.length;currentTicket.messages=ms;if(last&&last.from!=='user')typing=false;renderMessages(ms);persist();
       if(last&&last.from!=='user'&&added>0){if(!cp.classList.contains('open')||view!=='chat'){unread+=Math.max(added,1);setBadge()}if(was)ding()}}
-    remoteReady=true;}catch(e){}
+    remoteReady=true;return true;}catch(e){return false}
 }
 
 function finishClosed(ticket,messageKey){archiveClosed(ticket);currentTicket=null;sdel('norda_last_ticket');setTyping(false);shown=0;updateTabs();setView('closed');loadClosed();toast(messageKey)}
@@ -356,7 +356,7 @@ async function poll(){
   if(!cp||d.hidden)return;
   if(hasOpen()&&!sending&&!pollBusy){
     pollBusy=true;
-    try{await loadMessages();pollDelay=1500}catch(e){pollDelay=Math.min(pollDelay*2,15000)}finally{pollBusy=false}
+    try{var loaded=await loadMessages();pollDelay=loaded===false?Math.min(pollDelay*2,15000):1500}finally{pollBusy=false}
   }else pollDelay=1500;
   schedulePoll();
 }
@@ -381,7 +381,7 @@ if(cf)cf.addEventListener('submit',async function(e){
   e.preventDefault();
   if(!hasOpen()||sending){if(!hasOpen())toast('ticket_closed_msg');return}
   var btn=$1('#chBtn'),msg=ta.value.trim(),file=pendingFile,ticket=currentTicket,tid=String(ticket.ticketId);if(!msg&&!file)return;
-  var payload=retryPayload&&retryPayload.text===msg&&retryPayload.fileName===(file&&file.name||null)?retryPayload:{text:msg,file:file?file.data:null,fileName:file?file.name:null,fileType:file?file.type:null,clientMessageId:createClientMessageId()};
+  var payload=retryPayload&&retryPayload.text===msg&&retryPayload.file===(file&&file.data||null)?retryPayload:{text:msg,file:file?file.data:null,fileName:file?file.name:null,fileType:file?file.type:null,clientMessageId:createClientMessageId()};
   ta.value='';grow();pendingFile=null;clearFile();
   currentTicket.messages=currentTicket.messages||[];
   currentTicket.messages.push({from:'user',text:msg,time:Date.now(),file:file?{name:file.name,type:file.type,data:file.data}:null});
@@ -390,7 +390,7 @@ if(cf)cf.addEventListener('submit',async function(e){
   try{
     var j=await apiSend(payload,ticket,tid);
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid)return;
-    if(j&&j.ok){retryPayload=null;ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
+    if(j&&j.ok){retryPayload=null;ticket.supportMode=j.supportMode==='human'?'human':(ticket.supportMode||'ai');ticket.messages=j.messages||ticket.messages;lastCount=ticket.messages.length;setTyping(false);renderMessages(ticket.messages);if(ticket.supportMode!=='human'&&ticket.messages.length&&ticket.messages[ticket.messages.length-1].from==='user'){setTyping(true);renderMessages(ticket.messages)}updateSupportMode();persist();if(j.aiUnavailable)toastRaw(t('ai_unavailable'));if(j.notificationSent===false){var notice=lang==='ar'?'حُفظت رسالتك، لكن تعذّر إرسال إشعار الدعم إلى Telegram.':lang==='fr'?'Votre message a été enregistré, mais la notification Telegram n’a pas pu être envoyée.':'Your message was saved, but the Telegram support notification could not be sent.';toastRaw(notice)}}else restoreFailedMessage();
   }catch(err){restoreFailedMessage()}
   finally{sending=false;setBusy(btn,false);if(currentTicket===ticket&&ta)ta.focus()}
 });
