@@ -143,7 +143,6 @@
       <div class="nd-brand-mark" aria-hidden="true"><img src="./logo%20nordaa.png" alt=""></div>
       <div class="nd-heading">
         <strong id="chatTitle">NORDA Support</strong>
-        <span id="supportModeLabel" class="nd-human-label" hidden></span>
         <span class="nd-status"><i></i><small>نرد عادة في غضون دقائق</small></span>
       </div>
       <div class="nd-header-actions">
@@ -154,16 +153,13 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
         </button>
         <div id="chatActionsMenu" class="nd-actions-menu" hidden>
-          <div class="nd-menu-label">CONVERSATION</div>
-          <button id="tabNew" class="nd-menu-item tk-tab" type="button" data-tab="new"><span class="nd-menu-icon">＋</span><span>New conversation</span></button>
-          <button id="tabChat" class="nd-menu-item tk-tab" type="button" data-tab="chat" aria-disabled="true"><span class="nd-menu-icon">◌</span><span>Current conversation</span></button>
-          <button id="tabClosed" class="nd-menu-item tk-tab" type="button" data-tab="closed"><span class="nd-menu-icon">▤</span><span>Closed conversations</span><span id="closedCount" class="nd-count tab-count" data-n="0"></span></button>
+          <button id="tabNew" class="nd-menu-item tk-tab" type="button" data-tab="new"><span class="nd-menu-icon">＋</span><span>محادثة جديدة</span></button>
+          <button id="tabChat" class="nd-menu-item tk-tab" type="button" data-tab="chat" hidden><span class="nd-menu-icon">◌</span><span>العودة للمحادثة</span></button>
+          <button id="tabClosed" class="nd-menu-item tk-tab" type="button" data-tab="closed"><span class="nd-menu-icon">▤</span><span>المحادثات المغلقة</span><span id="closedCount" class="nd-count tab-count" data-n="0"></span></button>
           <div class="nd-menu-divider"></div>
-          <div class="nd-menu-label">TICKET ACTIONS</div>
-          <button id="btnHumanHandoff" class="nd-menu-item tk-human-handoff" type="button"><span class="nd-menu-icon">♧</span><span>Request human support</span></button>
-          <button id="btnCloseTicket" class="nd-menu-item nd-menu-danger tk-link" type="button"><span class="nd-menu-icon">×</span><span>Close ticket</span></button>
-          <div class="nd-menu-divider"></div>
-          <button id="soundToggle" class="nd-menu-item" type="button" aria-pressed="true" aria-label="Mute chat notifications" title="Sound"><span class="nd-menu-icon">◖</span><span>Sound notifications</span><span class="nd-menu-state">On</span></button>
+          <button id="soundToggle" class="nd-menu-item" type="button" aria-pressed="true" aria-label="كتم صوت تنبيه الدردشة" title="صوت"><span class="nd-menu-icon">◖</span><span>صوت الإشعارات</span><span class="nd-menu-state"></span></button>
+          <div class="nd-menu-divider" id="menuTicketDivider" hidden></div>
+          <button id="btnCloseTicket" class="nd-menu-item nd-menu-danger tk-link" type="button" hidden><span class="nd-menu-icon">×</span><span>إغلاق التذكرة</span></button>
         </div>
       </div>
     </header>
@@ -180,12 +176,20 @@
         <input id="ch-name" class="nd-name-input tk-in" type="text" placeholder="اسمك" autocomplete="name" maxlength="80">
         <button id="btnNewTicket" class="nd-primary-btn" type="button">ابدأ المحادثة <span aria-hidden="true">→</span></button>
         <p class="nd-footnote">دعم القوالب والمنتجات الرقمية والطلبات.</p>
+        <button id="btnPastChats" class="nd-link-btn" type="button" hidden>محادثاتي السابقة</button>
       </section>
 
       <section class="tk-v nd-conversation" data-view="chat" aria-hidden="true">
         <div class="nd-ticketbar tk-info">
-          <span class="nd-ticket-id" id="ticketIdLabel">#</span>
-          <span class="nd-ticket-live"><i></i> ACTIVE TICKET</span>
+          <div class="nd-ticket-meta">
+            <span class="nd-ticket-id" id="ticketIdLabel">#</span>
+            <span class="nd-ticket-live"><i></i> <span>نشطة</span></span>
+          </div>
+          <button id="btnHumanHandoff" class="nd-agent-btn tk-human-handoff" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <span>تحدث مع موظف</span>
+          </button>
+          <span id="supportModeLabel" class="nd-agent-badge" hidden></span>
         </div>
         <div id="chatLog" class="nd-log tk-log" role="log" aria-live="polite" aria-relevant="additions text"></div>
         <div id="filePreview" class="nd-file-preview tk-file" style="display:none">
@@ -203,13 +207,13 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/></svg>
             </button>
           </div>
-          <div class="nd-composer-meta"><small id="chatCharCount" class="tk-char-count">0 / 3500</small><small>Enter للإرسال · Shift + Enter لسطر جديد</small></div>
+          <div class="nd-composer-meta"><small id="chatCharCount" class="tk-char-count">0 / 3500</small><small class="nd-hint">Enter للإرسال · Shift + Enter لسطر جديد</small></div>
           <input id="fileInput" type="file" accept="image/*,application/pdf" hidden>
         </form>
       </section>
 
       <section class="tk-v nd-closed" data-view="closed" aria-hidden="true">
-        <div class="nd-section-heading"><span class="nd-kicker">HISTORY</span><h3>التذاكر المغلقة</h3><p>يمكنك الرجوع إلى محادثات الدعم السابقة.</p></div>
+        <div class="nd-section-heading"><span class="nd-kicker">المحادثات السابقة</span><h3>التذاكر المغلقة</h3><p>يمكنك الرجوع إلى محادثات الدعم السابقة.</p></div>
         <div id="closedList" class="nd-closed-list"></div>
       </section>
 
@@ -234,13 +238,18 @@
 (function(){
   var toggle=document.getElementById('chatMenuToggle'),menu=document.getElementById('chatActionsMenu');
   if(!toggle||!menu)return;
-  function setMenu(open){menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open){var first=menu.querySelector('button:not([hidden]):not([aria-disabled="true"])');if(first)first.focus()}}
+  var sound=document.getElementById('soundToggle'),state=sound&&sound.querySelector('.nd-menu-state');
+  var L={ar:['تشغيل','إيقاف'],en:['On','Off'],fr:['Activé','Désactivé']};
+  function sync(){if(!state||!sound)return;var a=L[document.documentElement.lang]||L.ar;state.textContent=sound.getAttribute('aria-pressed')==='true'?a[0]:a[1]}
+  function setMenu(open){menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open){sync();var first=menu.querySelector('button:not([hidden]):not([aria-disabled="true"])');if(first)first.focus()}}
   toggle.addEventListener('click',function(e){e.stopPropagation();setMenu(menu.hidden)});
-  menu.addEventListener('click',function(e){var b=e.target.closest('button');if(b){setMenu(false);toggle.focus()}});
+  menu.addEventListener('click',function(e){var b=e.target.closest('button');if(b&&b!==sound){setMenu(false);toggle.focus()}});
   document.addEventListener('click',function(e){if(!menu.hidden&&!menu.contains(e.target)&&!toggle.contains(e.target))setMenu(false)});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!menu.hidden){setMenu(false);toggle.focus()}});
-  var sound=document.getElementById('soundToggle'),state=sound&&sound.querySelector('.nd-menu-state');
-  if(sound&&state){var sync=function(){state.textContent=sound.getAttribute('aria-pressed')==='true'?'On':'Off'};sound.addEventListener('click',function(){setTimeout(sync,0)});sync()}
+  if(sound)sound.addEventListener('click',function(){setTimeout(sync,0)});
+  sync();
+  var past=document.getElementById('btnPastChats');
+  if(past)past.addEventListener('click',function(){document.getElementById('tabClosed').click()});
 })();
 </script>
 </body>
