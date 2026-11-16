@@ -675,7 +675,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       supportMode: finalMode,
       handoffPending,
       aiUnavailable: !aiReply && finalMode === "ai" && !handoffPending,
-      handoffAvailable: finalMode === "ai" && !handoffPending,
+      handoffAvailable: !aiReply && finalMode === "ai" && !handoffPending,
       messages: await readTicketMessages(env, Number(ticket.id))
     });
   }
