@@ -63,6 +63,10 @@ Object.assign(DICT,{
 "إغلاق التذكرة":["Close ticket","Fermer le ticket"],
 "نشطة":["Active","Active"],
 "تحدث مع موظف":["Talk to an agent","Parler à un agent"],
+"شكل طلب الموظف":["Agent request style","Style de demande d’agent"],
+"زر في شريط المحادثة":["Button in chat header","Bouton dans l’en-tête"],
+"اقتراح فوق حقل الكتابة":["Suggestion above message field","Suggestion au-dessus du champ de message"],
+"إعادة المعاينة":["Replay chat animation","Rejouer l’animation du chat"],
 "محادثاتي السابقة":["My previous chats","Mes conversations précédentes"],
 "المحادثات السابقة":["Chat history","Historique des conversations"],
 "التذاكر المغلقة":["Closed tickets","Tickets fermés"]
