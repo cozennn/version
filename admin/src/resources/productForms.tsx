@@ -7,6 +7,8 @@ function ProductFields(){return <>
  <TextInput source="name" validate={required()} fullWidth/>
  <TextInput source="tagline" fullWidth/>
  <NumberInput source="price" min={0} validate={required()}/>
+ <SelectInput source="currency" choices={[{id:"USD",name:"USD"},{id:"EUR",name:"EUR"},{id:"DZD",name:"DZD"}]} defaultValue="USD"/>
+ <TextInput source="ggsoma_slug" label="GGSoma product slug" helperText="Exact slug from Partner API catalog. Required to enable supplier fulfillment." fullWidth/>
  <TextInput source="category"/>
  <TextInput source="image" fullWidth/>
  <TextInput source="paypal_url" label="PayPal payment link" helperText="Paste the HTTPS PayPal Payment Link created for this product. Leave blank to keep the current manual/contact flow." fullWidth/>

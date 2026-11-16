@@ -1,4 +1,6 @@
-interface AdminEnv { DB: D1Database; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
+import { fulfillPaidDigitalOrder } from "./digital";
+
+interface AdminEnv { DB: D1Database; GGSOMA_API_KEY?: string; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
 
 const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -283,8 +285,8 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0||!["draft","active","inquiry","archived"].includes(status)||paypalUrl===null) return adminJson({error:"invalid_product",message:"Check the product details and use a valid PayPal payment link."},400);
     const duplicate=await env.DB.prepare("SELECT id FROM norda_products WHERE id=? LIMIT 1").bind(id).first();
     if(duplicate) return adminJson({error:"product_id_already_exists",message:"Choose a different product ID. The existing product was not changed."},409);
-    await env.DB.prepare("INSERT INTO norda_products(id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,paypal_url,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
-      .bind(id,type,name,clean(b.tagline,240),price,clean(b.category,80),clean(b.image,1000),JSON.stringify(Array.isArray(b.tags)?b.tags:[]),clean(b.description,4000),JSON.stringify(Array.isArray(b.includes)?b.includes:[]),b.featured?1:0,status,b.subscription?1:0,clean(b.interval,20)||"month",paypalUrl,nowIso(),session.id).run();
+    await env.DB.prepare("INSERT INTO norda_products(id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,paypal_url,ggsoma_slug,currency,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+      .bind(id,type,name,clean(b.tagline,240),price,clean(b.category,80),clean(b.image,1000),JSON.stringify(Array.isArray(b.tags)?b.tags:[]),clean(b.description,4000),JSON.stringify(Array.isArray(b.includes)?b.includes:[]),b.featured?1:0,status,b.subscription?1:0,clean(b.interval,20)||"month",paypalUrl,clean(b.ggsoma_slug,120),clean(b.currency,3)||"USD",nowIso(),session.id).run();
     await audit(env,session.id,"upsert","product",id);
     const row=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row},201);
@@ -304,8 +306,8 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const merged: Record<string, unknown> = {...current,...b,id};
     const type=clean(merged.type,20),name=clean(merged.name,120),price=Number(merged.price),status=clean(merged.status,30)||"active",paypalUrl=paypalPaymentUrl(merged.paypal_url);
     if(!name||!["template","digital"].includes(type)||!Number.isFinite(price)||price<0||!["draft","active","inquiry","archived"].includes(status)||paypalUrl===null)return adminJson({error:"invalid_product",message:"Check the product details and use a valid PayPal payment link."},400);
-    await env.DB.prepare("UPDATE norda_products SET type=?,name=?,tagline=?,price=?,category=?,image=?,tags_json=?,description=?,includes_json=?,featured=?,status=?,subscription=?,interval=?,paypal_url=?,updated_at=?,updated_by=? WHERE id=?")
-      .bind(type,name,clean(merged.tagline,240),price,clean(merged.category,80),clean(merged.image,1000),JSON.stringify(Array.isArray(merged.tags)?merged.tags:jsonArray(current.tags_json)),clean(merged.description,4000),JSON.stringify(Array.isArray(merged.includes)?merged.includes:jsonArray(current.includes_json)),merged.featured?1:0,status,merged.subscription?1:0,clean(merged.interval,20)||"month",paypalUrl,nowIso(),session.id,id).run();
+    await env.DB.prepare("UPDATE norda_products SET type=?,name=?,tagline=?,price=?,category=?,image=?,tags_json=?,description=?,includes_json=?,featured=?,status=?,subscription=?,interval=?,paypal_url=?,ggsoma_slug=?,currency=?,updated_at=?,updated_by=? WHERE id=?")
+      .bind(type,name,clean(merged.tagline,240),price,clean(merged.category,80),clean(merged.image,1000),JSON.stringify(Array.isArray(merged.tags)?merged.tags:jsonArray(current.tags_json)),clean(merged.description,4000),JSON.stringify(Array.isArray(merged.includes)?merged.includes:jsonArray(current.includes_json)),merged.featured?1:0,status,merged.subscription?1:0,clean(merged.interval,20)||"month",paypalUrl,clean(merged.ggsoma_slug,120),clean(merged.currency,3)||"USD",nowIso(),session.id,id).run();
     await audit(env,session.id,"update","product",id);
     const row=await env.DB.prepare("SELECT * FROM norda_products WHERE id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row});
@@ -481,6 +483,7 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const productName=clean(merged.product_name,180)||product?.name||"Custom service";
     await env.DB.prepare("UPDATE norda_orders SET customer_id=?,product_id=?,product_name=?,quantity=?,unit_price=?,currency=?,total_amount=?,status=?,payment_status=?,payment_method=?,notes=?,updated_at=? WHERE id=?")
       .bind(customerId,productId,productName,quantity,unitPrice,currency,quantity*unitPrice,status,payment,clean(merged.payment_method,100),clean(merged.notes,4000),nowIso(),id).run();
+    if (payment === "paid" && current.ggsoma_product_slug && !current.partner_order_code) await fulfillPaidDigitalOrder(env, id);
     await audit(env,session.id,"update","order",id);
     const row=await env.DB.prepare("SELECT o.*,c.name AS customer_name,c.email AS customer_email FROM norda_orders o JOIN norda_customers c ON c.id=o.customer_id WHERE o.id=?").bind(id).first<Record<string,unknown>>();
     return adminJson({data:row});

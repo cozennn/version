@@ -12,6 +12,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css?v=20261108-1">
 <link rel="stylesheet" href="assets/chat.css?v=20261108-1">
+<style>
+.digital-checkout{width:min(460px,calc(100% - 28px));max-width:none;padding:0;border:1px solid var(--line);border-radius:18px;background:var(--surface,var(--card));color:var(--text);box-shadow:0 24px 80px #0004}
+.digital-checkout::backdrop{background:#1119;backdrop-filter:blur(3px)}
+.digital-checkout__form{display:grid;gap:14px;padding:24px}
+.digital-checkout__head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.digital-checkout__head h2{margin:4px 0 0;font-size:1.35rem}
+.digital-checkout__close{border:0;background:transparent;color:inherit;font-size:28px;cursor:pointer}
+.digital-checkout label{display:grid;gap:6px;font-size:.88rem;font-weight:650}
+.digital-checkout input,.digital-checkout select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;background:var(--bg,var(--surface));color:inherit;padding:9px 11px;font:inherit}
+.digital-checkout__hint{font-size:.82rem;color:var(--muted);margin:0}
+.digital-checkout__result{font-size:.88rem;line-height:1.6;overflow-wrap:anywhere}
+.digital-checkout__result a{font-weight:700}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script>(function(){var d=document.documentElement,t='light',l='en';try{var raw=localStorage.getItem('norda:theme');t=raw?JSON.parse(raw):'light';if(t!=='light'&&t!=='dark'&&t!=='system')t='light';}catch(e){}try{l=localStorage.getItem('norda_lang')||'en';}catch(e){}if(t==='system')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('js');})();</script>
 </head>
@@ -58,6 +71,19 @@
   <section class="section section--tight">
     <div class="grid-products" id="grid"></div>
   </section>
+  <dialog id="digitalCheckout" class="digital-checkout">
+    <form id="digitalCheckoutForm" class="digital-checkout__form">
+      <div class="digital-checkout__head"><div><span class="eyebrow">Secure order</span><h2 id="digitalCheckoutTitle">Place your order</h2></div><button type="button" class="digital-checkout__close" id="digitalCheckoutClose" aria-label="Close">×</button></div>
+      <p id="digitalCheckoutProduct" class="muted"></p>
+      <label>Name<input name="name" autocomplete="name" maxlength="100" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" maxlength="180" required></label>
+      <label>Quantity<input name="quantity" type="number" min="1" max="50" value="1" required></label>
+      <label>Payment method<select name="paymentMethod" required><option value="paypal">PayPal</option><option value="manual">Manual payment</option></select></label>
+      <p class="digital-checkout__hint">Orders are sent to the supplier only after NorDa confirms your payment.</p>
+      <button class="btn btn--primary" type="submit" id="digitalCheckoutSubmit">Create order</button>
+      <div id="digitalCheckoutResult" class="digital-checkout__result" role="status" aria-live="polite"></div>
+    </form>
+  </dialog>
 </main>
 
 <footer class="footer">
@@ -214,7 +240,7 @@
           <div class="prod__tags">${p.tags.map(t=>`<span class="prod__tag">${esc(t)}</span>`).join('')}</div>
           <div class="prod__actions">
             <a class="btn btn--ghost btn--sm" href="product.html?id=${p.id}">Details</a>
-            ${p.status === "inquiry" ? `<a class="btn btn--primary btn--sm" href="contact.html?product=${encodeURIComponent(p.id)}">Request access</a>` : p.paypal_url ? `<a class="btn btn--primary btn--sm" href="${esc(p.paypal_url)}" target="_blank" rel="noopener noreferrer">Pay with PayPal</a>` : `<button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>`}
+            ${p.available === false ? `<button class="btn btn--ghost btn--sm" disabled>Out of stock</button>` : p.ggsoma_slug || p.slug ? `<button class="btn btn--primary btn--sm" data-digital-order="${esc(p.id)}">Order now</button>` : `<a class="btn btn--ghost btn--sm" href="contact.html?product=${encodeURIComponent(p.id)}">Ask about this item</a>`}
           </div>
         </div>
       </article>`).join('');
@@ -234,6 +260,75 @@
     render();
   };
   window.NORDA_RENDER_PRODUCTS();
+
+  // Replace the static digital list with the live, locally-priced GGSoma catalog when configured.
+  const digitalApi = (window.NORDA_CONFIG && window.NORDA_CONFIG.TELEGRAM_API) || '';
+  const checkout = document.getElementById('digitalCheckout');
+  const checkoutForm = document.getElementById('digitalCheckoutForm');
+  const checkoutResult = document.getElementById('digitalCheckoutResult');
+  let selectedDigitalProduct = null;
+  document.getElementById('digitalCheckoutClose').addEventListener('click', () => checkout.close());
+  grid.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-digital-order]');
+    if (!button) return;
+    selectedDigitalProduct = all.find(p => String(p.id) === String(button.dataset.digitalOrder));
+    if (!selectedDigitalProduct) return;
+    document.getElementById('digitalCheckoutTitle').textContent = 'Place your order';
+    document.getElementById('digitalCheckoutProduct').textContent = selectedDigitalProduct.name + ' · ' + window.NORDA_FMT(selectedDigitalProduct.price);
+    checkoutResult.textContent = '';
+    checkoutForm.reset();
+    checkout.showModal();
+  });
+  checkoutForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!selectedDigitalProduct) return;
+    const submit = document.getElementById('digitalCheckoutSubmit');
+    const data = Object.fromEntries(new FormData(checkoutForm).entries());
+    data.productId = selectedDigitalProduct.id;
+    data.quantity = Number(data.quantity);
+    submit.disabled = true;
+    submit.textContent = 'Creating order…';
+    checkoutResult.textContent = '';
+    try {
+      const response = await fetch(digitalApi + '/digital/orders', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(data) });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'order_creation_failed');
+      sessionStorage.setItem('norda:digital-order:' + result.orderNumber, result.accessToken);
+      const payment = result.paymentUrl ? '<p><a href="' + esc(result.paymentUrl) + '" target="_blank" rel="noopener noreferrer">Continue to PayPal</a></p>' : '<p>Complete your manual payment, then contact NorDa and provide this order number.</p>';
+      checkoutResult.innerHTML = '<strong>Order created: ' + esc(result.orderNumber) + '</strong>' + payment + '<p>Keep this order number. Delivery appears here after NorDa confirms your payment.</p><button type="button" class="btn btn--ghost btn--sm" id="digitalCheckOrder">Check order status</button><div id="digitalOrderStatus"></div>';
+      document.getElementById('digitalCheckOrder').addEventListener('click', async () => {
+        const statusBox = document.getElementById('digitalOrderStatus');
+        statusBox.textContent = 'Checking…';
+        try {
+          const statusResponse = await fetch(digitalApi + '/digital/orders/' + encodeURIComponent(result.orderNumber), { headers:{authorization:'Bearer ' + result.accessToken} });
+          const statusData = await statusResponse.json();
+          if (!statusResponse.ok || !statusData.ok) throw new Error(statusData.error || 'status_unavailable');
+          const order = statusData.order;
+          statusBox.textContent = 'Payment: ' + order.paymentStatus + ' · Order: ' + order.status;
+          if (order.delivery) statusBox.textContent += ' · Delivery: ' + JSON.stringify(order.delivery);
+        } catch (error) { statusBox.textContent = error.message || 'Could not check order.'; }
+      });
+      if (result.paymentUrl) window.open(result.paymentUrl, '_blank', 'noopener');
+    } catch (error) {
+      checkoutResult.textContent = error.message || 'Could not create order. Please try again.';
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Create order';
+    }
+  });
+  fetch(digitalApi + '/digital/catalog', { headers:{accept:'application/json'} })
+    .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog_unavailable')))
+    .then(result => {
+      if (!result.ok || !Array.isArray(result.products)) return;
+      window.NORDA_PRODUCTS = (window.NORDA_PRODUCTS || []).filter(p => p.type !== 'digital').concat(result.products.map(p => ({...p,type:'digital',tags:[p.provider].filter(Boolean),subscription:false,featured:false,ggsoma_slug:p.slug})));
+      all = result.products.map(p => ({...p,type:'digital',tags:[p.provider].filter(Boolean),subscription:false,featured:false,ggsoma_slug:p.slug}));
+      cats = [...new Set(all.map(p => p.category))];
+      counts = cats.reduce((o,c)=>(o[c]=all.filter(p=>p.category===c).length,o),{});
+      current = 'all';
+      filtersEl.innerHTML = '<button class="chip" data-cat="all" aria-pressed="true">All <small>'+all.length+'</small></button>' + cats.map(c=>'<button class="chip" data-cat="'+esc(c)+'" aria-pressed="false">'+esc(catNames[c]||c)+' <small>'+counts[c]+'</small></button>').join('');
+      render();
+    }).catch(() => {});
+
 
   filtersEl.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cat]');
