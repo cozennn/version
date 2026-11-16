@@ -257,8 +257,10 @@ function updateSupportMode(){
   var human=currentTicket.supportMode==='human',label=$1('#supportModeLabel'),button=$1('#btnHumanHandoff');
   if(label){label.textContent=human?t('handoff_short'):'';label.hidden=!human}
   if(button)button.hidden=human;
+  var slot=$1('.nd-handoff-slot');if(slot)slot.hidden=human||getHandoffLayout()!=='composer';
 }
-function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+currentTicket.ticketId;updateSupportMode();renderMessages(currentTicket.messages||[],true)}
+function ticketDisplayId(ticket){return String(ticket&&(ticket.publicId||ticket.public_id||ticket.ticketId)||'')}
+function renderChat(){if(!hasOpen())return;$1('#ticketIdLabel').textContent='#'+ticketDisplayId(currentTicket);updateSupportMode();renderMessages(currentTicket.messages||[],true)}
 async function createTicket(name){
   if(!API){console.warn('[NORDA] TELEGRAM_API is not configured');return null}
   var mode=await ensureSession();if(mode==='error')return null;
@@ -317,7 +319,9 @@ async function loadMessages(){
     var j=await r.json();
     if(currentTicket!==ticket||String(ticket.ticketId)!==tid||!j.ok||sending)return;
     var was=remoteReady;
-    if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId;$1('#ticketIdLabel').textContent='#'+j.ticketId}
+    if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId}
+    if(j.publicId)ticket.publicId=String(j.publicId);
+    $1('#ticketIdLabel').textContent='#'+ticketDisplayId(ticket);
     if(j.status==='closed'){onClosedRemote();return}
     ticket.supportMode=j.supportMode==='human'?'human':'ai';updateSupportMode();persist();
     var ms=j.messages||[];
@@ -386,6 +390,39 @@ if(cf)cf.addEventListener('submit',async function(e){
 });
 if(ta){ta.addEventListener('input',grow);ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(cf.requestSubmit)cf.requestSubmit();else cf.dispatchEvent(new Event('submit',{cancelable:true}))}})}
 var bh=$1('#btnHumanHandoff');
+var HANDOFF_LAYOUT_KEY='norda_handoff_layout';
+function getHandoffLayout(){return sget(HANDOFF_LAYOUT_KEY)==='composer'?'composer':'bar'}
+function setHandoffLayout(layout,save){
+  layout=layout==='composer'?'composer':'bar';
+  var ticketbar=cp&&cp.querySelector('.nd-ticketbar.tk-info'),slot=$1('.nd-handoff-slot');
+  if(!bh||!ticketbar||!cf)return;
+  if(!slot){slot=d.createElement('div');slot.className='nd-handoff-slot';cf.parentNode.insertBefore(slot,cf)}
+  if(layout==='composer'){slot.appendChild(bh);slot.hidden=bh.hidden}
+  else{ticketbar.insertBefore(bh,$1('#supportModeLabel')||null);slot.hidden=true}
+  bh.classList.toggle('nd-agent-btn--chip',layout==='composer');
+  ['handoffLayoutBar','handoffLayoutComposer'].forEach(function(id){
+    var button=$1('#'+id);if(!button)return;
+    var active=(id==='handoffLayoutComposer')===(layout==='composer');
+    button.classList.toggle('on',active);button.setAttribute('aria-pressed',active?'true':'false');
+    var check=button.querySelector('.nd-layout-check');if(check)check.textContent=active?'✓':'';
+  });
+  if(save!==false)sset(HANDOFF_LAYOUT_KEY,layout);
+}
+function replayChatPreview(){
+  if(hasOpen()){scrollLog()}else setView('new');
+  if(window.gsap&&!reduce){gsap.killTweensOf(cp);gsap.fromTo(cp,{y:9,scale:window.innerWidth<=520?1:.985,autoAlpha:.88},{y:0,scale:1,autoAlpha:1,duration:.3,ease:'power2.out',clearProps:'transform,opacity,visibility'})}
+}
+setHandoffLayout(getHandoffLayout(),false);
+['handoffLayoutBar','handoffLayoutComposer'].forEach(function(id){
+  var button=$1('#'+id);if(button)button.addEventListener('click',function(){setHandoffLayout(id==='handoffLayoutComposer'?'composer':'bar',true)});
+});
+var replayButton=$1('#chatReplayPreview');if(replayButton)replayButton.addEventListener('click',replayChatPreview);
+var ticketIdButton=$1('#ticketIdLabel');
+if(ticketIdButton)ticketIdButton.addEventListener('click',function(){
+  if(!currentTicket)return;
+  var reference=ticketDisplayId(currentTicket);
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(reference).then(function(){toastRaw('تم نسخ رقم التذكرة #'+reference)}).catch(function(){toast('msg_err')});
+});
 if(bh)bh.addEventListener('click',async function(){
   if(!hasOpen()||sending||currentTicket.supportMode==='human')return;
   var ticket=currentTicket,tid=String(ticket.ticketId);
@@ -469,11 +506,11 @@ function renderClosed(){
   closedCache.forEach(function(tk){
     var ms=tk.messages||[],prev='';for(var i=ms.length-1;i>=0;i--){if(ms[i].text){prev=ms[i].text;break}if(ms[i].file){prev=ms[i].file.name||'';break}}
     var el=d.createElement('div');el.className='ci';
-    el.innerHTML='<b>#'+esc(tk.ticketId)+'</b><small>'+esc(fmtDate(tk.closedAt||tk.updatedAt||Date.now()))+' · '+ms.length+'</small>'+(prev?'<span>'+esc(prev.slice(0,70))+'</span>':'')+'<button class="tk-link" type="button">'+esc(t('view_ticket'))+'</button>';
+    el.innerHTML='<b>#'+esc(ticketDisplayId(tk))+'</b><small>'+esc(fmtDate(tk.closedAt||tk.updatedAt||Date.now()))+' · '+ms.length+'</small>'+(prev?'<span>'+esc(prev.slice(0,70))+'</span>':'')+'<button class="tk-link" type="button">'+esc(t('view_ticket'))+'</button>';
     el.querySelector('button').addEventListener('click',function(){detailTicket=tk;renderDetail();setView('detail')});list.appendChild(el);
   });
 }
-function renderDetail(){if(!detailTicket)return;$1('#detailTicketId').textContent='#'+detailTicket.ticketId;var log=$1('#detailLog');log.innerHTML='';(detailTicket.messages||[]).forEach(function(m){log.appendChild(buildBub(m))});setTimeout(function(){log.scrollTop=log.scrollHeight},40)}
+function renderDetail(){if(!detailTicket)return;$1('#detailTicketId').textContent='#'+ticketDisplayId(detailTicket);var log=$1('#detailLog');log.innerHTML='';(detailTicket.messages||[]).forEach(function(m){log.appendChild(buildBub(m))});setTimeout(function(){log.scrollTop=log.scrollHeight},40)}
 function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}renderClosed();if(detailTicket&&view==='detail')renderDetail()}
 var bb=$1('#btnBack');if(bb)bb.addEventListener('click',function(){setView('closed')});
 if(tabs['new'])tabs['new'].addEventListener('click',function(){if(hasOpen())setView('chat');else if(sget('norda_name'))startNew();else{setView('new');$1('#ch-name').focus()}});
