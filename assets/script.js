@@ -534,7 +534,7 @@ function chatOpen(o){
     fab.classList.add('hidden');
     if(gs){
       var mobileChat=window.innerWidth<=520;
-      gs.fromTo(cp,{autoAlpha:0,y:mobileChat?12:25,scale:mobileChat?1:.78,rotation:mobileChat?0:-1.2},{autoAlpha:1,y:0,scale:1,rotation:0,duration:mobileChat?.24:.42,ease:mobileChat?'power2.out':'back.out(1.45)',clearProps:'transform,opacity,visibility'});
+      gs.fromTo(cp,{autoAlpha:0,y:mobileChat?12:25,scale:mobileChat?1:.78,rotation:mobileChat?0:-1.2},{autoAlpha:1,y:0,scale:1,rotation:0,duration:mobileChat ? 0.24 : 0.42,ease:mobileChat?'power2.out':'back.out(1.45)',clearProps:'transform,opacity,visibility'});
     }
     if(window.innerWidth<=520){
       chatSavedScrollY=window.pageYOffset||d.documentElement.scrollTop||0;
