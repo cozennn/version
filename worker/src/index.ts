@@ -200,7 +200,7 @@ async function requestNordaAI(env: Env, message: string, history: Array<{ from: 
       console.warn("[norda-ai] model returned no readable text", { keys: Object.keys(result).slice(0, 12), choiceCount });
       return null;
     }
-    if (reply.includes("[[NORDA_HANDOFF]]") || /(?:i don.t know|i am not sure|i.m not sure|i cannot help|i can.t help|speak to a human|human agent|contact (?:a )?human|لا أ(?:عرف|ستطيع)|ما عندي (?:معلومات|إجابة)|لست متأكد(?:ة)?|تواصل مع (?:موظف|وكيل) بشري|وكيل بشري|agent humain|je ne sais pas|je ne suis pas sûr|je ne peux pas répondre|contacter un agent humain)/i.test(reply)) return null;
+    if (reply.includes("[[NORDA_HANDOFF]]") || /(?:i don.t know|i am not sure|i.m not sure|i cannot help|i can.t help|speak to a human|human agent|contact (?:a )?human|connect you (?:to|with) (?:a )?human|talk to (?:a )?human|لا أ(?:عرف|ستطيع)|ما عندي (?:معلومات|إجابة)|لست متأكد(?:ة)?|تواصل مع (?:موظف|وكيل) بشري|وكيل بشري|موظف بشري|التحدث مع موظف|تحدث مع موظف|أحولك إلى موظف|أوصلك بموظف|سأحولك|سأوصلك بموظف|agent humain|je ne sais pas|je ne suis pas sûr|je ne peux pas répondre|contacter un agent humain|parler à un agent)/i.test(reply)) return null;
     return reply;
   } catch (error) {
     // Workers Free enforces the daily 10,000-Neuron allocation. When the
@@ -696,12 +696,16 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
     const requestedName = text(parsed.body.userName, 100);
     if (!requestedName) return json({ ok: false, error: "name_required" }, 400);
     await env.DB.prepare("UPDATE tickets SET user_name = ? WHERE id = ?").bind(requestedName, ticket.id).run();
+    const conversation = await readTicketMessages(env, Number(ticket.id));
+    const latestVisitorMessage = [...conversation].reverse().find(item => item.from === "user");
+    const visitorMessage = String(latestVisitorMessage?.text ?? "").slice(0, 3500);
     const dedupeKey = "handoff:" + ticketId;
     const now = new Date().toISOString();
     const outboxId = crypto.randomUUID();
     const payload = "NORDA HUMAN AGENT REQUESTED\nTicket ID: " + String(ticket.public_ref ?? "------") +
       "\nTicket Key: " + ticketId +
       "\nVisitor: " + requestedName +
+      "\n\nVisitor's latest message:\n" + (visitorMessage || "(No text message recorded)") +
       "\n\nThe visitor requested a human support agent. Please reply directly to this message to answer in the website chat.";
     await env.DB.batch([
       env.DB.prepare("UPDATE tickets SET handoff_status = 'pending' WHERE id = ? AND status = 'open' AND support_mode = 'ai' AND handoff_status = 'none'").bind(ticket.id),
