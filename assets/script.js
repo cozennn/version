@@ -257,7 +257,7 @@ async function loadMessages(){
     if(j.ticketId&&j.ticketId!==ticket.ticketId){ticket.ticketId=j.ticketId}
     if(j.publicId)ticket.publicId=String(j.publicId);
     if(j.status==='closed'){onClosedRemote();return}
-    ticket.supportMode=j.supportMode==='human'?'human':'ai';var pollLast=j.messages&&j.messages[j.messages.length-1];ticket.handoffAvailable=ticket.supportMode!=='human'&&(j.handoffAvailable===true||!!(pollLast&&pollLast.from==='user'&&j.status==='open'&&!ticket.handoffPending));updateSupportMode();persist();
+    ticket.supportMode=j.supportMode==='human'?'human':'ai';ticket.handoffAvailable=!!j.handoffAvailable;updateSupportMode();persist();
     var ms=j.messages||[];
     if(ms.length!==lastCount){var added=ms.length-lastCount,last=ms[ms.length-1];lastCount=ms.length;currentTicket.messages=ms;if(last&&last.from!=='user')typing=false;renderMessages(ms);persist();
       if(last&&last.from!=='user'&&added>0){if(!cp.classList.contains('open')||view!=='chat'){unread+=Math.max(added,1);setBadge()}if(was)ding()}}
