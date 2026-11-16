@@ -140,16 +140,18 @@ function apiTicketUrl(path){return API+path+(sessionMode==='legacy'?'?userId='+e
 var currentTicket=null,pendingFile=null,retryPayload=null,lastCount=0,shown=0,typing=false,typingTimer=null,sending=false,unread=0,view='new',remoteReady=false;
             
 var cp=$1('#chatPanel'),fab=$1('#chatFab'),clog=$1('#chatLog'),cf=$1('#chatForm'),badge=$1('#fabBadge'),ta=$1('#ch-msg'),fileInput=$1('#fileInput'),charCount=$1('#chatCharCount');
+var chatMenuToggle=$1('#chatMenuToggle'),chatActionsMenu=$1('#chatActionsMenu');
 var soundToggle=$1('#soundToggle'),soundOn=sget('norda_chat_sound')!=='off',ac=null;
 function paintSound(){
   if(!soundToggle)return;
+  var label=$1('#soundToggleLabel'),icon=$1('#soundToggleIcon'),state=$1('#soundToggleState');
   soundToggle.setAttribute('aria-pressed',soundOn?'true':'false');
   soundToggle.setAttribute('aria-label',t(soundOn?'sound_on':'sound_off'));
-  soundToggle.setAttribute('title',t(soundOn?'sound_on':'sound_off'));
-  soundToggle.innerHTML=soundOn
+  if(label)label.textContent=t(soundOn?'sound_on':'sound_off');
+  if(state){state.classList.toggle('on',soundOn);state.setAttribute('aria-pressed',soundOn?'true':'false')}
+  if(icon)icon.innerHTML=soundOn
     ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>'
     :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>';
-  soundToggle.style.opacity=soundOn?1:.62;
 }
 paintSound();
 function unlock(){if(!soundOn)return;var A=window.AudioContext||window.webkitAudioContext;if(!A)return;try{if(!ac)ac=new A();if(ac.state==='suspended')ac.resume()}catch(e){}}
@@ -330,7 +332,12 @@ if(fileInput)fileInput.addEventListener('change',function(){
 var fr=$1('#fileRemove');if(fr)fr.addEventListener('click',function(){pendingFile=null;clearFile()});
 
 function refreshChatLang(){if(hasOpen()){updateSupportMode();renderMessages(currentTicket.messages||[],true)}}
-var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',function(){startNew('',false)});var newConversation=$1('#chatNewConversation');if(newConversation)newConversation.addEventListener('click',function(){retryPayload=null;startNew('',true)});
+var bn=$1('#btnNewTicket');if(bn)bn.addEventListener('click',function(){startNew('',false)});
+function closeChatMenu(returnFocus){if(!chatActionsMenu||!chatMenuToggle)return;chatActionsMenu.hidden=true;chatMenuToggle.setAttribute('aria-expanded','false');if(returnFocus)chatMenuToggle.focus()}
+function openChatMenu(){if(!chatActionsMenu||!chatMenuToggle)return;chatActionsMenu.hidden=false;chatMenuToggle.setAttribute('aria-expanded','true');var first=chatActionsMenu.querySelector('button:not([disabled])');if(first)first.focus()}
+if(chatMenuToggle)chatMenuToggle.addEventListener('click',function(){if(chatActionsMenu&&!chatActionsMenu.hidden)closeChatMenu(false);else openChatMenu()});
+var newConversation=$1('#chatNewConversation');if(newConversation)newConversation.addEventListener('click',function(){closeChatMenu(false);retryPayload=null;startNew('',true)});
+d.addEventListener('click',function(e){if(chatActionsMenu&&!chatActionsMenu.hidden&&!e.target.closest('.nd-header-actions'))closeChatMenu(false)});
 var chatPreviousOverflow='',chatSavedScrollY=0;
 function chatOpen(o){
   if(!cp||!fab)return;
@@ -374,7 +381,7 @@ if(fab)fab.addEventListener('click',function(){chatOpen(!cp.classList.contains('
 var cx=$1('#chatX');if(cx)cx.addEventListener('click',function(){chatOpen(false);fab.focus()});
 d.addEventListener('keydown',function(e){
   if(!cp||!cp.classList.contains('open'))return;
-  if(e.key==='Escape'){chatOpen(false);fab.focus();return}
+  if(e.key==='Escape'){if(chatActionsMenu&&!chatActionsMenu.hidden){closeChatMenu(true);return}chatOpen(false);fab.focus();return}
   if(e.key!=='Tab')return;
   var focusable=Array.prototype.slice.call(cp.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.getAttribute('aria-hidden')!=='true'&&el.getClientRects().length>0});
   if(!focusable.length){e.preventDefault();return}
