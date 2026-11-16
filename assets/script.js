@@ -532,7 +532,10 @@ function chatOpen(o){
     cp.setAttribute('aria-hidden','false');
     fab.setAttribute('aria-expanded','true');
     fab.classList.add('hidden');
-    if(gs)gs.fromTo(cp,{autoAlpha:0,y:18,scale:.965},{autoAlpha:1,y:0,scale:1,duration:.38,ease:'power3.out',clearProps:'transform,opacity,visibility'});
+    if(gs){
+      var mobileChat=window.innerWidth<=520;
+      gs.fromTo(cp,{autoAlpha:0,y:mobileChat?12:25,scale:mobileChat?1:.78,rotation:mobileChat?0:-1.2},{autoAlpha:1,y:0,scale:1,rotation:0,duration:mobileChat?.24:.42,ease:mobileChat?'power2.out':'back.out(1.45)',clearProps:'transform,opacity,visibility'});
+    }
     if(window.innerWidth<=520){
       chatSavedScrollY=window.pageYOffset||d.documentElement.scrollTop||0;
       if(window.NORDA_SCROLL_LOCK)window.NORDA_SCROLL_LOCK('chat',true);
