@@ -177,7 +177,7 @@ async function requestNordaAI(env: Env, message: string, history: Array<{ from: 
     "Some product pages provide PayPal-hosted payment links. Payment confirmation and order status are handled manually by NORDA. Never claim payment was verified automatically.",
     "Subscriptions are not currently available for purchase. Do not claim that NORDA Plus or NORDA Pro can be purchased or billed.",
     "For custom website projects, hosting, domains, and publishing are client-managed. NORDA does not provide complex e-commerce systems, admin dashboards, or integrated payment processing.",
-    "Never invent prices, product availability, license terms, refund decisions, delivery dates, or private order details. If uncertain, or if a human decision or custom quote is needed, suggest the human-agent button. Do not claim a handoff."
+    "Never invent prices, product availability, license terms, refund decisions, delivery dates, or private order details. If uncertain, or if a human decision or custom quote is needed, output the exact marker [[NORDA_HANDOFF]] and no other text. The server converts this marker into the visible human-agent handoff action. Never merely say that a button appeared or that a handoff was requested."
   ].join(" ");
   const contextText = history.slice(-6).map(item =>
     (item.from === "user" ? "Visitor: " : "Support: ") + String(item.text ?? "").slice(0, 350)
@@ -200,7 +200,7 @@ async function requestNordaAI(env: Env, message: string, history: Array<{ from: 
       console.warn("[norda-ai] model returned no readable text", { keys: Object.keys(result).slice(0, 12), choiceCount });
       return null;
     }
-    if (reply.includes("[[NORDA_HANDOFF]]")) return null;
+    if (reply.includes("[[NORDA_HANDOFF]]") || /(?:i don.t know|i am not sure|i.m not sure|i cannot help|i can.t help|speak to a human|human agent|contact (?:a )?human|لا أ(?:عرف|ستطيع)|ما عندي (?:معلومات|إجابة)|لست متأكد(?:ة)?|تواصل مع (?:موظف|وكيل) بشري|وكيل بشري|agent humain|je ne sais pas|je ne suis pas sûr|je ne peux pas répondre|contacter un agent humain)/i.test(reply)) return null;
     return reply;
   } catch (error) {
     // Workers Free enforces the daily 10,000-Neuron allocation. When the
