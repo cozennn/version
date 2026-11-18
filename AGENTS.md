@@ -1,25 +1,32 @@
 # NorDa project instructions
 
 ## Using project skills
-Before making a change, inspect the relevant code and read the matching skill file(s) under `agents/skills/`.
-Use only skills relevant to the current task; do not load every skill for a small change.
+Before making a change, inspect the relevant code and read the matching skill file(s) under `agents/skills/`. Use only skills relevant to the current task; do not load every skill for a small change.
 
-Available skills:
-- `ui-ux-design`: visual design and interface behavior
-- `frontend-development`: frontend implementation
-- `responsive-design`: mobile and responsive behavior
-- `accessibility`: accessible markup and interaction
-- `cloudflare-worker-api`: Worker routes, API, and integrations
-- `database-d1-sqlite`: D1 schema, SQL, and migrations
-- `security-review`: authentication, authorization, uploads, and data protection
-- `code-review`: review diffs and cross-project contracts
-- `performance`: speed and efficiency
-- `localization-i18n`: Arabic, English, French, and RTL
-- `design-system-starter`: design tokens, component systems, and theming
-- `accessibility-auditor`: WCAG and inclusive web accessibility audits
-- `web-performance-optimization`: web performance and Core Web Vitals
-- `react-best-practices`: React/Next.js implementation guidance
-- `tailwind-patterns`: Tailwind CSS utility patterns
+### Existing NorDa-specific skills
+- `ui-ux-design`
+- `frontend-development`
+- `responsive-design`
+- `accessibility`
+- `cloudflare-worker-api`
+- `database-d1-sqlite`
+- `security-review`
+- `code-review`
+- `performance`
+- `localization-i18n`
+
+### Website specialist skills
+- `frontend-design`: primary visual art direction
+- `design-system-starter`: design tokens and reusable systems
+- `material-design-3-ui`: Material 3 only when explicitly requested or already used
+- `premium-web-design`: premium visual craft without imposing a generic luxury look
+- `ui-ux-pro-max`: product UX, visual systems, interaction, and UI review
+- `scroll-experience`: scroll-led storytelling only when requested
+- `senior-frontend`: frontend engineering and review
+- `accessibility-auditor`: WCAG and inclusive design audits
+- `web-performance-optimization`: Core Web Vitals and web performance
+- `react-best-practices`: React/Next.js only
+- `tailwind-patterns`: Tailwind CSS v4 only
 - `webapp-testing`: browser-based functional testing
 - `copywriting`, `seo-optimizer`, `page-cro`, `form-cro`, `interactive-portfolio`: content, search, conversion, and portfolio specialists
 
@@ -33,4 +40,4 @@ Available skills:
 - Do not claim that repository skill files are automatically loaded by every AI tool. If the active coding environment does not support Agent Skills or `AGENTS.md`, provide the relevant skill text to that environment or configure its own rules mechanism.
 
 ## Website design skill routing
-Read `NORDA-SKILLS.md` for the broader website-design workflow and for deciding which optional skills apply to a task. Do not duplicate the existing NorDa-specific skills listed above. Optional skills become available only after their complete `SKILL.md` files are copied into `agents/skills/<skill-name>/`.
+Read `NORDA-SKILLS.md` for the broader website-design workflow and conflict rules. Load only skills relevant to the current task. NorDa-specific platform skills take precedence for Cloudflare, D1, security, localization, and existing application contracts.
