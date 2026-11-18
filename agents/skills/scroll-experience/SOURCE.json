@@ -1,0 +1,8 @@
+{
+  "name": "scroll-experience",
+  "source": "https://github.com/sickn33/agentic-awesome-skills/tree/main/skills/scroll-experience",
+  "source_file": "SKILL.md",
+  "reference_file": "references/detailed-guide.md",
+  "license": "MIT",
+  "adaptation": "NorDa-focused rewrite. The upstream detailed guide informed the technique selection; safety, accessibility, performance, and progressive-enhancement constraints are explicit here."
+}
