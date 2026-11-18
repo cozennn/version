@@ -11,6 +11,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan complete Git history for leaked secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -20,6 +27,12 @@ jobs:
       - name: Install Worker development tools
         working-directory: worker
         run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Audit Worker dependencies
+        working-directory: worker
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit --audit-level=high
 
       - name: Type-check Cloudflare Worker
         working-directory: worker
@@ -42,6 +55,12 @@ jobs:
       - name: Install NorDa Admin dependencies
         working-directory: admin
         run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Audit NorDa Admin dependencies
+        working-directory: admin
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit --audit-level=high
 
       - name: Build NorDa Admin
         working-directory: admin
