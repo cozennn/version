@@ -1,0 +1,7 @@
+{
+  "name": "ui-ux-pro-max",
+  "source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "source_file": ".claude/skills/ui-ux-pro-max/SKILL.md",
+  "license": "MIT",
+  "adaptation": "NorDa-focused, self-contained decision guide based on the upstream skill's workflow and priority model. It does not claim to include the upstream searchable CSV database, Python search engine, templates, or all 78+ upstream assets."
+}
