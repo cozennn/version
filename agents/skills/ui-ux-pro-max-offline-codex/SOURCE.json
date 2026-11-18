@@ -1,0 +1,7 @@
+{
+  "name": "ui-ux-pro-max-offline-codex",
+  "source": "NorDa local adaptation",
+  "source_file": "SKILL.md",
+  "license": "Not separately specified",
+  "adaptation": "Preserves the previous root-level offline instruction-only UI/UX Pro Max skill under a unique name to avoid collision with the database-backed ui-ux-pro-max skill."
+}
