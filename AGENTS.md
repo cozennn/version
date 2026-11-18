@@ -24,3 +24,6 @@ Available skills:
 - Back up production data before risky database changes.
 - Run a focused check for the changed feature and report the actual result.
 - Do not claim that repository skill files are automatically loaded by every AI tool. If the active coding environment does not support Agent Skills or `AGENTS.md`, provide the relevant skill text to that environment or configure its own rules mechanism.
+
+## Website design skill routing
+Read `NORDA-SKILLS.md` for the broader website-design workflow and for deciding which optional skills apply to a task. Do not duplicate the existing NorDa-specific skills listed above. Optional skills become available only after their complete `SKILL.md` files are copied into `agents/skills/<skill-name>/`.
