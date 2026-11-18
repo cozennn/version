@@ -1,0 +1,56 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 7652,
+      "lines": 242
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 14918,
+      "lines": 603
+    },
+    {
+      "path": "checklists/design-system-checklist.md",
+      "bytes": 12943,
+      "lines": 390
+    },
+    {
+      "path": "references/component-examples.md",
+      "bytes": 13552,
+      "lines": 578
+    },
+    {
+      "path": "templates/component-template.tsx",
+      "bytes": 6722,
+      "lines": 252
+    },
+    {
+      "path": "templates/design-tokens-template.json",
+      "bytes": 17128,
+      "lines": 735
+    }
+  ],
+  "languages": [
+    {
+      "name": "Markdown",
+      "bytes": 49065
+    },
+    {
+      "name": "JSON",
+      "bytes": 17128
+    },
+    {
+      "name": "TypeScript",
+      "bytes": 6722
+    }
+  ],
+  "lastCommit": {
+    "sha": "1c194fd27b9cb37a5ef68b213578c586b1072ce3",
+    "date": "2026-01-24T19:56:42-05:00",
+    "author": "Daniel Avila",
+    "subject": "Add component migrator agent and migrate initial components (#303)",
+    "pr": 303
+  },
+  "addedAt": "2026-01-24T19:56:42-05:00"
+}
