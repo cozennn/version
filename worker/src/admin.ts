@@ -21,10 +21,34 @@ function aiResponseText(output: unknown, max = 4500): string {
 const nowIso = () => new Date().toISOString();
 
 async function bodyOf(request: Request): Promise<Record<string, unknown>> {
+  if (!request.body) return {};
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
   try {
-    const value = await request.json();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > 64 * 1024) {
+        await reader.cancel();
+        return {};
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    const value: unknown = JSON.parse(new TextDecoder().decode(bytes));
     return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
-  } catch { return {}; }
+  } catch {
+    return {};
+  } finally {
+    reader.releaseLock();
+  }
 }
 
 function randomToken() {
@@ -40,6 +64,14 @@ async function passwordHash(password: string, saltHex: string) {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: 100000 }, key, 256);
   return Array.from(new Uint8Array(bits), b => b.toString(16).padStart(2, "0")).join("");
+}
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+  let difference = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return difference === 0;
 }
 async function adminSession(request: Request, env: AdminEnv) {
   const token = (request.headers.get("authorization") || "").replace(/^Bearer /i, "");
@@ -129,9 +161,11 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     const username = clean(body.username, 40), password = clean(body.password, 200);
     const user = await env.DB.prepare("SELECT id,username,password_hash,password_salt,role FROM norda_admin_users WHERE username=? COLLATE NOCASE AND disabled_at IS NULL LIMIT 1")
       .bind(username).first<{id:string;username:string;password_hash:string;password_salt:string;role:string}>();
-    if (!user || !password) return adminJson({ error: "invalid_credentials" }, 401);
-    const candidate = await passwordHash(password, user.password_salt);
-    if (candidate !== user.password_hash) return adminJson({ error: "invalid_credentials" }, 401);
+    if (!password) return adminJson({ error: "invalid_credentials" }, 401);
+    // Perform the same PBKDF2 work for unknown usernames to reduce account enumeration
+    // through response timing. Keep the existing work factor for compatibility.
+    const candidate = await passwordHash(password, user?.password_salt || "00000000000000000000000000000000");
+    if (!user || !constantTimeEqual(candidate, user.password_hash)) return adminJson({ error: "invalid_credentials" }, 401);
     const token = randomToken(), stamp = nowIso(), expires = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
     await env.DB.prepare("INSERT INTO norda_admin_sessions(id,user_id,token_hash,created_at,expires_at) VALUES(?,?,?,?,?)")
       .bind(crypto.randomUUID(), user.id, await sha256(token), stamp, expires).run();

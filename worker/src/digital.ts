@@ -95,7 +95,35 @@ export async function handleDigitalApi(request: Request, env: DigitalEnv): Promi
 
   if (path === "/digital/orders" && method === "POST") {
     let body: Record<string, any>;
-    try { body = await request.json() as Record<string, any>; } catch { return json({ ok: false, error: "invalid_json" }, 400); }
+    if (!request.body) return json({ ok: false, error: "invalid_json" }, 400);
+    const reader = request.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        total += value.byteLength;
+        if (total > 16 * 1024) {
+          await reader.cancel();
+          return json({ ok: false, error: "payload_too_large" }, 413);
+        }
+        chunks.push(value);
+      }
+      const bytes = new Uint8Array(total);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      const parsed: unknown = JSON.parse(new TextDecoder().decode(bytes));
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return json({ ok: false, error: "invalid_json" }, 400);
+      body = parsed as Record<string, any>;
+    } catch {
+      return json({ ok: false, error: "invalid_json" }, 400);
+    } finally {
+      reader.releaseLock();
+    }
     const name = clean(body.name, 100), email = clean(body.email, 180).toLowerCase();
     const productId = clean(body.productId, 160), paymentMethod = clean(body.paymentMethod, 20);
     const quantity = Math.floor(Number(body.quantity || 1));
