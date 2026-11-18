@@ -768,8 +768,9 @@ export class TicketsDurableObject extends DurableObject<Env> {
 
     if (!bypassRateLimit) {
       const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-      const rule = path === "/admin/auth/login"
-        ? { bucket: "admin_login", limit: 5 }
+      const isAdminLogin = path === "/admin/auth/login" && request.method === "POST";
+      const rule = isAdminLogin
+        ? { bucket: "admin_login_ip", limit: 15 }
         : path === "/admin/auth/setup"
           ? { bucket: "admin_setup", limit: 3 }
           : path === "/telegram/webhook"
@@ -785,14 +786,29 @@ export class TicketsDurableObject extends DurableObject<Env> {
                 : path.endsWith("/handoff") && request.method === "POST"
                   ? { bucket: "ticket_handoff", limit: 5 }
                 : { bucket: "general", limit: 90 };
-      const key = `rate:${rule.bucket}:${ip}`;
       const now = Date.now();
+      let loginUsername = "";
+      if (isAdminLogin) {
+        try {
+          const body = await request.clone().json() as Record<string, unknown>;
+          loginUsername = typeof body.username === "string" ? body.username.trim().toLowerCase().slice(0, 40) : "";
+        } catch { /* malformed login bodies remain protected by the IP bucket */ }
+      }
+      const keys = [`rate:${rule.bucket}:${ip}`];
+      if (isAdminLogin && loginUsername) keys.push(`rate:admin_login_user:${loginUsername}`);
       const allowed = await this.ctx.storage.transaction(async transaction => {
-        const current = await transaction.get<{ start: number; count: number }>(key);
-        const state = !current || now - current.start >= 60_000 ? { start: now, count: 0 } : current;
-        if (state.count >= rule.limit) return false;
-        state.count += 1;
-        await transaction.put(key, state);
+        const states: Array<{ key: string; state: { start: number; count: number }; limit: number }> = [];
+        for (const key of keys) {
+          const current = await transaction.get<{ start: number; count: number }>(key);
+          const state = !current || now - current.start >= 60_000 ? { start: now, count: 0 } : current;
+          const limit = key.startsWith("rate:admin_login_user:") ? 5 : rule.limit;
+          if (state.count >= limit) return false;
+          states.push({ key, state, limit });
+        }
+        for (const item of states) {
+          item.state.count += 1;
+          await transaction.put(item.key, item.state);
+        }
         return true;
       });
       if (!allowed) return json({ ok: false, error: "rate_limited" }, 429);

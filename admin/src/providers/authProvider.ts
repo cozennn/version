@@ -1,1 +1,43 @@
-import type {AuthProvider} from "react-admin";const API=import.meta.env.VITE_API_URL||"https://norda-api.houda2004houdaa.workers.dev";export const authProvider:AuthProvider={async login({username,password}){const r=await fetch(API+"/admin/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})});const d=await r.json();if(!r.ok||!d.token)throw new Error(d.error||"Login failed");localStorage.setItem("norda_admin_token",d.token);},async logout(){const token=localStorage.getItem("norda_admin_token");if(token)await fetch(API+"/admin/auth/logout",{method:"POST",headers:{Authorization:"Bearer "+token}});localStorage.removeItem("norda_admin_token");},async checkAuth(){const token=localStorage.getItem("norda_admin_token");if(!token)throw new Error("Not authenticated");const r=await fetch(API+"/admin/auth/me",{headers:{Authorization:"Bearer "+token}});if(!r.ok){localStorage.removeItem("norda_admin_token");throw new Error("Session expired");}},async checkError(e){if(e?.status===401||e?.status===403){localStorage.removeItem("norda_admin_token");throw new Error("Session expired");}},async getIdentity(){const token=localStorage.getItem("norda_admin_token");const r=await fetch(API+"/admin/auth/me",{headers:{Authorization:"Bearer "+token}});if(!r.ok)throw new Error("Not authenticated");const d=await r.json();return{id:d.user.id,fullName:d.user.username};},async getPermissions(){const token=localStorage.getItem("norda_admin_token");const r=await fetch(API+"/admin/auth/me",{headers:{Authorization:"Bearer "+token}});if(!r.ok)throw new Error("Not authenticated");const d=await r.json();return d.user?.role||"support";}};
+import type { AuthProvider } from "react-admin";
+
+const API = "/api";
+
+// Remove any legacy bearer token left by the previous localStorage-based login.
+if (typeof localStorage !== "undefined") localStorage.removeItem("norda_admin_token");
+
+async function currentUser() {
+  const response = await fetch(API + "/admin/auth/me", { credentials: "include" });
+  if (!response.ok) throw new Error("Not authenticated");
+  const payload = await response.json();
+  return payload.user;
+}
+
+export const authProvider: AuthProvider = {
+  async login({ username, password }) {
+    const response = await fetch(API + "/admin/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.user) throw new Error(payload.error || "Login failed");
+  },
+  async logout() {
+    await fetch(API + "/admin/auth/logout", { method: "POST", credentials: "include" });
+  },
+  async checkAuth() {
+    await currentUser();
+  },
+  async checkError(error) {
+    if (error?.status === 401 || error?.status === 403) throw new Error("Session expired");
+  },
+  async getIdentity() {
+    const user = await currentUser();
+    return { id: user.id, fullName: user.username };
+  },
+  async getPermissions() {
+    const user = await currentUser();
+    return user?.role || "support";
+  }
+};

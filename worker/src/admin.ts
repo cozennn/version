@@ -1,6 +1,6 @@
 import { fulfillPaidDigitalOrder } from "./digital";
 
-interface AdminEnv { DB: D1Database; GGSOMA_API_KEY?: string; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
+interface AdminEnv { DB: D1Database; ALLOWED_ORIGINS?: string; GGSOMA_API_KEY?: string; AI?: Ai; NORDA_ADMIN_SETUP_TOKEN?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string; TELEGRAM_WEBHOOK_SECRET?: string; }
 
 const adminJson = (data: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -73,8 +73,18 @@ function constantTimeEqual(left: string, right: string): boolean {
   }
   return difference === 0;
 }
+const ADMIN_SESSION_COOKIE = "__Host-norda_admin_session";
+const ADMIN_SESSION_MAX_AGE = 8 * 60 * 60;
+function adminCookie(token: string, maxAge = ADMIN_SESSION_MAX_AGE): string {
+  return `${ADMIN_SESSION_COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAge}`;
+}
+function adminCookieToken(request: Request): string {
+  const cookie = request.headers.get("cookie") || "";
+  const item = cookie.split(";").map(value => value.trim()).find(value => value.startsWith(ADMIN_SESSION_COOKIE + "="));
+  return item ? item.slice(ADMIN_SESSION_COOKIE.length + 1) : "";
+}
 async function adminSession(request: Request, env: AdminEnv) {
-  const token = (request.headers.get("authorization") || "").replace(/^Bearer /i, "");
+  const token = adminCookieToken(request);
   if (!/^[a-f0-9]{64}$/i.test(token)) return null;
   const hash = await sha256(token);
   return env.DB.prepare("SELECT u.id,u.username,u.role,s.id AS session_id FROM norda_admin_sessions s JOIN norda_admin_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>? AND s.revoked_at IS NULL AND u.disabled_at IS NULL LIMIT 1")
@@ -134,6 +144,14 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
   const method = request.method.toUpperCase();
   if (!path.startsWith("/admin/") && path !== "/products/public") return null;
 
+  // Cookie-backed admin sessions require a same-origin browser request for every
+  // state-changing operation, including login, to prevent cross-site request forgery.
+  if (path.startsWith("/admin/") && method !== "GET" && method !== "HEAD") {
+    const origin = request.headers.get("origin") || "";
+    const allowedOrigins = (env.ALLOWED_ORIGINS || "").split(",").map(value => value.trim()).filter(Boolean);
+    if (!origin || !allowedOrigins.includes(origin)) return adminJson({ error: "origin_not_allowed" }, 403);
+  }
+
   if (method === "GET" && path === "/products/public") {
     const rows = await env.DB.prepare("SELECT id,type,name,tagline,price,category,image,tags_json,description,includes_json,featured,status,subscription,interval,paypal_url FROM norda_products WHERE status IN ('active','inquiry') ORDER BY name").all<Record<string, unknown>>();
     return adminJson({ ok: true, products: (rows.results || []).map(p => ({ ...p, tags: jsonArray(p.tags_json), includes: jsonArray(p.includes_json), featured: Boolean(p.featured), subscription: Boolean(p.subscription) })) });
@@ -166,21 +184,29 @@ export async function handleAdminApi(request: Request, env: AdminEnv): Promise<R
     // through response timing. Keep the existing work factor for compatibility.
     const candidate = await passwordHash(password, user?.password_salt || "00000000000000000000000000000000");
     if (!user || !constantTimeEqual(candidate, user.password_hash)) return adminJson({ error: "invalid_credentials" }, 401);
-    const token = randomToken(), stamp = nowIso(), expires = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
+    const token = randomToken(), stamp = nowIso(), expires = new Date(Date.now() + ADMIN_SESSION_MAX_AGE * 1000).toISOString();
     await env.DB.prepare("INSERT INTO norda_admin_sessions(id,user_id,token_hash,created_at,expires_at) VALUES(?,?,?,?,?)")
       .bind(crypto.randomUUID(), user.id, await sha256(token), stamp, expires).run();
     await audit(env, user.id, "login", "session");
-    return adminJson({ token, expiresAt: expires, user: { id: user.id, username: user.username, role: user.role } });
+    const response = adminJson({ expiresAt: expires, user: { id: user.id, username: user.username, role: user.role } });
+    response.headers.append("set-cookie", adminCookie(token));
+    return response;
+  }
+
+  if (method === "POST" && path === "/admin/auth/logout") {
+    const session = await adminSession(request, env);
+    if (session) {
+      await env.DB.prepare("UPDATE norda_admin_sessions SET revoked_at=? WHERE id=?").bind(nowIso(), session.session_id).run();
+    }
+    const response = adminJson({ ok: true });
+    response.headers.append("set-cookie", adminCookie("", 0) + "; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    return response;
   }
 
   if (path.startsWith("/admin/auth/")) {
     const session = await adminSession(request, env);
     if (!session) return adminJson({ error: "unauthorized" }, 401);
     if (method === "GET" && path === "/admin/auth/me") return adminJson({ user: { id: session.id, username: session.username, role: session.role } });
-    if (method === "POST" && path === "/admin/auth/logout") {
-      await env.DB.prepare("UPDATE norda_admin_sessions SET revoked_at=? WHERE id=?").bind(nowIso(), session.session_id).run();
-      return adminJson({ ok: true });
-    }
   }
 
   if (!path.startsWith("/admin/")) return null;
