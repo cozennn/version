@@ -1,14 +1,16 @@
 {
   "name": "senior-frontend",
-  "source": "https://github.com/alirezarezvani/claude-skills/tree/main/engineering-team/skills/senior-frontend",
+  "source": "https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills/development/senior-frontend",
   "source_file": "SKILL.md",
   "reference_files": [
-    "references/frontend_best_practices.md",
-    "references/react_patterns.md",
-    "references/nextjs_optimization_guide.md",
-    "references/forcing_questions.md",
-    "references/composition_map.md"
+    "references/ui-checklist.md",
+    "references/react-patterns.md",
+    "references/NOTICE.md"
+  ],
+  "scripts": [
+    "scripts/check_ui.mjs",
+    "scripts/page-audit.mjs"
   ],
   "license": "MIT",
-  "adaptation": "NorDa-focused rewrite. Excludes upstream scaffolding scripts and external agent-fork paths that are not present in this repository; keeps the relevant engineering practices."
+  "attribution": "claude-code-templates; adapted reference materials from Vercel Web Interface Guidelines, Vercel agent-skills, and Addy Osmani web-quality-skills. See references/NOTICE.md."
 }
