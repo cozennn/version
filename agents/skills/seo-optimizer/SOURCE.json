@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "path": "SKILL.md",
+      "bytes": 11687,
+      "lines": 413
+    }
+  ],
+  "languages": [
+    {
+      "name": "Markdown",
+      "bytes": 11687
+    }
+  ],
+  "lastCommit": {
+    "sha": "1c859b46334fc1368a30aa4ded127d122de6561c",
+    "date": "2026-10-23T23:15:01-04:00",
+    "author": "Daniel Avila",
+    "subject": "fix(skills): replace display-title names with the directory name (31 skills) (#1263)",
+    "pr": 1263
+  },
+  "addedAt": "2025-12-19T21:14:16-05:00"
+}
