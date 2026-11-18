@@ -1,15 +1,21 @@
-# Optional website skills
+# Website skills
 
-This repository already has NorDa-specific skills under `agents/skills/`. Keep those skills and add optional website skills here, each in its own folder:
+Complete website-specialist skills installed directly under `agents/skills/`:
 
-```
-agents/skills/
-  copywriting/
-    SKILL.md
-  webapp-testing/
-    SKILL.md
-```
+- `accessibility-auditor`
+- `copywriting`
+- `design-system-starter`
+- `form-cro`
+- `interactive-portfolio`
+- `page-cro`
+- `react-best-practices`
+- `seo-optimizer`
+- `tailwind-patterns`
+- `web-performance-optimization`
+- `webapp-testing`
 
-Copy complete skill folders from the NorDa-Website-Skills archive into this directory. Preserve bundled reference files alongside each `SKILL.md`. Do not copy `SOURCE_PENDING.md` placeholders as active skills.
+Each folder contains its complete `SKILL.md` and its `SOURCE.json` provenance record.
 
-Use the root `AGENTS.md` and `NORDA-SKILLS.md` for project-wide instructions and skill selection. Existing skills may overlap; prefer the NorDa-specific skill when it already covers the task.
+Keep the existing NorDa-specific skills, especially Cloudflare Worker, D1/SQLite, security, localization, responsive design, and code review. The website-skill archive remains under `NorDa-Website-Skills/` as a source backup. Do not activate `SOURCE_PENDING.md` placeholders as skills.
+
+Use the root `AGENTS.md` and `NORDA-SKILLS.md` for project-wide instructions and skill routing. Load only the skills relevant to the current task.
