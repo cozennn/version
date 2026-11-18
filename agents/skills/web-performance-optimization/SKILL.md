@@ -12,9 +12,9 @@ Help developers optimize website and web application performance to improve user
 ## When to Use This Skill
 
 - Use when website or app is loading slowly
-- Use when optimizing for Core Web Vitals (LCP, FID, CLS)
+- Use when optimizing for Core Web Vitals (LCP, INP, CLS)
 - Use when reducing JavaScript bundle size
-- Use when improving Time to Interactive (TTI)
+- Use when improving interaction responsiveness (INP)
 - Use when optimizing images and assets
 - Use when implementing caching strategies
 - Use when debugging performance bottlenecks
@@ -26,7 +26,7 @@ Help developers optimize website and web application performance to improve user
 
 I'll help you establish baseline metrics:
 - Run Lighthouse audits
-- Measure Core Web Vitals (LCP, FID, CLS)
+- Measure Core Web Vitals (LCP, INP, CLS)
 - Check bundle sizes
 - Analyze network waterfall
 - Identify performance bottlenecks
@@ -77,14 +77,14 @@ Measure impact of changes:
 
 ### Current Metrics (Before Optimization)
 - **LCP (Largest Contentful Paint):** 4.2s ❌ (should be < 2.5s)
-- **FID (First Input Delay):** 180ms ❌ (should be < 100ms)
+- **INP (Interaction to Next Paint):** 280ms ❌ (should be < 200ms)
 - **CLS (Cumulative Layout Shift):** 0.25 ❌ (should be < 0.1)
 - **Lighthouse Score:** 62/100
 
 ### Issues Identified
 
 1. **LCP Issue:** Hero image (2.5MB) loads slowly
-2. **FID Issue:** Large JavaScript bundle (850KB) blocks main thread
+2. **INP Issue:** Large JavaScript bundle (850KB) blocks main thread
 3. **CLS Issue:** Images without dimensions cause layout shifts
 
 ### Optimization Plan
@@ -118,7 +118,7 @@ Measure impact of changes:
 - Use CDN for faster delivery
 - Preload hero image: `<link rel="preload" as="image" href="/hero.avif">`
 
-#### Fix FID (First Input Delay)
+#### Fix INP (Interaction to Next Paint)
 
 **Problem:** 850KB JavaScript bundle blocks main thread
 
@@ -202,7 +202,7 @@ npm install date-fns
 ### Results After Optimization
 
 - **LCP:** 1.8s ✅ (improved by 57%)
-- **FID:** 45ms ✅ (improved by 75%)
+- **INP:** 120ms ✅ (improved by 57%)
 - **CLS:** 0.05 ✅ (improved by 80%)
 - **Lighthouse Score:** 94/100 ✅
 ```
@@ -522,7 +522,7 @@ lighthouse https://yoursite.com --throttling.cpuSlowdownMultiplier=4
 ```
 
 ### Problem: Large JavaScript Bundle
-**Symptoms:** Long Time to Interactive (TTI), high FID
+**Symptoms:** Long Time to Interactive (TTI), poor INP
 **Solution:**
 - Analyze bundle with webpack-bundle-analyzer
 - Remove unused dependencies
@@ -599,10 +599,10 @@ export async function getStaticProps() {
 
 ### Core Web Vitals
 - [ ] LCP < 2.5s
-- [ ] FID < 100ms
+- [ ] INP < 200ms
 - [ ] CLS < 0.1
 - [ ] TTFB < 600ms
-- [ ] TTI < 3.8s
+- [ ] Treat TTI as a legacy diagnostic metric, not a Core Web Vital target
 
 ## Performance Tools
 
@@ -643,4 +643,4 @@ export async function getStaticProps() {
 
 ---
 
-**Pro Tip:** Focus on Core Web Vitals (LCP, FID, CLS) first - they have the biggest impact on user experience and SEO rankings!
+**Pro Tip:** Focus on Core Web Vitals (LCP, INP, CLS) first - they have the biggest impact on user experience and SEO rankings!
