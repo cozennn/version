@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "path": "SKILL.md",
+      "bytes": 5475,
+      "lines": 224
+    }
+  ],
+  "languages": [
+    {
+      "name": "Markdown",
+      "bytes": 5475
+    }
+  ],
+  "lastCommit": {
+    "sha": "13da94c06601e0ab89f3d9f5e584a10f13d0b945",
+    "date": "2026-10-23T22:19:15-04:00",
+    "author": "Daniel Avila",
+    "subject": "fix(skills): move non-spec frontmatter keys under metadata (299 skills) (#1258)",
+    "pr": 1258
+  },
+  "addedAt": "2026-01-25T10:01:14-05:00"
+}
