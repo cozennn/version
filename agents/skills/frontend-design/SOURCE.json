@@ -1,0 +1,7 @@
+{
+  "name": "frontend-design",
+  "source": "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+  "source_file": "SKILL.md",
+  "license": "See upstream LICENSE.txt",
+  "adaptation": "Existing root skill retained as the canonical copy. No duplicate folder was created."
+}
