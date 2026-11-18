@@ -19,6 +19,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Scan all reachable Git history
+        run: gitleaks detect --redact --verbose --exit-code=2 --log-opts=--all
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
