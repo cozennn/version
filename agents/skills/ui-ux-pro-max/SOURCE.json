@@ -3,5 +3,44 @@
   "source": "https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills/creative-design/ui-ux-pro-max",
   "source_file": "SKILL.md",
   "license": "See upstream repository license",
-  "bundled_assets": "Original Python search scripts and CSV data files, including all configured stack datasets, copied from the exact source directory specified by the user."
+  "bundled_assets": "Original Python search scripts and CSV data files, including all configured stack datasets, copied from the exact source directory specified by the user.",
+  "verified_catalog": {
+    "styles": 58,
+    "color_palettes": 96,
+    "typography_pairings": 57,
+    "ux_guidelines": 99,
+    "chart_types": 25,
+    "icon_references": 100,
+    "technology_stacks": 11,
+    "domains": [
+      "style",
+      "prompt",
+      "color",
+      "chart",
+      "landing",
+      "product",
+      "ux",
+      "typography",
+      "icons",
+      "react",
+      "web"
+    ],
+    "stacks": [
+      "html-tailwind",
+      "react",
+      "nextjs",
+      "vue",
+      "nuxtjs",
+      "nuxt-ui",
+      "svelte",
+      "swiftui",
+      "react-native",
+      "flutter",
+      "shadcn"
+    ]
+  },
+  "notes": [
+    "Documentation counts and supported domain/stack lists were aligned with the included CSV files and Python configuration.",
+    "The separate offline Codex UI/UX skill is stored as ui-ux-pro-max-offline-codex to avoid a duplicate skill name."
+  ]
 }
