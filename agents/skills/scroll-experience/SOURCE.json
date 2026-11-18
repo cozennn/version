@@ -1,7 +1,12 @@
 {
   "name": "scroll-experience",
-  "source": "https://github.com/vibeforge1111/vibeship-spawner-skills",
+  "source": "https://github.com/vibeforge1111/vibeship-spawner-skills/tree/main/maker/scroll-experience",
   "source_file": "User-provided SKILL.md",
   "license": "Apache-2.0 (as stated in supplied metadata)",
-  "adaptation": "The exact skill text supplied by the user is retained. No separate references or scripts were included in that supplied version."
+  "references": [
+    "references/sharp-edges.yaml",
+    "references/validations.yaml",
+    "references/collaboration.yaml"
+  ],
+  "adaptation": "The exact SKILL.md text supplied by the user is retained. The three original supporting YAML files from the upstream source are included under references/. The upstream skill.yaml also contains a Performance Optimization pattern that is not present in the user-supplied Markdown; it has not been inserted into SKILL.md."
 }
