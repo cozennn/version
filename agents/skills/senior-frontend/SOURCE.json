@@ -1,0 +1,14 @@
+{
+  "name": "senior-frontend",
+  "source": "https://github.com/alirezarezvani/claude-skills/tree/main/engineering-team/skills/senior-frontend",
+  "source_file": "SKILL.md",
+  "reference_files": [
+    "references/frontend_best_practices.md",
+    "references/react_patterns.md",
+    "references/nextjs_optimization_guide.md",
+    "references/forcing_questions.md",
+    "references/composition_map.md"
+  ],
+  "license": "MIT",
+  "adaptation": "NorDa-focused rewrite. Excludes upstream scaffolding scripts and external agent-fork paths that are not present in this repository; keeps the relevant engineering practices."
+}
