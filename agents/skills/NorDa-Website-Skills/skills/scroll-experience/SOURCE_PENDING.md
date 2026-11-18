@@ -1,5 +1,3 @@
 # scroll-experience
 
-Optional scroll-driven storytelling and motion. The original full SKILL.md source has not yet been supplied as a file.
-
-Do not treat this placeholder as an executable skill. Add the original source SKILL.md and any bundled references before using it.
+The active NorDa-focused skill is installed at `agents/skills/scroll-experience/SKILL.md`, with provenance in `SOURCE.json`. This archive placeholder is historical only.
