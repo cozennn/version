@@ -1,0 +1,52 @@
+{
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 11345,
+      "lines": 202
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 3913,
+      "lines": 96
+    },
+    {
+      "path": "examples/console_logging.py",
+      "bytes": 1027,
+      "lines": 35
+    },
+    {
+      "path": "examples/element_discovery.py",
+      "bytes": 1463,
+      "lines": 40
+    },
+    {
+      "path": "examples/static_html_automation.py",
+      "bytes": 953,
+      "lines": 33
+    },
+    {
+      "path": "scripts/with_server.py",
+      "bytes": 3693,
+      "lines": 106
+    }
+  ],
+  "languages": [
+    {
+      "name": "Python",
+      "bytes": 7136
+    },
+    {
+      "name": "Markdown",
+      "bytes": 3913
+    }
+  ],
+  "lastCommit": {
+    "sha": "15e09b2214585976ae4073522192eb62d4dd4093",
+    "date": "2026-07-05T13:20:45-04:00",
+    "author": "Daniel Avila",
+    "subject": "chore: sync Anthropic skills LICENSE attribution with upstream (#670)",
+    "pr": 670
+  },
+  "addedAt": "2025-10-17T17:27:34-04:00"
+}
