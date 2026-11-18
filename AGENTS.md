@@ -15,6 +15,13 @@ Available skills:
 - `code-review`: review diffs and cross-project contracts
 - `performance`: speed and efficiency
 - `localization-i18n`: Arabic, English, French, and RTL
+- `design-system-starter`: design tokens, component systems, and theming
+- `accessibility-auditor`: WCAG and inclusive web accessibility audits
+- `web-performance-optimization`: web performance and Core Web Vitals
+- `react-best-practices`: React/Next.js implementation guidance
+- `tailwind-patterns`: Tailwind CSS utility patterns
+- `webapp-testing`: browser-based functional testing
+- `copywriting`, `seo-optimizer`, `page-cro`, `form-cro`, `interactive-portfolio`: content, search, conversion, and portfolio specialists
 
 ## NorDa working rules
 - Inspect the existing implementation before editing; preserve established architecture and visual identity.
