@@ -14,24 +14,21 @@ Build websites that feel intentionally designed for their specific brand, audien
 
 ## Skill routing
 
-### Visual direction
-- `frontend-design`: primary art direction and distinctive visual design (already present in this repository).
-- `premium-web-design`: premium/editorial visual treatment when appropriate.
-- `ui-ux-pro-max`: UI/UX patterns, palettes, typography, and stack-specific references.
-- `material-design-3-ui`: only when Material Design 3 is selected.
-- `scroll-experience`: only for story-led, scroll-driven pages.
+### Visual direction and design systems
+- `frontend-design`: primary art direction and distinctive visual design; retain the existing complete NorDa skill.
+- `design-system-starter`: tokens, component architecture, theming, and documentation when its complete skill file is installed.
+- `premium-web-design`, `ui-ux-pro-max`, `material-design-3-ui`, and `scroll-experience`: optional specialist skills; do not use their pending placeholders as instructions.
 
-### Systems and implementation
-- `design-system-starter`: tokens, component architecture, theming, documentation.
-- Existing `frontend-development` and `responsive-design` remain the NorDa-specific implementation skills.
+### Frontend implementation
+- Existing `frontend-development` remains the primary NorDa-specific implementation skill.
+- Existing `responsive-design` remains active until a complete replacement is installed.
 - `react-best-practices`: React/Next.js only.
 - `tailwind-patterns`: Tailwind CSS v4 only.
 
-### Quality
-- Existing `accessibility` and `performance` skills remain primary for NorDa.
+### Accessibility and performance
+- Existing `accessibility` remains active until the complete `accessibility-auditor` skill is installed.
+- Existing `performance` remains active until the complete `web-performance-optimization` skill is installed.
 - `webapp-testing`: Playwright/browser functional checks.
-- `web-performance-optimization`: deeper Core Web Vitals, bundles, caching, and runtime optimization.
-- Existing `code-review` remains the cross-project review skill.
 
 ### Content and conversion
 - `copywriting`: website and product marketing copy.
@@ -41,6 +38,13 @@ Build websites that feel intentionally designed for their specific brand, audien
 
 ### Specialized
 - `interactive-portfolio`: portfolio projects only.
+
+### NorDa platform skills to preserve
+- `cloudflare-worker-api`: Worker API and integrations.
+- `database-d1-sqlite`: Cloudflare D1 and SQLite.
+- `security-review`: authentication, authorization, uploads, and application security.
+- `localization-i18n`: Arabic, English, French, and RTL.
+- `code-review`: cross-project correctness and regression review.
 
 ## Workflow
 1. Identify the site type, audience, primary action, content, framework, and constraints.
@@ -56,10 +60,13 @@ Build websites that feel intentionally designed for their specific brand, audien
 ## Conflict handling
 - Visual skills must not override the actual brand brief.
 - A design system creates consistency within one project, not across all NorDa client sites.
-- Existing NorDa-specific skills take precedence for the public site, admin panel, Worker API, and database.
+- Existing NorDa-specific platform skills take precedence for the public site, admin panel, Worker API, and database.
 - Testing, accessibility, and performance skills complement one another.
 - Marketing skills must not create deceptive claims.
 - Motion is progressive enhancement; respect `prefers-reduced-motion`.
 
-## Important
-The names above are routing guidance, not proof that every skill is installed. Read only skill files that actually exist under `agents/skills/`. Do not create empty placeholders and treat them as complete.
+## Installation and replacement safety
+- Only complete `SKILL.md` files count as installed skills. A `SOURCE_PENDING.md` file is not a skill.
+- Do not delete `ui-ux-design`, `frontend-development`, `responsive-design`, `accessibility`, or `performance` until their complete replacements have been added and checked.
+- Preserve `cloudflare-worker-api`, `database-d1-sqlite`, `security-review`, `localization-i18n`, and `code-review`.
+- Never remove backend or platform-specific skills as part of a website-design refresh.
