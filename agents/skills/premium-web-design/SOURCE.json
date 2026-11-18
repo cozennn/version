@@ -1,7 +1,8 @@
 {
   "name": "premium-web-design",
-  "source": "https://github.com/Lucxar/premium-web-design-skill",
+  "source": "User-provided skill content",
   "source_file": "SKILL.md",
-  "adaptation": "Independently rewritten for NorDa. Uses the source repository as a design reference; does not reproduce its bundled research or brand-pattern files.",
-  "license": "Not asserted; verify upstream repository terms before copying upstream text or assets."
+  "license": "Not specified in the provided content",
+  "bundled_references": [],
+  "notes": "SKILL.md was replaced with the complete version supplied by the user. No separate reference files, scripts, datasets, or assets were included in that submission."
 }
