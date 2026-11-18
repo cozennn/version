@@ -1,0 +1,11 @@
+{
+  "name": "material-design-3-ui",
+  "source": "https://github.com/skydashnet/material-design-3-ui-skill",
+  "source_file": "SKILL.md",
+  "license": "MIT",
+  "adaptation": "NorDa-focused adaptation. The skill is self-contained and uses official Material 3 documentation as the current source of truth.",
+  "references": [
+    "https://m3.material.io/",
+    "https://developer.android.com/"
+  ]
+}
