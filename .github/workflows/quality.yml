@@ -83,16 +83,21 @@ jobs:
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
           const findings = Object.entries(report.vulnerabilities || {});
+          const knownDevToolPackages = new Set(['picomatch', 'fdir', 'tinyglobby', 'vite']);
           const unexpected = findings.filter(([name, item]) => {
             const via = Array.isArray(item.via) ? item.via : [];
-            const knownPicomatchDevAdvisory =
-              name === 'picomatch' &&
-              item.isDirect === false &&
+            const advisoryPathIsKnown =
+              name === 'picomatch'
+                ? via.length > 0 && via.every(entry => entry && typeof entry === 'object' && entry.url === 'https://github.com/advisories/GHSA-fc5q-39xc-vjpf')
+                : via.length > 0 && via.every(entry => typeof entry === 'string' && knownDevToolPackages.has(entry));
+            // This narrow exception is safe only for the named build-tool chain:
+            // the separate --omit=dev audit above must continue to pass.
+            const knownPicomatchDevChain =
+              knownDevToolPackages.has(name) &&
+              item.dev === true &&
               item.severity === 'high' &&
-              via.length > 0 &&
-              via.every(entry => entry && typeof entry === 'object' && entry.url === 'https://github.com/advisories/GHSA-fc5q-39xc-vjpf') &&
-              (item.effects || []).every(effect => ['fdir', 'tinyglobby'].includes(effect));
-            return !knownPicomatchDevAdvisory;
+              advisoryPathIsKnown;
+            return !knownPicomatchDevChain;
           });
           if (unexpected.length) {
             console.error('Unexpected dependency vulnerabilities:', unexpected.map(([name, item]) => ({ name, severity: item.severity, via: item.via })));
