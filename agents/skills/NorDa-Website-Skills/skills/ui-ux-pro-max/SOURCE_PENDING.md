@@ -1,5 +1,3 @@
 # ui-ux-pro-max
 
-UI/UX design intelligence and reference database. The original full SKILL.md and bundled resources have not yet been supplied as files.
-
-Do not treat this placeholder as an executable skill. Add the original source SKILL.md and any bundled references before using it.
+The active NorDa-focused skill is installed at `agents/skills/ui-ux-pro-max/SKILL.md`, with provenance and explicit dataset limitations in `SOURCE.json`. This is not the complete upstream searchable database package. This archive placeholder is historical only.
