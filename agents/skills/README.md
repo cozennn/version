@@ -20,6 +20,7 @@ Skills are stored directly under this directory. Read only the skill relevant to
 - `material-design-3-ui`
 - `premium-web-design`
 - `ui-ux-pro-max`
+- `ui-ux-pro-max-offline-codex`
 - `scroll-experience`
 - `senior-frontend`
 - `accessibility-auditor`
