@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
 
       - name: Scan complete Git history for leaked secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -51,6 +51,16 @@ jobs:
             code=$(curl --silent --output /dev/null --write-out '%{http_code}' "$API$route")
             test "$code" = "401" || { echo "Expected 401 for $route, received $code"; exit 1; }
           done
+
+          # Safe, read-only CORS checks: allowed admin origin is reflected; an
+          # untrusted origin cannot read authenticated API responses.
+          allowed_code=$(curl --silent --output /dev/null --write-out '%{http_code}' -H "Origin: https://admin-e9v.pages.dev" "$API/admin/auth/me")
+          test "$allowed_code" = "401" || { echo "Expected unauthenticated 401, received $allowed_code"; exit 1; }
+          allowed_origin=$(curl --silent --dump-header - --output /dev/null -H "Origin: https://admin-e9v.pages.dev" "$API/admin/auth/me" | tr -d '\r' | grep -i '^access-control-allow-origin:' | tail -n 1)
+          echo "$allowed_origin" | grep -Fqi 'https://admin-e9v.pages.dev' || { echo "Allowed origin was not reflected"; exit 1; }
+
+          blocked_code=$(curl --silent --output /dev/null --write-out '%{http_code}' -H "Origin: https://untrusted.invalid" "$API/admin/auth/me")
+          test "$blocked_code" = "403" || { echo "Expected CORS rejection 403, received $blocked_code"; exit 1; }
 
       - name: Install NorDa Admin dependencies
         working-directory: admin
