@@ -16,7 +16,7 @@ Build websites that feel intentionally designed for their specific brand, audien
 
 ### Visual direction and design systems
 - `frontend-design`: primary art direction and distinctive visual design; retain the existing complete NorDa skill.
-- `design-system-starter`: tokens, component architecture, theming, and documentation when its complete skill file is installed.
+- `design-system-starter`: tokens, component architecture, theming, and documentation now installed.
 - `premium-web-design`, `ui-ux-pro-max`, `material-design-3-ui`, and `scroll-experience`: optional specialist skills; do not use their pending placeholders as instructions.
 
 ### Frontend implementation
@@ -26,8 +26,8 @@ Build websites that feel intentionally designed for their specific brand, audien
 - `tailwind-patterns`: Tailwind CSS v4 only.
 
 ### Accessibility and performance
-- Existing `accessibility` remains active until the complete `accessibility-auditor` skill is installed.
-- Existing `performance` remains active until the complete `web-performance-optimization` skill is installed.
+- Existing `accessibility` remains active alongside the installed `accessibility-auditor` specialist skill.
+- Existing `performance` remains active alongside the installed `web-performance-optimization` specialist skill.
 - `webapp-testing`: Playwright/browser functional checks.
 
 ### Content and conversion
