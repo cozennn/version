@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Container } from '@/components/layout/Container';
 import { Section } from '@/components/layout/Section';
 
-function FlowerMark({ className = '' }: { className?: string }): JSX.Element {
+function FlowerMark({ className = '', label }: { className?: string; label: string }): JSX.Element {
   return (
-    <svg viewBox="0 0 360 390" fill="none" className={className} role="img" aria-label="NorDa flower mark">
+    <svg viewBox="0 0 360 390" fill="none" className={className} role="img" aria-label={label}>
       <circle cx="180" cy="180" r="154" stroke="currentColor" strokeOpacity=".16" />
       <circle cx="180" cy="180" r="122" stroke="currentColor" strokeOpacity=".24" strokeDasharray="2 9" />
       <path d="M180 278C123 235 91 181 116 129C139 81 185 76 207 119C230 164 207 220 180 278Z" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="1.5"/>
@@ -23,9 +23,9 @@ export function HomePage(): JSX.Element {
   const isArabic = i18n.language.startsWith('ar');
   const arrow = isArabic ? '←' : '→';
   const services = [
-    { number: '01', title: t('home.services.web.title'), body: t('home.services.web.body'), tag: t('home.discipline.digital') },
-    { number: '02', title: t('home.services.identity.title'), body: t('home.services.identity.body'), tag: t('home.discipline.identity') },
-    { number: '03', title: t('home.services.digital.title'), body: t('home.services.digital.body'), tag: t('home.discipline.tools') },
+    { title: t('home.services.web.title'), body: t('home.services.web.body'), tag: t('home.discipline.digital') },
+    { title: t('home.services.identity.title'), body: t('home.services.identity.body'), tag: t('home.discipline.identity') },
+    { title: t('home.services.digital.title'), body: t('home.services.digital.body'), tag: t('home.discipline.tools') },
   ];
   const steps = ['discover', 'shape', 'make'];
 
@@ -64,7 +64,7 @@ export function HomePage(): JSX.Element {
               <div className="relative aspect-[.9] overflow-hidden bg-surface">
                 <div className="absolute inset-4 border border-brand/20 md:inset-6"/>
                 <div className="absolute inset-0 flex items-center justify-center p-7 text-brand">
-                  <FlowerMark className="w-full max-w-[350px] transition-transform duration-700 hover:rotate-3"/>
+                  <FlowerMark label={t("home.art.alt")} className="w-full max-w-[350px] transition-transform duration-700 hover:rotate-3"/>
                 </div>
                 <div className="absolute start-0 top-[18%] border border-rose/30 bg-paper px-4 py-3 shadow-sm">
                   <span className="block text-[9px] font-bold uppercase tracking-[.2em] text-rose">{t('home.art.kicker')}</span>
@@ -88,10 +88,10 @@ export function HomePage(): JSX.Element {
           </div>
           <div className="mt-14 grid md:grid-cols-3">
             {services.map((service) => (
-              <article key={service.number} className="group border-b border-ink/15 py-8 md:border-b-0 md:border-e md:px-7 md:first:ps-0 md:last:border-e-0">
+              <article key={service.title} className="group border-b border-ink/15 py-8 md:border-b-0 md:border-e md:px-7 md:first:ps-0 md:last:border-e-0">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-ink-faint">{service.number}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[.16em] text-rose">{service.tag}</span>
+                  <span className="h-px w-8 bg-rose transition-all duration-300 group-hover:w-14"/>
+                  <span className="text-[10px] font-semibold tracking-[.08em] text-rose">{service.tag}</span>
                 </div>
                 <h2 className="mt-10 text-2xl font-bold text-ink transition-colors group-hover:text-brand">{service.title}</h2>
                 <p className="mt-4 max-w-xs text-sm leading-7 text-ink-muted">{service.body}</p>

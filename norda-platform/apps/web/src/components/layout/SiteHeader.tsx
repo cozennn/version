@@ -55,11 +55,11 @@ export function SiteHeader(): JSX.Element {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'relative px-3 py-2 text-sm rounded-sm transition-colors duration-[var(--motion-fast)]',
+                    'relative px-3 py-2 text-sm rounded-sm transition-colors duration-[var(--motion-fast)] after:absolute after:inset-x-3 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-brand after:transition-transform after:duration-200 aria-[current=page]:after:scale-x-100',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
                     isActive
-                      ? 'text-ink font-medium'
-                      : 'text-ink-muted hover:text-ink hover:bg-surface',
+                      ? 'text-brand font-semibold'
+                      : 'text-ink-muted hover:text-ink',
                   )
                 }
               >
@@ -108,8 +108,8 @@ export function SiteHeader(): JSX.Element {
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     cn(
-                      'px-2 py-2.5 text-sm rounded-sm',
-                      isActive ? 'text-ink font-medium bg-surface' : 'text-ink-muted hover:bg-surface',
+                      'px-3 py-3 text-sm rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                      isActive ? 'text-brand font-semibold bg-surface' : 'text-ink-muted hover:bg-surface',
                     )
                   }
                 >
