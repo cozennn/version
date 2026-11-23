@@ -71,6 +71,11 @@ norda-platform/
 └── README.md
 ```
 
+
+## Preview deployment
+
+Cloudflare Pages project `norda-preview` builds this branch only. Preview deployments are restricted to `feature/norda-independent-platform`; production deployments are disabled and the production branch remains `main`.
+
 ## License
 
 Proprietary — all rights reserved. Not for redistribution.
