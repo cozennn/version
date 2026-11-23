@@ -16,11 +16,6 @@ const EXPLORE: FooterLink[] = [
 const STUDIO: FooterLink[] = [
   { to: '/about', labelKey: 'nav.about' },
   { to: '/contact', labelKey: 'nav.contact' },
-  { to: '/support', labelKey: 'nav.support' },
-];
-const LEGAL: FooterLink[] = [
-  { to: '/terms', labelKey: 'footer.terms' },
-  { to: '/privacy', labelKey: 'footer.privacy' },
 ];
 
 export function SiteFooter(): JSX.Element {
@@ -43,15 +38,7 @@ export function SiteFooter(): JSX.Element {
           <p className="text-xs text-ink-muted">
             © {year} {t('app.name')}. {t('footer.rights')}
           </p>
-          <ul className="flex flex-wrap gap-4 text-xs">
-            {LEGAL.map((l) => (
-              <li key={l.to}>
-                <Link to={l.to} className="text-ink-muted hover:text-ink">
-                  {t(l.labelKey)}
-                </Link>
-              </li>
-            ))}
-          </ul>
+
         </div>
       </Container>
     </footer>

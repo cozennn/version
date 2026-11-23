@@ -35,11 +35,13 @@ export function SiteHeader(): JSX.Element {
             className="flex items-center gap-2 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 rounded-sm"
             aria-label={t('app.name')}
           >
-            <span
-              aria-hidden="true"
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-paper font-display font-bold text-sm"
-            >
-              N
+            <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center text-brand">
+              <svg viewBox="0 0 40 40" className="h-9 w-9" fill="none">
+                <path d="M20 34C12.8 28.5 9 22.4 11.8 16.6C14.2 11.5 19 10.7 20 17.1C21 10.7 25.8 11.5 28.2 16.6C31 22.4 27.2 28.5 20 34Z" fill="currentColor" fillOpacity=".14" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M20 34C17.5 26.3 17.5 18.8 20 9C22.5 18.8 22.5 26.3 20 34Z" fill="currentColor" fillOpacity=".22" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M20 34V38" stroke="#C2648A" strokeWidth="1.8" strokeLinecap="round"/>
+                <circle cx="20" cy="19" r="2.2" fill="#C2648A"/>
+              </svg>
             </span>
             <span className="font-display font-bold text-lg tracking-tight text-ink">
               {t('app.name')}
@@ -71,24 +73,7 @@ export function SiteHeader(): JSX.Element {
               <span aria-hidden="true">{theme === 'light' ? '◐' : '☼'}</span>
             </button>
             <LanguageSwitcher className="hidden sm:inline-flex" />
-            <Link
-              to="/account"
-              className="hidden md:inline-flex h-9 items-center px-3 rounded-md text-sm text-ink-muted hover:text-ink hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-            >
-              {t('nav.account')}
-            </Link>
-            <Link
-              to="/cart"
-              className="relative inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-ink bg-elevated border border-border-strong/20 hover:border-border-strong/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M6 6h15l-1.5 9h-12z" />
-                <circle cx="9" cy="20" r="1" />
-                <circle cx="18" cy="20" r="1" />
-                <path d="M6 6 5 3H2" />
-              </svg>
-              <span className="hidden sm:inline">{t('nav.cart')}</span>
-            </Link>
+
             <button
               type="button"
               aria-label={mobileOpen ? t('nav.closeMenu') : t('nav.openMenu')}
