@@ -1,0 +1,78 @@
+/*
+ * NorDa — font stack.
+ *
+ * We self-host Tajawal (Arabic) and Manrope (Latin) but ship ONLY this
+ * @font-face block — the .woff2 files are added by the operator, see
+ * public/fonts/README.txt. `font-display: swap` ensures the fallback
+ * stack is used instantly if the binaries are absent.
+ *
+ * The fallback chains below deliberately include fonts present on
+ * Windows, macOS, iOS, Android, and Linux so the site always looks
+ * intentional even before the custom fonts are installed.
+ */
+
+/* ── Arabic ─────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Tajawal Regular'), url('/fonts/Tajawal-Regular.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF,
+                 U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Tajawal Medium'), url('/fonts/Tajawal-Medium.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF,
+                 U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Tajawal Bold'), url('/fonts/Tajawal-Bold.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF,
+                 U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* ── Latin ──────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Manrope Regular'), url('/fonts/Manrope-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Manrope Medium'), url('/fonts/Manrope-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Manrope SemiBold'), url('/fonts/Manrope-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Manrope Bold'), url('/fonts/Manrope-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: local('Manrope ExtraBold'), url('/fonts/Manrope-ExtraBold.woff2') format('woff2');
+}

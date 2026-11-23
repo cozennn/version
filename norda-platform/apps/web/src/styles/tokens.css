@@ -1,0 +1,128 @@
+/*
+ * NorDa — design tokens.
+ *
+ * Two layers:
+ *   1. Raw palette (hex → RGB triplets) — the only place colors are authored.
+ *   2. Semantic variables consumed by Tailwind and by hand-written CSS.
+ *
+ * All colors are stored as space-separated RGB triplets so Tailwind can
+ * apply alpha via `rgb(var(--x) / <alpha-value>)` without breaking.
+ */
+
+:root {
+  /* ── Brand ──────────────────────────────────────────────────── */
+  --brand: 90 70 214;              /* #5A46D6 */
+  --brand-strong: 71 52 186;       /* #4734BA — for pressed states */
+  --brand-soft: 235 231 251;       /* #EBE7FB — tinted surfaces */
+  --brand-ring: 90 70 214;         /* same as brand; separate slot for focus */
+
+  /* ── Rose accent (Wardah) — used sparingly ──────────────────── */
+  --rose: 194 100 138;             /* #C2648A */
+  --rose-soft: 250 235 240;        /* #FAEBF0 */
+
+  /* ── Warm neutrals — "paper", not pure white ────────────────── */
+  --ink: 20 18 37;                 /* #141225 — primary text */
+  --ink-muted: 75 74 94;           /* #4B4A5E — secondary text */
+  --ink-faint: 128 127 144;        /* #807F90 — tertiary / placeholder */
+  --paper: 251 250 247;            /* #FBFAF7 — page background */
+  --surface: 243 241 236;          /* #F3F1EC — recessed surfaces */
+  --surface-2: 237 234 226;        /* #EDEAE2 — deeper recessed */
+  --elevated: 255 255 255;         /* #FFFFFF — cards, modals */
+
+  /* ── Borders ────────────────────────────────────────────────── */
+  --border: 20 18 37;              /* used with low alpha */
+  --border-strong: 20 18 37;       /* used with medium alpha */
+
+  /* ── Semantic ───────────────────────────────────────────────── */
+  --success: 46 125 91;            /* #2E7D5B */
+  --success-soft: 230 244 238;     /* #E6F4EE */
+  --warning: 184 121 28;           /* #B8791C */
+  --warning-soft: 251 243 227;     /* #FBF3E3 */
+  --danger: 178 58 58;             /* #B23A3A */
+  --danger-soft: 251 233 233;      /* #FBE9E9 */
+  --info: 45 91 140;               /* #2D5B8C */
+  --info-soft: 230 240 250;        /* #E6F0FA */
+
+  /* ── Focus ring ─────────────────────────────────────────────── */
+  --focus: 90 70 214;              /* brand violet */
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-sans: 'Manrope', 'Tajawal', system-ui, -apple-system, 'Segoe UI',
+               'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Tajawal', 'Manrope', 'Noto Sans Arabic', system-ui,
+                  -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  --radius-xs: 0.25rem;            /* 4px — inputs */
+  --radius-sm: 0.375rem;           /* 6px — small chips */
+  --radius-md: 0.5rem;             /* 8px — cards, buttons */
+  --radius-lg: 0.75rem;            /* 12px — modals, large surfaces */
+  --radius-full: 9999px;           /* pills — used only for tags */
+
+  /* ── Shadows — extremely soft, never neon ───────────────────── */
+  --shadow-xs: 0 1px 2px 0 rgb(20 18 37 / 0.04);
+  --shadow-sm: 0 2px 6px -1px rgb(20 18 37 / 0.06),
+               0 1px 2px 0 rgb(20 18 37 / 0.04);
+  --shadow-md: 0 12px 32px -12px rgb(20 18 37 / 0.12),
+               0 4px 12px -4px rgb(20 18 37 / 0.06);
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-base: 240ms;
+  --motion-slow: 400ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.6, 0, 1, 0.6);
+
+  /* ── Layout rhythm ──────────────────────────────────────────── */
+  --header-height: 4.5rem;         /* 72px — desktop */
+  --header-height-mobile: 3.75rem; /* 60px */
+}
+
+/*
+ * Directional adjustments. We use logical properties everywhere in
+ * the component CSS (padding-inline, margin-inline, border-inline),
+ * but a few tokens read differently by direction.
+ */
+:root[dir='rtl'] {
+  --font-sans: 'Tajawal', 'Manrope', 'Noto Sans Arabic', system-ui,
+               -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --font-display: 'Tajawal', 'Manrope', 'Noto Sans Arabic', system-ui,
+                  -apple-system, 'Segoe UI', Tahoma, sans-serif;
+}
+
+/*
+ * Reduced motion — every animation/transition collapses to near-zero.
+ * Components also check `@media (prefers-reduced-motion)` directly for
+ * reveals; this token is a safety net.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}
+
+/* Dark theme — semantic tokens change; component styles remain shared. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: 244 242 250;
+  --ink-muted: 190 187 205;
+  --ink-faint: 142 139 158;
+  --paper: 19 18 27;
+  --surface: 29 27 40;
+  --surface-2: 39 36 52;
+  --elevated: 33 31 45;
+  --border: 235 231 251;
+  --border-strong: 235 231 251;
+  --brand-soft: 54 45 91;
+  --rose-soft: 70 39 54;
+  --success-soft: 28 57 46;
+  --warning-soft: 65 49 25;
+  --danger-soft: 67 35 35;
+  --info-soft: 29 48 67;
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.18);
+  --shadow-sm: 0 2px 8px -1px rgb(0 0 0 / 0.28);
+  --shadow-md: 0 12px 32px -12px rgb(0 0 0 / 0.42);
+}

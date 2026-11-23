@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "NorDa",
+    "tagline": "Light meets Rose — a studio, a store, a service."
+  },
+  "nav": {
+    "home": "Home",
+    "store": "Store",
+    "portfolio": "Portfolio",
+    "services": "Services",
+    "about": "About NorDa",
+    "contact": "Contact",
+    "account": "Account",
+    "support": "Support",
+    "cart": "Cart",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": "Switch to {{language}}",
+    "ar": "العربية",
+    "en": "English"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "clear": "Clear",
+    "apply": "Apply",
+    "reset": "Reset",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue",
+    "viewAll": "View all",
+    "readMore": "Read more"
+  },
+  "preview": {
+    "title": "Design System — Preview",
+    "intro": "This is a temporary preview of the NorDa design system. It is replaced by the real Home page when batch B4 ships. Try the language switcher in the header to inspect both directions."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link you requested isn't available. Return to the home page or browse the store.",
+    "backHome": "Back to home"
+  },
+  "footer": {
+    "explore": "Explore",
+    "studio": "Studio",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "rights": "All rights reserved."
+  },
+  "status": {
+    "demoBadge": "Demo data",
+    "demoNotice": "This is a demo preview. No real transaction is performed.",
+    "loading": "Loading…",
+    "empty": "Nothing here yet.",
+    "error": "Something went wrong. Please try again."
+  },
+  "theme": { "toggle": "Toggle theme", "light": "Light", "dark": "Dark" },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "opensInNewTab": "Opens in a new tab",
+    "requiredField": "Required field"
+  }
+}

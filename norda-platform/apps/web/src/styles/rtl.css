@@ -1,0 +1,34 @@
+/*
+ * NorDa — RTL-specific adjustments that cannot be expressed via
+ * Tailwind's logical utilities. Kept minimal and documented.
+ *
+ * The rule of thumb: use logical properties in components
+ * (`padding-inline`, `margin-inline-start`, `inset-inline-end`), and
+ * reach for this file only when a physical value is unavoidable —
+ * e.g. icon mirroring, transform directions, and shadows that carry
+ * a light source.
+ */
+
+:root[dir='rtl'] {
+  /* Shadows cast from top-start — mirrors the light source on RTL. */
+  --shadow-sm: 0 2px 6px -1px rgb(20 18 37 / 0.06),
+               0 1px 2px 0 rgb(20 18 37 / 0.04);
+}
+
+/* Arrows / chevrons that carry a direction. */
+:root[dir='rtl'] .directional-icon {
+  transform: scaleX(-1);
+}
+
+/* Numeric strings stay LTR even inside RTL text. */
+.numeric {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Arabic paragraphs render with a slightly larger line-height. */
+:root[dir='rtl'] p,
+:root[dir='rtl'] li {
+  line-height: 1.75;
+}

@@ -1,0 +1,124 @@
+/* NorDa — global base styles. Applied after Tailwind base. */
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: rgb(var(--ink));
+    background-color: rgb(var(--paper));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Focus visible — a single, coherent ring, never removed. */
+  :where(a, button, [role='button'], input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+  :where(input, textarea, select):focus-visible {
+    outline-offset: 1px;
+  }
+
+  /* Selection — brand-tinted, respecting the dark ink. */
+  ::selection {
+    background: rgb(var(--brand) / 0.18);
+    color: rgb(var(--ink));
+  }
+
+  /* Heading reset — we set sizes with utility classes, not element defaults. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  p { margin: 0; }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: none;
+  }
+
+  img, svg, video {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Buttons — reset to a clean baseline. */
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Native form element baseline (Radix components wrap these). */
+  input, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Scrollbar — subtle, brand-tinted. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border-strong) / 0.4) transparent;
+  }
+
+  /* Utility: hide visually but keep for screen readers. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Skip-link — visible only on keyboard focus. */
+  .skip-link {
+    position: fixed;
+    inset-inline-start: 1rem;
+    inset-block-start: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgb(var(--ink));
+    color: rgb(var(--paper));
+    border-radius: var(--radius-sm);
+    transform: translateY(-200%);
+    transition: transform var(--motion-fast) var(--ease-out);
+    z-index: 100;
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Directional rules that Tailwind logical utilities do not cover.
+ * Everything else uses Tailwind's `ms-*`, `me-*`, `ps-*`, `pe-*`,
+ * `start-*`, `end-*`, `text-start`, `text-end` utilities.
+ */
+:root[dir='rtl'] .flip-icon {
+  transform: scaleX(-1);
+}

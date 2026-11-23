@@ -1,0 +1,9 @@
+/* NorDa — style entry. Import order matters. */
+@import './fonts.css';
+@import './tokens.css';
+@import './globals.css';
+@import './rtl.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -6,13 +6,23 @@ This project is independent. It does not connect to or modify any existing NorDa
 
 ## Status
 
-The project is built in reviewable batches. B0 establishes the workspace and shared domain contracts. The application is not runnable end-to-end until the web and API batches are added.
+The project is built in reviewable batches. B0 establishes the workspace and shared domain contracts. B1 adds the independent React/Vite storefront shell, design tokens, reusable UI primitives, Arabic/English localization, RTL/LTR support, and a temporary design-system preview. The API is not included yet, so end-to-end commerce, authentication, persistence, and payment workflows are not available. B1 build/typecheck and browser verification are still pending.
 
 ## Prerequisites
 
 - Node.js 20 LTS or newer
 - pnpm 9
 - PowerShell 5+ on Windows, or Bash with rsync and zip for packaging
+
+## Setup (current B1 preview)
+
+```bash
+pnpm install
+pnpm --filter @norda/shared build
+pnpm --filter @norda/web dev
+```
+
+The temporary preview is served at `http://localhost:5173`. The root `pnpm dev` and full production build require the API package from B2.
 
 ## Setup (after all batches land)
 
