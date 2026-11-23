@@ -45,9 +45,68 @@
     "viewAll": "View all",
     "readMore": "Read more"
   },
+  "home": {
+    "eyebrow": "Independent digital studio · Algeria",
+    "hero": {
+      "titleA": "Make your presence",
+      "titleB": "mean more.",
+      "body": "NorDa is where ideas meet design and technology. We shape digital identities and experiences, showcase thoughtful work, and offer products that help you move forward.",
+      "primary": "Explore our services",
+      "secondary": "View selected work",
+      "noteOne": "Intentional by design",
+      "noteTwo": "Details make the difference"
+    },
+    "art": {
+      "alt": "A geometric flower mark inspired by NorDa's identity",
+      "kicker": "NORDA · THE IDEA",
+      "title": "Light meets Rose",
+      "stamp": "IDEA\nDESIGN\nIMPACT"
+    },
+    "intro": {
+      "kicker": "WHAT WE DO",
+      "title": "Three paths. One connected experience.",
+      "body": "Whether you are starting something new or refining an existing presence, NorDa brings creative thinking and practical execution together — from the first sketch to the final detail."
+    },
+    "services": {
+      "web": {
+        "title": "Digital experiences",
+        "body": "Websites and digital pages shaped around your goals — clear, fast, and easy to use."
+      },
+      "identity": {
+        "title": "Identity & design",
+        "body": "Cohesive visual systems, from the mark and palette to interface and content details."
+      },
+      "digital": {
+        "title": "Digital solutions",
+        "body": "Curated digital tools and products that save time and make work flow better."
+      }
+    },
+    "work": {
+      "kicker": "FROM THE STUDIO",
+      "title": "Design is more than appearance.",
+      "body": "Every detail should serve an idea and an experience. This is a space for selected projects and the thinking behind them.",
+      "link": "Explore the portfolio",
+      "visualOne": "IDENTITY · INTERFACE",
+      "visualTwo": "ART · VISUAL SYSTEM",
+      "caseOne": "Experimental visual study",
+      "caseTwo": "Form study",
+      "disclaimer": "These are illustrative preview compositions, not client projects or completed case studies."
+    },
+    "store": {
+      "kicker": "THE NORDA STORE",
+      "title": "Digital tools that move you forward.",
+      "body": "Explore digital products, subscriptions, and carefully selected tools. Clear details, considered purchase options, and transparent availability before you decide.",
+      "link": "Browse the store"
+    },
+    "contact": {
+      "kicker": "HAVE AN IDEA?",
+      "title": "Let's turn your idea into something real.",
+      "link": "Start a conversation"
+    }
+  },
   "preview": {
-    "title": "Design System — Preview",
-    "intro": "This is a temporary preview of the NorDa design system. It is replaced by the real Home page when batch B4 ships. Try the language switcher in the header to inspect both directions."
+    "title": "Design System Preview",
+    "intro": "Temporary preview."
   },
   "notFound": {
     "title": "Page not found",
@@ -69,7 +128,11 @@
     "empty": "Nothing here yet.",
     "error": "Something went wrong. Please try again."
   },
-  "theme": { "toggle": "Toggle theme", "light": "Light", "dark": "Dark" },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "a11y": {
     "skipToContent": "Skip to content",
     "opensInNewTab": "Opens in a new tab",
