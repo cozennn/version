@@ -6,7 +6,7 @@ This project is independent. It does not connect to or modify any existing NorDa
 
 ## Status
 
-The project is built in reviewable batches. B0 establishes the workspace and shared domain contracts. B1 adds the independent React/Vite storefront shell, design tokens, reusable UI primitives, Arabic/English localization, RTL/LTR support, and a temporary design-system preview. The API is not included yet, so end-to-end commerce, authentication, persistence, and payment workflows are not available. B1 build/typecheck and browser verification are still pending.
+The project is built in reviewable batches. B0 establishes the workspace and shared domain contracts. B1 adds the independent React/Vite storefront shell, design tokens, reusable UI primitives, Arabic/English localization, RTL/LTR support, and a temporary design-system preview. The API is not included yet, so end-to-end commerce, authentication, persistence, and payment workflows are not available. The B1 TypeScript check and Vite production build passed on Cloudflare Pages. Visual browser review remains pending.
 
 ## Prerequisites
 
