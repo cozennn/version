@@ -7,7 +7,7 @@ between batches except the B1 preview route (removed in B4).
 | Batch | Title | Status |
 |---|---|---|
 | B0 | Foundations (workspace, shared package, packaging scripts, env) | ✅ Delivered |
-| B1 | Design System & Internationalization | 🟡 Integrated — build verification pending |
+| B1 | Design System & Internationalization | 🟢 Build passed — visual review pending |
 | B2 | Backend core (Fastify, Drizzle, migrations, seed) | ⏳ Next |
 | B3 | Auth + Catalog API | ⏳ |
 | B4 | Storefront (Home, Store index, Product, Cart, Checkout) | ⏳ |
@@ -35,4 +35,4 @@ persistence), primitive component library (including Chip, Divider, Breadcrumbs)
 `SiteHeader`/`SiteFooter`/`LanguageSwitcher`/`ThemeProvider`/`AppShell`, a design-system
 preview page at `/`, and this log.
 
-The preview page is intentionally temporary and will be removed in B4. Font binaries are not included; see `apps/web/public/fonts/README.txt`. Typecheck/build and browser validation remain pending.
+The preview page is intentionally temporary and will be removed in B4. Font binaries are not included; see `apps/web/public/fonts/README.txt`. Typecheck and Vite production build passed on Cloudflare Pages. Browser-level visual and accessibility review remains pending.
