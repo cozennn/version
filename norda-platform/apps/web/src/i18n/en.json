@@ -102,6 +102,30 @@
       "kicker": "HAVE AN IDEA?",
       "title": "Let's turn your idea into something real.",
       "link": "Start a conversation"
+    },
+    "discipline": {
+      "digital": "Digital experiences",
+      "identity": "Identity & design",
+      "tools": "Tools & solutions"
+    },
+    "process": {
+      "kicker": "HOW WE WORK",
+      "title": "From the first thought to the details that shape the experience.",
+      "body": "Good work comes from clear understanding, considered decisions, and execution that respects the details.",
+      "steps": {
+        "discover": {
+          "title": "Understand the whole picture",
+          "body": "We start by listening to your needs, the people you want to reach, and the outcome you have in mind."
+        },
+        "shape": {
+          "title": "Give the idea a direction",
+          "body": "We turn early thoughts into a clear structure, visual language, and coherent experience before building."
+        },
+        "make": {
+          "title": "Build, refine, and care",
+          "body": "We bring the experience to life, review the details, and improve it to feel useful and effortless."
+        }
+      }
     }
   },
   "preview": {
@@ -140,21 +164,11 @@
   },
   "pages": {
     "services": {
-      "eyebrow": "STUDIO SERVICES",
-      "title": "From first idea to a complete digital experience.",
-      "body": "We clarify the need, set priorities, then design and build an experience around your audience and goals.",
-      "details": {
-        "web": "Responsive websites and digital pages with clear structure, considered interaction, performance, and accessibility.",
-        "identity": "A coherent visual language across marks, color, typography, iconography, and practical usage rules.",
-        "digital": "Selected digital tools and solutions that help organize work and get things done with less friction."
-      },
-      "cta": "Discuss your project"
+      "ctaTitle": "Have a project in mind?",
+      "ctaBody": "Tell us what you want to create and we can define a useful first step."
     },
     "work": {
-      "eyebrow": "SELECTED WORK",
-      "title": "Ideas with intent, not just images.",
-      "body": "A space for real projects and the goals, constraints, and design decisions that shaped each experience.",
-      "disclaimer": "The visuals shown here are experimental compositions for direction-setting only. They are not client work or completed projects."
+      "studyLabel": "Visual study"
     },
     "store": {
       "eyebrow": "THE NORDA STORE",
@@ -165,16 +179,25 @@
       "status": "No products published yet"
     },
     "contact": {
-      "eyebrow": "CONTACT NORDA",
-      "title": "Tell us about the idea you're working on.",
-      "body": "We are preparing a clear channel for project requests and questions, organized for proper follow-up.",
-      "notice": "The inquiry form is not connected to a backend yet. This page does not send messages or store personal information at this stage."
+      "noteKicker": "A NOTE",
+      "noteTitle": "Our contact channel is being prepared.",
+      "noteFoot": "We will not ask you to submit information through a form that is not connected."
     },
     "about": {
-      "eyebrow": "ABOUT NORDA",
-      "title": "Light meets Rose. Ideas become experiences.",
-      "body": "NorDa is a digital studio bringing design, technology, and digital products together in one considered space — soft in character, confident in execution.",
-      "statement": "We believe a good experience starts with understanding people and purpose, then turns into coherent visual and functional details."
+      "values": {
+        "clarity": {
+          "title": "Clarity before decoration",
+          "body": "Every visual and functional decision should serve a clear purpose."
+        },
+        "care": {
+          "title": "Care in the details",
+          "body": "We consider language, spacing, motion, and usability — not appearance alone."
+        },
+        "craft": {
+          "title": "Thoughtful craft",
+          "body": "We prefer coherent, extensible experiences over quick, disposable fixes."
+        }
+      }
     }
   }
 }
