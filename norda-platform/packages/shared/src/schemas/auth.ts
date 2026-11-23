@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { SUPPORTED_LOCALES } from '../constants.js';
+import { emailSchema, passwordSchema } from './common.js';
+export const registerSchema = z.object({email:emailSchema,password:passwordSchema,displayName:z.string().trim().min(2).max(80),locale:z.enum(SUPPORTED_LOCALES).default('ar')});
+export type RegisterInput = z.infer<typeof registerSchema>;
+export const loginSchema = z.object({email:emailSchema,password:z.string().min(1).max(200)});
+export type LoginInput = z.infer<typeof loginSchema>;
+export const bootstrapAdminSchema = z.object({token:z.string().trim().min(20).max(200),email:emailSchema,displayName:z.string().trim().min(2).max(80),password:passwordSchema});
+export type BootstrapAdminInput = z.infer<typeof bootstrapAdminSchema>;
+export const changePasswordSchema = z.object({currentPassword:z.string().min(1).max(200),newPassword:passwordSchema});
+export const updateProfileSchema = z.object({displayName:z.string().trim().min(2).max(80),locale:z.enum(SUPPORTED_LOCALES)});
+export const forgotPasswordSchema = z.object({email:emailSchema});
+export const resetPasswordSchema = z.object({token:z.string().trim().min(20).max(200),newPassword:passwordSchema});
