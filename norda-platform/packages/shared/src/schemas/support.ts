@@ -1,0 +1,12 @@
+import { z } from 'zod';
+import { TICKET_MODES, TICKET_STATUSES } from '../constants.js';
+import { emailSchema, idSchema, paginationQuerySchema } from './common.js';
+export const ticketCreateSchema = z.object({subject:z.string().trim().min(3).max(200),email:emailSchema,initialMessage:z.string().trim().min(10).max(5000)});
+export type TicketCreate = z.infer<typeof ticketCreateSchema>;
+export const ticketMessageCreateSchema = z.object({body:z.string().trim().min(1).max(5000)});
+export type TicketMessageCreate = z.infer<typeof ticketMessageCreateSchema>;
+export const ticketQuerySchema = paginationQuerySchema.extend({status:z.enum(TICKET_STATUSES).optional(),mode:z.enum(TICKET_MODES).optional(),q:z.string().trim().max(200).optional()});
+export const ticketTakeoverSchema = z.object({note:z.string().trim().max(500).optional()});
+export const ticketReleaseSchema = z.object({note:z.string().trim().max(500).optional()});
+export const ticketAssignSchema = z.object({agentId:idSchema});
+export const ticketStatusUpdateSchema = z.object({status:z.enum(TICKET_STATUSES)});
