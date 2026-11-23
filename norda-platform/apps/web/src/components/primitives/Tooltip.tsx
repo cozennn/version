@@ -1,5 +1,6 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { cn } from '@/lib/cn';
+import { useDirection } from '@/lib/useDirection';
 
 export interface TooltipProps {
   content: React.ReactNode;
@@ -9,13 +10,15 @@ export interface TooltipProps {
 }
 
 export function Tooltip({ content, children, side = 'top', delayMs = 200 }: TooltipProps): JSX.Element {
+  const { dir } = useDirection();
+  const resolvedSide = side === 'start' ? (dir === 'rtl' ? 'right' : 'left') : side === 'end' ? (dir === 'rtl' ? 'left' : 'right') : side;
   return (
     <TooltipPrimitive.Provider delayDuration={delayMs}>
       <TooltipPrimitive.Root>
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Content
-            side={side}
+            side={resolvedSide}
             sideOffset={6}
             className={cn(
               'z-50 max-w-xs rounded-sm bg-ink px-2.5 py-1.5 text-xs text-paper shadow-sm',
