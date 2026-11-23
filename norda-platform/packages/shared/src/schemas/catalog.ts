@@ -1,0 +1,12 @@
+import { z } from 'zod';
+import { PRODUCT_DATA_SOURCES, PRODUCT_PUBLICATION_STATUSES, SUPPORTED_CURRENCIES } from '../constants.js';
+import { idSchema, localizedTextSchema, paginationQuerySchema, slugSchema } from './common.js';
+export const productQuerySchema = paginationQuerySchema.extend({q:z.string().trim().max(200).optional(),category:z.string().trim().max(120).optional(),minPriceUsdCents:z.coerce.number().int().min(0).optional(),maxPriceUsdCents:z.coerce.number().int().min(0).optional(),availability:z.enum(['all','available','unavailable']).default('all'),sort:z.enum(['newest','price_asc','price_desc','name_asc']).default('newest'),featuredOnly:z.coerce.boolean().default(false)});
+export type ProductQuery = z.infer<typeof productQuerySchema>;
+export const productPlanInputSchema = z.object({id:idSchema.optional(),label:localizedTextSchema,durationDays:z.number().int().min(0).max(3650).nullable(),priceUsdCents:z.number().int().min(0),originalPriceUsdCents:z.number().int().min(0).nullable(),isDefault:z.boolean().default(false),sortOrder:z.number().int().min(0).default(0)});
+export const productSpecificationSchema = z.object({label:localizedTextSchema,value:localizedTextSchema});
+export const productUpsertSchema = z.object({slug:slugSchema,name:localizedTextSchema,shortDescription:localizedTextSchema,longDescription:localizedTextSchema,categoryId:idSchema.nullable(),dataSource:z.enum(PRODUCT_DATA_SOURCES),publicationStatus:z.enum(PRODUCT_PUBLICATION_STATUSES).default('draft'),isFeatured:z.boolean().default(false),isAvailable:z.boolean().default(true),availabilityNote:localizedTextSchema.nullable(),providerRef:z.string().trim().max(120).nullable(),providerSlug:z.string().trim().max(120).nullable(),deliveryInfo:localizedTextSchema.nullable(),specifications:z.array(productSpecificationSchema).default([]),plans:z.array(productPlanInputSchema).min(1),seoTitle:localizedTextSchema.nullable(),seoDescription:localizedTextSchema.nullable()});
+export type ProductUpsert = z.infer<typeof productUpsertSchema>;
+export const categoryUpsertSchema = z.object({slug:slugSchema,name:localizedTextSchema,sortOrder:z.number().int().min(0).default(0)});
+export type CategoryUpsert = z.infer<typeof categoryUpsertSchema>;
+export const priceConversionQuerySchema = z.object({to:z.enum(SUPPORTED_CURRENCIES).default('USD')});
