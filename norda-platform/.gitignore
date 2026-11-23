@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+*.tsbuildinfo
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# local data & runtime
+data/
+storage/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# bootstrap / runtime artifacts
+storage/bootstrap-token.txt
+
+# test & coverage
+coverage/
+playwright-report/
+test-results/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+*.log
+logs/
+
+# package output
+NorDa-Complete-Platform.zip
