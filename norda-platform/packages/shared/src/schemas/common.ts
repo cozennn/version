@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '../constants.js';
+export const localeSchema = z.enum(SUPPORTED_LOCALES).default(DEFAULT_LOCALE);
+export const localizedTextSchema = z.object({ en:z.string().min(1).max(2000), ar:z.string().min(1).max(2000) });
+export const emailSchema = z.string().trim().min(3).max(320).email();
+export const passwordSchema = z.string().min(10).max(200);
+export const idSchema = z.string().min(1).max(64);
+export const slugSchema = z.string().min(1).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+export const paginationQuerySchema = z.object({ page:z.coerce.number().int().min(1).max(10000).default(1), pageSize:z.coerce.number().int().min(1).max(100).default(24) });
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
+export const orderReferenceSchema = z.string().trim().min(6).max(64).regex(/^[A-Z0-9-]+$/);
+export const errorResponseSchema = z.object({error:z.object({code:z.string(),message:z.string(),details:z.unknown().optional()})});
+export type ErrorResponse = z.infer<typeof errorResponseSchema>;
