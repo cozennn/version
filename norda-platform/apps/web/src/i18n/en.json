@@ -137,5 +137,44 @@
     "skipToContent": "Skip to content",
     "opensInNewTab": "Opens in a new tab",
     "requiredField": "Required field"
+  },
+  "pages": {
+    "services": {
+      "eyebrow": "STUDIO SERVICES",
+      "title": "From first idea to a complete digital experience.",
+      "body": "We clarify the need, set priorities, then design and build an experience around your audience and goals.",
+      "details": {
+        "web": "Responsive websites and digital pages with clear structure, considered interaction, performance, and accessibility.",
+        "identity": "A coherent visual language across marks, color, typography, iconography, and practical usage rules.",
+        "digital": "Selected digital tools and solutions that help organize work and get things done with less friction."
+      },
+      "cta": "Discuss your project"
+    },
+    "work": {
+      "eyebrow": "SELECTED WORK",
+      "title": "Ideas with intent, not just images.",
+      "body": "A space for real projects and the goals, constraints, and design decisions that shaped each experience.",
+      "disclaimer": "The visuals shown here are experimental compositions for direction-setting only. They are not client work or completed projects."
+    },
+    "store": {
+      "eyebrow": "THE NORDA STORE",
+      "title": "Thoughtfully selected digital products.",
+      "body": "We are preparing the product catalogue, details, pricing, and purchase flows. No demo items will be presented as available for sale.",
+      "emptyTitle": "The catalogue is being prepared",
+      "emptyBody": "Products will appear here once the catalogue source, prices, availability, and delivery links are verified.",
+      "status": "No products published yet"
+    },
+    "contact": {
+      "eyebrow": "CONTACT NORDA",
+      "title": "Tell us about the idea you're working on.",
+      "body": "We are preparing a clear channel for project requests and questions, organized for proper follow-up.",
+      "notice": "The inquiry form is not connected to a backend yet. This page does not send messages or store personal information at this stage."
+    },
+    "about": {
+      "eyebrow": "ABOUT NORDA",
+      "title": "Light meets Rose. Ideas become experiences.",
+      "body": "NorDa is a digital studio bringing design, technology, and digital products together in one considered space — soft in character, confident in execution.",
+      "statement": "We believe a good experience starts with understanding people and purpose, then turns into coherent visual and functional details."
+    }
   }
 }
