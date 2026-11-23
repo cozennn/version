@@ -1,0 +1,23 @@
+{
+  "name": "norda",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NorDa — unified digital commerce, portfolio & services platform (standalone, local-first).",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.12.0",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @norda/api --filter @norda/web dev",
+    "dev:api": "pnpm --filter @norda/api dev",
+    "dev:web": "pnpm --filter @norda/web dev",
+    "build": "pnpm --filter @norda/shared build && pnpm --filter @norda/api build && pnpm --filter @norda/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "db:migrate": "pnpm --filter @norda/api db:migrate",
+    "db:seed": "pnpm --filter @norda/api db:seed",
+    "db:reset": "pnpm --filter @norda/api db:reset",
+    "package": "bash scripts/package.sh"
+  },
+  "devDependencies": { "typescript": "^5.6.3" }
+}
