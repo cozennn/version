@@ -85,20 +85,68 @@ export function WorkPage(): JSX.Element {
 
 export function StorePage(): JSX.Element {
   const { t } = useTranslation();
+  const families = [
+    { number: '01', key: 'subscriptions', mark: 'S', tone: 'bg-[#E9E4F7] text-[#4734BA]' },
+    { number: '02', key: 'creative', mark: 'C', tone: 'bg-[#F4E6EA] text-[#A64F73]' },
+    { number: '03', key: 'productivity', mark: 'P', tone: 'bg-[#E9EAE3] text-[#52624B]' },
+  ];
   return (
     <>
       <PageIntro eyebrow={t('pages.store.eyebrow')} title={t('pages.store.title')} body={t('pages.store.body')}/>
+      <Section tone="paper" spacing="lg">
+        <Container width="wide">
+          <div className="grid gap-10 border-y border-ink/15 py-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.2em] text-brand">{t('pages.store.manifestoKicker')}</p>
+              <h2 className="mt-3 max-w-2xl text-2xl font-bold leading-snug text-ink md:text-3xl">{t('pages.store.manifestoTitle')}</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t('pages.store.manifestoBody')}</p>
+            </div>
+            <span className="inline-flex w-fit items-center gap-2 border border-ink/15 px-4 py-3 text-xs font-semibold text-ink-muted">
+              <span className="h-2 w-2 rounded-full bg-rose" />
+              {t('pages.store.status')}
+            </span>
+          </div>
+          <div className="mt-16 flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.22em] text-brand">{t('pages.store.familiesKicker')}</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink md:text-4xl">{t('pages.store.familiesTitle')}</h2>
+            </div>
+            <p className="max-w-sm text-sm leading-7 text-ink-muted">{t('pages.store.familiesBody')}</p>
+          </div>
+          <div className="mt-8 grid border-t border-ink/15 md:grid-cols-3 md:divide-x md:divide-ink/15">
+            {families.map((family) => (
+              <article key={family.key} className="group border-b border-ink/15 py-8 md:border-b-0 md:px-7 md:first:ps-0 md:last:pe-0">
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-xs text-rose">{family.number}</span>
+                  <span className={`flex h-12 w-12 items-center justify-center text-lg font-display font-bold ${family.tone}`}>{family.mark}</span>
+                </div>
+                <h3 className="mt-8 text-xl font-bold text-ink">{t(`pages.store.families.${family.key}.title`)}</h3>
+                <p className="mt-3 min-h-14 text-sm leading-7 text-ink-muted">{t(`pages.store.families.${family.key}.body`)}</p>
+                <p className="mt-7 border-t border-ink/10 pt-4 text-[10px] font-bold uppercase tracking-[.16em] text-ink-faint">{t('pages.store.preparing')}</p>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </Section>
       <Section tone="surface" spacing="xl">
         <Container width="wide">
-          <div className="relative overflow-hidden border border-ink/15 bg-paper px-6 py-20 text-center md:px-12">
-            <div aria-hidden="true" className="pointer-events-none absolute -end-16 -top-24 h-64 w-64 rounded-full border border-brand/15"/>
-            <div aria-hidden="true" className="pointer-events-none absolute -start-16 -bottom-28 h-56 w-56 rounded-full border border-rose/20"/>
-            <div className="relative mx-auto flex h-16 w-16 items-center justify-center border border-brand/30 text-brand">
-              <svg viewBox="0 0 32 32" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M5 10h22l-2 17H7L5 10Z"/><path d="M11 12V8a5 5 0 0 1 10 0v4"/></svg>
+          <div className="grid gap-12 md:grid-cols-[.8fr_1.2fr]">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.22em] text-brand">{t('pages.store.purchaseKicker')}</p>
+              <h2 className="mt-4 text-3xl font-bold leading-tight text-ink md:text-4xl">{t('pages.store.purchaseTitle')}</h2>
+              <p className="mt-4 text-sm leading-8 text-ink-muted">{t('pages.store.purchaseBody')}</p>
             </div>
-            <p className="relative mt-8 text-[10px] font-bold uppercase tracking-[.22em] text-brand">{t('pages.store.status')}</p>
-            <h2 className="relative mt-4 text-3xl font-bold text-ink md:text-4xl">{t('pages.store.emptyTitle')}</h2>
-            <p className="relative mx-auto mt-4 max-w-xl text-sm leading-8 text-ink-muted">{t('pages.store.emptyBody')}</p>
+            <div className="border-t border-ink/15">
+              <div className="grid gap-4 border-b border-ink/15 py-6 sm:grid-cols-[120px_1fr] sm:items-center">
+                <span className="text-xs font-bold uppercase tracking-[.14em] text-brand">PayPal</span>
+                <p className="text-sm leading-7 text-ink-muted">{t('pages.store.paypal')}</p>
+              </div>
+              <div className="grid gap-4 border-b border-ink/15 py-6 sm:grid-cols-[120px_1fr] sm:items-center">
+                <span className="text-xs font-bold uppercase tracking-[.14em] text-brand">BaridiMob</span>
+                <p className="text-sm leading-7 text-ink-muted">{t('pages.store.baridimob')}</p>
+              </div>
+              <p className="pt-5 text-xs leading-6 text-ink-faint">{t('pages.store.safetyNote')}</p>
+            </div>
           </div>
         </Container>
       </Section>
