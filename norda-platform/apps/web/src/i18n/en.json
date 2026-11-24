@@ -172,11 +172,36 @@
     },
     "store": {
       "eyebrow": "THE NORDA STORE",
-      "title": "Thoughtfully selected digital products.",
-      "body": "We are preparing the product catalogue, details, pricing, and purchase flows. No demo items will be presented as available for sale.",
-      "emptyTitle": "The catalogue is being prepared",
-      "emptyBody": "Products will appear here once the catalogue source, prices, availability, and delivery links are verified.",
-      "status": "No products published yet"
+      "title": "Digital products, chosen with intention.",
+      "body": "A considered collection of subscriptions, creative resources, and useful tools. Every listing will show its real price, availability, and delivery terms before you buy.",
+      "manifestoKicker": "A SMALLER, BETTER CATALOGUE",
+      "manifestoTitle": "Useful things. Clear choices. No surprises.",
+      "manifestoBody": "We are building a catalogue around products that solve a real need. We will publish an item only after its source, current price, availability, and delivery method have been checked.",
+      "status": "Catalogue in preparation",
+      "familiesKicker": "WHAT WE ARE CURATING",
+      "familiesTitle": "Three thoughtful collections.",
+      "familiesBody": "These are collection themes, not live product listings. Individual products will appear only when their details are verified.",
+      "families": {
+        "subscriptions": {
+          "title": "Subscriptions",
+          "body": "Digital memberships and services with clear durations and renewal details."
+        },
+        "creative": {
+          "title": "Creative resources",
+          "body": "Design assets, templates, and resources for making better work."
+        },
+        "productivity": {
+          "title": "Tools for work",
+          "body": "Practical software and digital utilities that make everyday work easier."
+        }
+      },
+      "preparing": "Collection being curated",
+      "purchaseKicker": "A CLEAR WAY TO BUY",
+      "purchaseTitle": "Know the terms before you decide.",
+      "purchaseBody": "When products are published, each page will show the exact price, what is included, delivery timing, and any important limitations.",
+      "paypal": "International checkout in USD. The amount is shown for the selected product before confirmation.",
+      "baridimob": "Local payment in DZD. The DZD amount and applicable conversion basis will be displayed clearly on each product.",
+      "safetyNote": "No payment is accepted on this preview. Checkout will be enabled only after the independent order and delivery systems are ready."
     },
     "contact": {
       "noteKicker": "A NOTE",
