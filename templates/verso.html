@@ -1,0 +1,293 @@
+<!doctype html>
+<!-- Login & Signup Animation — the card a blade of night sweeps between — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<!--
+  VERSO — the sign-in card where a raked blade of night sweeps the two states
+  past each other.
+
+  A verso is the left-hand page of an open book. This component is one leaf
+  turning: sign in lives on the light face, the welcome lives on the dark one,
+  and switching between them is a single wedge of night crossing the card at a
+  fixed rake — leading edge lit, trailing edge lit — with the whole surface dark
+  for about a fifth of a second in the middle. Both states are the same
+  composition mirrored, so the blade doesn't have to rotate to get there: it
+  travels one way, in one straight line, and the card comes out the other side
+  reversed.
+
+  The mechanism is two elements and one number. .auth__band is a rectangle 145%
+  as wide as the card, skewed by the rake, moved by a single translateX.
+  .band__inner is that translate and that skew applied backwards, so everything
+  inside it sits in card co-ordinates while still being clipped by the band's
+  diagonal border box. That is what slices the headline along the seam. Nothing
+  in the sweep animates anything but transform.
+
+  Underneath it is a real pair of forms: labels that are labels, the right
+  autocomplete tokens, a submit-then-live validation model, inline errors with
+  their space reserved so no field ever jumps, a password meter that scores what
+  you actually typed, a Caps Lock warning, a reveal toggle that reports its own
+  state, one live region for every outcome, and the inactive form made inert
+  rather than merely invisible. Reduced motion lands both states with no move at
+  all. With JavaScript off the card unfolds into two plain forms that work.
+
+  Zero dependencies. Transform and opacity only.
+-->
+<html lang="en">
+
+<!-- Mirrored from https://demo.codeandchill.store/verso/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:38 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login &amp; Signup Animation — the card a blade of night sweeps between</title>
+  <meta name="description" content="A sign-in card where switching to sign-up sends one raked blade of night across the whole surface, and the two states come out mirrored." />
+  <meta name="theme-color" content="#07110e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Login &amp; Signup Animation — the card a blade of night sweeps between" />
+  <meta property="og:description" content="One lit wedge crosses the card, the composition mirrors behind it, and the form you asked for is on the other side." />
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+  <script>document.documentElement.classList.add('js')</script>
+  <link rel="stylesheet" href="https://demo.codeandchill.store/verso/app.css" />
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+  <div class="room" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- Reel-first: the masthead is a title card, so it names the component,
+         not the brand. VERSO stays inside the card where it belongs. -->
+    <header class="masthead">
+      <p class="masthead__eyebrow">Component · 91</p>
+      <h1 class="masthead__title">Login &amp; Signup<br /><span class="masthead__accent">Animation</span></h1>
+    </header>
+
+    <!--
+      One data-mode on .auth is the single source of truth: signin | signup.
+      app.js sets it and manages focus, inertness and announcements. app.css
+      draws every consequence — the blade's resting position, which pane is
+      lit, which form is reachable. Nothing else knows what a mode is.
+    -->
+    <section class="auth" data-auth data-mode="signin">
+
+      <!-- ————————————————————————————————————— the light face + both forms
+           A two-cell grid. The sign-in form always owns the first cell and the
+           sign-up form the second, in both states — the blade is what moves,
+           not the columns. The inactive form keeps its cell, so the card is
+           exactly one height and nothing reflows when they trade places.     -->
+      <div class="auth__face">
+
+        <!-- ······································· sign in ····· -->
+        <form class="pane pane--signin" data-form="signin" novalidate autocomplete="on">
+          <div class="pane__head">
+            <h2 class="pane__title">Sign in</h2>
+            <span class="pane__rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="field">
+            <div class="field__control">
+            <input class="field__input" id="si-user" name="username" type="text"
+                   autocomplete="username" placeholder=" " required
+                   aria-describedby="si-user-err" />
+            <label class="field__label" for="si-user">Username or email</label>
+            <span class="field__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="3.6" /><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+              </svg>
+            </span>
+            <span class="field__line" aria-hidden="true"></span>
+            </div>
+            <p class="field__error" id="si-user-err"></p>
+          </div>
+
+          <div class="field field--pass">
+            <div class="field__control">
+            <input class="field__input" id="si-pass" name="password" type="password"
+                   autocomplete="current-password" placeholder=" " required
+                   aria-describedby="si-pass-err si-pass-caps" />
+            <label class="field__label" for="si-pass">Password</label>
+            <button class="field__mark field__mark--btn" type="button" data-reveal="si-pass"
+                    aria-pressed="false" aria-label="Show password">
+              <svg class="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1.9 12S5.6 5.4 12 5.4 22.1 12 22.1 12 18.4 18.6 12 18.6 1.9 12 1.9 12Z" /><circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg class="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9.6 5.7A8.9 8.9 0 0 1 12 5.4c6.4 0 10.1 6.6 10.1 6.6a17 17 0 0 1-3.2 4.1M6 7.4A17 17 0 0 0 1.9 12S5.6 18.6 12 18.6a9 9 0 0 0 3.9-.9" />
+                <path d="M10 10a2.8 2.8 0 0 0 4 4" /><path d="M3 3l18 18" />
+              </svg>
+            </button>
+            <span class="field__line" aria-hidden="true"></span>
+            </div>
+            <p class="field__caps" id="si-pass-caps" hidden>Caps Lock is on.</p>
+            <p class="field__error" id="si-pass-err"></p>
+          </div>
+
+          <div class="pane__row">
+            <label class="check">
+              <input type="checkbox" name="remember" checked />
+              <span class="check__box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6 9.6 17 19 7.4" /></svg>
+              </span>
+              <span class="check__text">Keep me signed in</span>
+            </label>
+            <a class="pane__link" href="#reset">Forgot password?</a>
+          </div>
+
+          <div class="pane__act">
+          <button class="submit" type="submit" data-state="idle">
+            <span class="submit__label">Sign in</span>
+            <span class="submit__spinner" aria-hidden="true"></span>
+            <svg class="submit__tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.6 9.6 17 19 7.4" /></svg>
+          </button>
+          </div>
+
+          <p class="pane__switch">
+            New to VERSO?
+            <button class="pane__switchbtn" type="button" data-switch="signup">Create an account</button>
+          </p>
+        </form>
+
+        <!-- ······································· sign up ····· -->
+        <form class="pane pane--signup" data-form="signup" novalidate autocomplete="on">
+          <div class="pane__head">
+            <h2 class="pane__title">Create account</h2>
+            <span class="pane__rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="field">
+            <div class="field__control">
+            <input class="field__input" id="su-name" name="name" type="text"
+                   autocomplete="name" placeholder=" " required
+                   aria-describedby="su-name-err" />
+            <label class="field__label" for="su-name">Full name</label>
+            <span class="field__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="3.6" /><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+              </svg>
+            </span>
+            <span class="field__line" aria-hidden="true"></span>
+            </div>
+            <p class="field__error" id="su-name-err"></p>
+          </div>
+
+          <div class="field">
+            <div class="field__control">
+            <input class="field__input" id="su-mail" name="email" type="email"
+                   autocomplete="email" inputmode="email" placeholder=" " required
+                   aria-describedby="su-mail-err" />
+            <label class="field__label" for="su-mail">Email address</label>
+            <span class="field__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.6" y="5" width="18.8" height="14" rx="2.4" /><path d="m3.4 7 8.6 6.2L20.6 7" />
+              </svg>
+            </span>
+            <span class="field__line" aria-hidden="true"></span>
+            </div>
+            <p class="field__error" id="su-mail-err"></p>
+          </div>
+
+          <div class="field field--pass">
+            <div class="field__control">
+            <input class="field__input" id="su-pass" name="new-password" type="password"
+                   autocomplete="new-password" placeholder=" " required
+                   aria-describedby="su-pass-err su-pass-caps su-pass-meter" />
+            <label class="field__label" for="su-pass">Password</label>
+            <button class="field__mark field__mark--btn" type="button" data-reveal="su-pass"
+                    aria-pressed="false" aria-label="Show password">
+              <svg class="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1.9 12S5.6 5.4 12 5.4 22.1 12 22.1 12 18.4 18.6 12 18.6 1.9 12 1.9 12Z" /><circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg class="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9.6 5.7A8.9 8.9 0 0 1 12 5.4c6.4 0 10.1 6.6 10.1 6.6a17 17 0 0 1-3.2 4.1M6 7.4A17 17 0 0 0 1.9 12S5.6 18.6 12 18.6a9 9 0 0 0 3.9-.9" />
+                <path d="M10 10a2.8 2.8 0 0 0 4 4" /><path d="M3 3l18 18" />
+              </svg>
+            </button>
+            <span class="field__line" aria-hidden="true"></span>
+            </div>
+            <p class="field__caps" id="su-pass-caps" hidden>Caps Lock is on.</p>
+
+            <!-- The meter's space is reserved whether or not it has anything to
+                 say, for the same reason the error line's is. -->
+            <div class="meter" data-meter data-score="0">
+              <span class="meter__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <p class="meter__label" id="su-pass-meter" aria-live="polite">Use 8 characters or more.</p>
+            </div>
+
+            <p class="field__error" id="su-pass-err"></p>
+          </div>
+
+          <div class="pane__act">
+          <button class="submit" type="submit" data-state="idle">
+            <span class="submit__label">Create account</span>
+            <span class="submit__spinner" aria-hidden="true"></span>
+            <svg class="submit__tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.6 9.6 17 19 7.4" /></svg>
+          </button>
+          </div>
+
+          <p class="pane__switch">
+            Already have an account?
+            <button class="pane__switchbtn" type="button" data-switch="signin">Sign in</button>
+          </p>
+        </form>
+      </div>
+
+      <!-- ——————————————————————————————————————————————— the blade
+           A rectangle wider than the card, skewed by the rake, positioned by
+           one translateX. Its two lit edges are the two seams: the leading one
+           is where the card is cut for sign-in, the trailing one for sign-up.
+           overflow:hidden is doing real work — it is what slices the headline
+           along the diagonal as the blade passes over it.                    -->
+      <div class="auth__band" aria-hidden="true" data-band>
+        <span class="band__edge band__edge--lead"></span>
+        <span class="band__edge band__edge--trail"></span>
+
+        <!-- exactly the blade's transform, backwards -->
+        <div class="band__inner">
+          <!-- and now we are back in card co-ordinates -->
+          <div class="band__page">
+            <div class="welcome welcome--signin">
+              <p class="welcome__mark">VERSO</p>
+              <h3 class="welcome__title">Welcome<br /><em>back.</em></h3>
+              <p class="welcome__copy">Your boards, your drafts and your people are exactly where you left them.</p>
+            </div>
+            <div class="welcome welcome--signup">
+              <p class="welcome__mark">VERSO</p>
+              <h3 class="welcome__title">Start the<br /><em>first page.</em></h3>
+              <p class="welcome__copy">One account for every board, every draft and every device you own.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- a single hairline of light, run across the card once on success -->
+      <span class="auth__flare" aria-hidden="true" data-flare></span>
+    </section>
+
+    <p class="hint">
+      <!-- "crosses", not "across": the blade travels sideways on a wide screen
+           and top-to-bottom on a narrow one, and the copy has to be true of both. -->
+      <span class="hint__key">Switch states and the blade crosses the card · both forms validate for real</span>
+    </p>
+
+    <!-- Everything the card wants to say out loud says it here, once. -->
+    <p class="sr-only" role="status" aria-live="polite" data-live></p>
+  </main>
+
+  <script type="module" src="https://demo.codeandchill.store/verso/app.js"></script>
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=verso&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Verso template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/verso/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:38 GMT -->
+</html>

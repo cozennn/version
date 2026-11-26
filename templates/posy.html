@@ -1,0 +1,248 @@
+<!doctype html>
+<!-- Happy Birthday — a cat, a flower, and a surprise — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<!--
+  POSY — a birthday surprise
+
+  A cat is holding a flower out. A stick figure is standing a few feet away
+  with his back turned, wearing a party hat, and he has no idea. The whole
+  page is one verb: GIVE IT TO HIM.
+
+  The point of it is that the gift is a real object you have to carry, not a
+  button that plays a cutscene. You pick the flower up and drag it across the
+  floor, and everything else in the scene is downstream of where it is:
+
+    · the cat's paw is GLUED to the stem — that arm is re-drawn from shoulder
+      to stem every frame in scene coordinates, so as you pull, the cat leans
+      after it. It holds on until the stem passes out of its reach, and only
+      then does the paw open. So the moment of LETTING GO is something the cat
+      does, at a distance you chose, rather than a keyframe at t=0.3s;
+
+    · the stick figure turns round when the flower gets close enough to notice
+      — and he turns by being scaled through zero on X, which is a real
+      quarter-turn: the head squashes to a line and comes back the other way,
+      and the face fades up on the far side of it;
+
+    · his arm then reaches for the stem the same way the cat's did, capped at
+      his own reach. Two arms, one stem, both solving for the same point:
+      that is what makes it read as a HAND-OFF rather than two sprites
+      overlapping.
+
+  Drop it inside his reach and he takes it, the petals open, and the type
+  arrives. Drop it anywhere else and it springs back to the cat, who was
+  never going to keep it anyway.
+
+  ONE COLOUR. Everything on the board is chalk-white line art on a plum-black
+  floor — the cat, the man, the hat, the ground. The flower is the only
+  saturated thing on the page, which is what makes it the thing to grab
+  without a glow, a pulse, or a label pointing at it. When it is delivered the
+  confetti is made of the flower: its coral, its gold, its green. Nothing else
+  ever gets a colour.
+
+  The typography is the opposite of the drawing on purpose. The actors are
+  naive doodles; the words are a proper display serif with the soft and wonky
+  axes wound up, set large and mixed-case, and they land letter by letter out
+  of the burst. A cartoon can say happy birthday. It takes real type to MEAN
+  it.
+
+  The path through it without a mouse is the same path: the flower is a real
+  button, Enter or Space sends it along an arc, and every reaction above runs
+  off the position exactly as it does under a finger — the auto-give is not a
+  second animation, it is the same one with a different driver. Reduced motion
+  lands each state with none of the travel. With JavaScript off, the page is
+  a card that already says happy birthday.
+
+  Zero dependencies. Transform, opacity, and stroke geometry.
+-->
+<html lang="en">
+
+<!-- Mirrored from https://demo.codeandchill.store/posy/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:31 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday — a cat, a flower, and a surprise</title>
+  <meta name="description" content="A cat holds out a flower. Drag it across to the birthday boy — he turns around, takes it, and the words arrive." />
+  <meta name="theme-color" content="#150e1a" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Happy Birthday" />
+  <meta property="og:description" content="Drag the flower from the cat to the birthday boy." />
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,600,0..100,0..1;0,9..144,700,0..100,0..1;1,9..144,600,0..100,0..1;1,9..144,700,0..100,0..1&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet" />
+  <script>document.documentElement.classList.add('js')</script>
+  <link rel="stylesheet" href="https://demo.codeandchill.store/posy/app.css" />
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+
+<main class="stage" data-stage data-state="idle">
+
+  <!-- Small, and it stays small. The page has one headline and it is not this
+       one — this is just the label on the tin. -->
+  <p class="kicker">A birthday surprise</p>
+
+  <!--
+    THE WORDS. Visible by default so the page is a birthday card with
+    JavaScript off; hidden by `html.js` until the flower is delivered, at
+    which point the letters arrive one at a time out of the burst.
+  -->
+  <p class="type" data-type>
+    <span class="type__a" data-split>Happy</span>
+    <span class="type__b" data-split>birthday</span>
+    <span class="type__from">— from the cat</span>
+  </p>
+
+  <!-- The particles. Painted only after the hand-off, and made of the
+       flower's own three colours so nothing new enters the palette. -->
+  <canvas class="fizz" data-fizz aria-hidden="true"></canvas>
+
+  <div class="board">
+    <svg class="scene" data-scene viewBox="0 0 1200 782" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+
+      <!-- ------------------------------------------------------- the floor -->
+      <!-- One chalk line with a little sag in it. A dead-straight rule reads
+           as a border; a sagging one reads as a drawing. -->
+      <path class="ink ground" d="M64 641 C 340 636 700 647 1136 638" />
+      <g class="dust">
+        <circle cx="212" cy="600" r="2.4" /><circle cx="596" cy="566" r="2" />
+        <circle cx="1004" cy="588" r="2.6" /><circle cx="716" cy="616" r="1.8" />
+        <circle cx="388" cy="332" r="2.2" /><circle cx="930" cy="300" r="2" />
+      </g>
+
+      <!-- --------------------------------------------------------- the cat -->
+      <g class="cat" data-cat>
+        <g class="cat__hop">
+          <path class="ink cat__tail" data-tail d="M304 640 C 252 650 214 620 222 582 C 228 554 258 546 270 566" />
+          <path class="ink cat__body" d="M306 644 C 282 604 284 546 316 518 C 340 498 372 496 390 510 C 406 522 410 542 404 562 C 394 594 392 620 396 644 Z" />
+          <path class="ink" d="M392 644 C 404 639 420 639 430 644" />
+          <g class="cat__head" data-cathead transform="translate(398,472)">
+            <path class="ink" d="M-30 -22 L-38 -60 L-6 -40 Z" />
+            <path class="ink" d="M8 -42 L32 -66 L34 -28 Z" />
+            <circle class="ink" cx="0" cy="0" r="38" />
+            <!-- the eyes, and their happy replacements. Two sets, one fades
+                 into the other; nothing is ever added to the DOM. -->
+            <g class="cat__eyes" data-eyes transform="translate(0,0)">
+              <circle class="ink dot" cx="-14" cy="-2" r="4.2" />
+              <circle class="ink dot" cx="16" cy="-2" r="4.2" />
+            </g>
+            <g class="cat__glee">
+              <path class="ink" d="M-21 -1 C -17 -10 -11 -10 -7 -1" />
+              <path class="ink" d="M9 -1 C 13 -10 19 -10 23 -1" />
+            </g>
+            <path class="ink nose" d="M1 8 L11 8 L6 15 Z" />
+            <path class="ink" d="M6 15 C 2 21 -5 21 -9 15" />
+            <path class="ink" d="M6 15 C 10 21 17 21 21 15" />
+            <g class="whisk">
+              <path class="ink" d="M-14 6 L-38 2" /><path class="ink" d="M-14 11 L-38 14" />
+              <path class="ink" d="M26 6 L50 2" /><path class="ink" d="M26 11 L50 14" />
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- --------------------------------------------------- the birthday boy -->
+      <!--
+        The turn is one scaleX run from +1 through 0 to -1 about his own
+        spine. Passing through zero is not a glitch to be avoided — it is the
+        edge-on frame of a real quarter turn, and it is the only reason the
+        head reads as a head rotating rather than a circle sliding.
+
+        Every stroke in here carries non-scaling-stroke, because a squashed
+        line whose width squashes with it goes thin and vanishes early.
+      -->
+      <g class="man" data-man>
+        <g class="man__hop">
+          <path class="ink" d="M880 342 L 851 378 H 909 Z" />
+          <circle class="ink" cx="880" cy="336" r="7" />
+          <circle class="ink" cx="880" cy="406" r="32" />
+          <path class="ink man__tuft" data-tuft d="M855 383 C 845 375 843 389 851 395" />
+          <g class="man__face" data-face>
+            <circle class="ink dot" cx="884" cy="400" r="3.4" />
+            <circle class="ink dot" cx="899" cy="401" r="3.4" />
+            <path class="ink" d="M881 414 C 889 423 899 421 904 412" />
+          </g>
+          <path class="ink" d="M880 438 V 548" />
+          <path class="ink man__far" data-far d="M880 468 C 899 492 907 514 903 532" />
+          <path class="ink" d="M880 548 C 872 588 862 616 852 642" />
+          <path class="ink" d="M880 548 C 892 588 902 616 912 642" />
+          <path class="ink" d="M852 642 H 838" /><path class="ink" d="M912 642 H 926" />
+        </g>
+      </g>
+
+      <!--
+        THE TWO ARMS, and they live out here on purpose — in scene
+        coordinates, outside both actors' own transforms. The man is mirrored
+        when he turns; an arm inside that group would be mirrored with him and
+        would reach away from the flower. Out here each arm just solves for
+        the same stem, every frame, and neither actor's local space can lie
+        about where the hand ended up.
+      -->
+      <g class="arms">
+        <!-- the d/transform values below are the REST pose, written out so
+             the drawing is complete before a line of JavaScript runs -->
+        <path class="ink arm" data-catarm d="M390 552 Q455.3 534.6 499.3 483.4" />
+        <path class="ink arm" data-manarm d="M880 468 Q883.6 505.4 857 532" />
+        <circle class="ink dot paw" data-catpaw cx="0" cy="0" r="7" transform="translate(499.3 483.4)" />
+        <circle class="ink dot paw" data-manpaw cx="0" cy="0" r="5.5" transform="translate(857 532)" />
+      </g>
+
+      <!-- The catch zone. Drawn only while something is in flight, and it is
+           a dashed outline rather than a filled target because it is a hint,
+           not a surface. -->
+      <circle class="zone" data-zone cx="744" cy="452" r="104" />
+
+      <!--
+        THE FLOWER. The only colour on the page, and a real button: it takes
+        focus, and Enter or Space sends it across on its own.
+      -->
+      <!-- It is only a BUTTON once there is something to press it for: the
+           role and the tab stop are added by app.js, so with JavaScript off
+           this is a picture of a flower and says so. -->
+      <g class="posy" data-posy transform="translate(478 398) rotate(-14)">
+        <path class="stem" d="M0 14 C 4 46 -3 74 0 96" />
+        <path class="leaf" d="M0 56 C 19 47 32 56 27 71 C 15 82 1 75 0 60 Z" />
+        <g class="petals" data-petals>
+          <g class="petal" transform="rotate(0)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(51.4)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(102.8)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(154.2)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(205.7)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(257.1)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+          <g class="petal" transform="rotate(308.5)"><ellipse cx="0" cy="-26" rx="11.5" ry="23" /></g>
+        </g>
+        <circle class="eye" cx="0" cy="0" r="12.5" />
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- One line, and it is an instruction rather than a description. It leaves
+       the moment you touch the flower and does not come back. -->
+  <p class="hint" data-hint>Drag the flower to him</p>
+
+  <button class="again" data-again type="button">Again</button>
+
+  <p class="u-sr" role="status" data-live></p>
+</main>
+
+<div class="grain" aria-hidden="true"></div>
+
+<script type="module" src="https://demo.codeandchill.store/posy/app.js"></script>
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=posy&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Posy template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/posy/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:31 GMT -->
+</html>
