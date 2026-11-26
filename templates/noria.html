@@ -1,0 +1,154 @@
+<!doctype html>
+<!-- Noria — ops automation for a freight forwarder — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<html lang="en" data-theme="light">
+
+<!-- Mirrored from https://demo.codeandchill.store/noria/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:08 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Noria — ops automation for a freight forwarder</title>
+  <meta name="description" content="Noria is a workflow automation app for a freight forwarder's back office: flows that match proofs of delivery, pre-check customs entries, audit detention invoices and post freight invoices to the ledger. A live run pulse, a node-canvas flow builder with test runs, a run log with step waterfalls, recipes, an AI copilot that drafts flows, connected apps, team settings and help — light and dark, fully animated." />
+  <meta name="theme-color" content="#eceee9" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Noria — ops automation for a freight forwarder" />
+  <meta property="og:description" content="Build, run and watch the flows that do a forwarder's desk work." />
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&amp;display=swap" rel="stylesheet" />
+  <script>
+    /* Before first paint: the saved theme and sidebar, so the page never
+       flashes the wrong state. The shell is hidden only under html.js; the
+       failsafe shows it if the script never runs. Under ?record the page
+       waits for the rig and ignores saved choices. */
+    (function (d) {
+      d.classList.add('js');
+      var rec = /[?&]record\b/.test(location.search);
+      if (rec) d.classList.add('is-record');
+      try {
+        if (!rec) {
+          var t = JSON.parse(localStorage.getItem('noria:theme') || '"light"');
+          d.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t;
+          if (localStorage.getItem('noria:rail') === '1') d.classList.add('is-rail');
+        }
+      } catch (e) {}
+      if (!rec) setTimeout(function () { d.classList.add('failsafe'); }, 4000);
+    })(document.documentElement);
+  </script>
+  <script type="module" crossorigin src="https://demo.codeandchill.store/noria/assets/index-DO-KsshO.js"></script>
+  <link rel="modulepreload" crossorigin href="https://demo.codeandchill.store/noria/assets/store-DbhXnLis.js">
+  <link rel="modulepreload" crossorigin href="https://demo.codeandchill.store/noria/assets/ui-CH4Vfa-C.js">
+  <link rel="stylesheet" crossorigin href="https://demo.codeandchill.store/noria/assets/index-FXRyovZf.css">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <div class="app">
+    <aside class="side" aria-label="Sidebar">
+      <div class="side__top">
+        <a class="brand" href="#/overview" aria-label="Noria — overview">
+          <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6"/><circle cx="12" cy="12" r="2.2"/><path d="M12 4.4v5.4M12 14.2v5.4M4.4 12h5.4M14.2 12h5.4M6.6 6.6l3.8 3.8M13.6 13.6l3.8 3.8M17.4 6.6l-3.8 3.8M10.4 13.6l-3.8 3.8"/><path d="M12 2.2v2.2M21.8 12h-2.2M12 21.8v-2.2M2.2 12h2.2"/></svg></span>
+          <span class="brand__text">Noria<small>Halyard &amp; Pike</small></span>
+        </a>
+        <button type="button" class="ibtn ibtn--side side__fold" id="btn-rail" aria-label="Collapse sidebar" aria-pressed="false" aria-keyshortcuts="[" data-tip="Expand sidebar  ["><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15M15.5 9.5 13 12l2.5 2.5"/></svg></button>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <div class="nav__track">
+          <p class="nav__label">Automate</p>
+          <a class="nav__item" href="#/overview" data-route="overview" data-tip="Overview"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><span>Overview</span></a>
+          <a class="nav__item" href="#/flows" data-route="flows" data-tip="Flows"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="5" rx="1.6"/><rect x="13.5" y="15.5" width="7" height="5" rx="1.6"/><path d="M7 8.5v3.5a2 2 0 0 0 2 2h6a2 2 0 0 1 2 2"/></svg><span>Flows</span><b class="nav__count" data-count="flows"></b></a>
+          <a class="nav__item" href="#/recipes" data-route="recipes" data-tip="Recipes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9.5l3 3v14H6z"/><path d="M15.5 3.5v3h3M9 11h6.5M9 14.5h6.5M9 18h3.5"/></svg><span>Recipes</span></a>
+          <a class="nav__item" href="#/copilot" data-route="copilot" data-tip="Copilot"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c.6 4.1 2.4 5.9 6.5 6.5-4.1.6-5.9 2.4-6.5 6.5-.6-4.1-2.4-5.9-6.5-6.5 4.1-.6 5.9-2.4 6.5-6.5Z"/><path d="M18.5 15.5c.2 1.6.9 2.3 2.5 2.5-1.6.2-2.3.9-2.5 2.5-.2-1.6-.9-2.3-2.5-2.5 1.6-.2 2.3-.9 2.5-2.5Z"/></svg><span>Copilot</span></a>
+          <p class="nav__label">Monitor</p>
+          <a class="nav__item" href="#/runs" data-route="runs" data-tip="Runs"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10 8.8v6.4l5-3.2z"/></svg><span>Runs</span><b class="nav__count nav__count--bad" data-count="runs"></b></a>
+          <a class="nav__item" href="#/connections" data-route="connections" data-tip="Connections"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.5V8M15 3.5V8M6.5 8h11v3a5.5 5.5 0 0 1-11 0zM12 16.5v4"/></svg><span>Connections</span><b class="nav__count nav__count--warn" data-count="connections"></b></a>
+          <p class="nav__label">Workspace</p>
+          <a class="nav__item" href="#/settings" data-route="settings" data-tip="Settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8l2 2.1 2.9-.4.7 2.8 2.6 1.4-1 2.8 1 2.8-2.6 1.4-.7 2.8-2.9-.4-2 2.1-2-2.1-2.9.4-.7-2.8-2.6-1.4 1-2.8-1-2.8 2.6-1.4.7-2.8 2.9.4Z"/></svg><span>Settings</span></a>
+          <a class="nav__item" href="#/help" data-route="help" data-tip="Help"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg><span>Help</span></a>
+          <button type="button" class="nav__item nav__more" aria-label="More pages" aria-haspopup="menu" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg><span>More</span></button>
+          <span class="nav__pill" aria-hidden="true"></span>
+        </div>
+      </nav>
+      <div class="side__foot">
+        <a class="today" id="today" href="#/runs"></a>
+        <button type="button" class="me" id="btn-me" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false"></button>
+      </div>
+    </aside>
+
+    <div class="main-col">
+      <header class="top">
+        <a class="top__brand" href="#/overview" aria-label="Noria — overview"><span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6"/><circle cx="12" cy="12" r="2.2"/><path d="M12 4.4v5.4M12 14.2v5.4M4.4 12h5.4M14.2 12h5.4M6.6 6.6l3.8 3.8M13.6 13.6l3.8 3.8M17.4 6.6l-3.8 3.8M10.4 13.6l-3.8 3.8"/></svg></span>Noria</a>
+        <button type="button" class="finder-btn" id="btn-find" aria-label="Search (⌘K)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search flows, runs, apps, people…</span><kbd>⌘K</kbd></button>
+        <span class="top__spacer"></span>
+        <div class="top__tools">
+          <a class="live" id="live" href="#/runs" aria-live="off"><i aria-hidden="true"></i><span id="live-n">0</span><small>running</small></a>
+          <button type="button" class="ibtn ibtn--glass" id="btn-theme" aria-label="Switch to dark theme"></button>
+          <button type="button" class="ibtn ibtn--glass" id="btn-bell" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="dot-badge" id="bell-badge" hidden></span></button>
+          <button type="button" class="btn btn--primary top__new magnetic" id="btn-new" aria-label="Create new" aria-haspopup="menu" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button>
+        </div>
+      </header>
+
+      <main id="main" class="main">
+        <section class="view" data-view="overview" hidden></section>
+        <section class="view" data-view="flows" hidden></section>
+        <section class="view" data-view="recipes" hidden></section>
+        <section class="view" data-view="copilot" hidden></section>
+        <section class="view" data-view="runs" hidden></section>
+        <section class="view" data-view="connections" hidden></section>
+        <section class="view" data-view="settings" hidden></section>
+        <section class="view" data-view="help" hidden></section>
+      </main>
+    </div>
+  </div>
+
+  <div class="signin" id="signin" hidden>
+    <form class="signin__card" novalidate>
+      <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6"/><circle cx="12" cy="12" r="2.2"/><path d="M12 4.4v5.4M12 14.2v5.4M4.4 12h5.4M14.2 12h5.4M6.6 6.6l3.8 3.8M13.6 13.6l3.8 3.8M17.4 6.6l-3.8 3.8M10.4 13.6l-3.8 3.8"/></svg></span>
+      <h1>Sign in to Noria</h1>
+      <p>Halyard &amp; Pike Ops workspace</p>
+      <label class="field"><span class="field__label">Work email</span><input name="email" type="email" value="leila.haddad@halyardpike.com" autocomplete="username" required /></label>
+      <label class="field"><span class="field__label">Password</span><input name="password" type="password" value="wheel-turns-0909" autocomplete="current-password" required /></label>
+      <p class="mform__err" role="alert"></p>
+      <button type="submit" class="btn btn--primary">Sign in</button>
+      <small>Your flows kept running while you were away.</small>
+    </form>
+  </div>
+
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="pop-layer"></div>
+
+  <dialog class="finder" id="finder" aria-label="Search Noria">
+    <div class="finder__bar">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      <input id="finder-q" type="text" role="combobox" aria-expanded="true" aria-controls="finder-list" aria-autocomplete="list" placeholder="A flow, a run number, an app, a person…" autocomplete="off" spellcheck="false" />
+      <kbd>esc</kbd>
+    </div>
+    <ul class="finder__list" id="finder-list" role="listbox" aria-label="Results"></ul>
+  </dialog>
+  <dialog class="modal" id="modal"></dialog>
+  <dialog class="drawer" id="drawer"></dialog>
+
+  <div class="toast" role="status" aria-live="polite">
+    <span class="toast__ico"></span><span class="toast__msg"></span>
+    <button type="button" class="toast__undo" hidden>Undo</button>
+  </div>
+
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=noria&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Noria template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/noria/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:08 GMT -->
+</html>

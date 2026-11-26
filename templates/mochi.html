@@ -1,0 +1,290 @@
+<!doctype html>
+<!-- Mochi — Sign in — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<html lang="en">
+
+<!-- Mirrored from https://demo.codeandchill.store/mochi/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:44 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mochi — Sign in</title>
+<meta name="description" content="A sign-in form guarded by a cat. She follows your caret while you type your email, claps both paws over her eyes for the password — and peeks through the gap the moment you tap “show”." />
+<link rel="preconnect" href="https://fonts.googleapis.com/" />
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://demo.codeandchill.store/mochi/style.css" />
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+
+<main class="room">
+  <section class="card" id="card">
+
+    <!-- ── the form ──────────────────────────────────────────────────────── -->
+    <form class="form" id="form" novalidate>
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><g fill="currentColor">
+            <ellipse cx="12" cy="15.4" rx="5.2" ry="4.4" />
+            <ellipse cx="6.1" cy="9.2" rx="2.3" ry="2.9" />
+            <ellipse cx="10.2" cy="6.6" rx="2.3" ry="3.1" />
+            <ellipse cx="14.6" cy="6.9" rx="2.3" ry="3" />
+            <ellipse cx="18.2" cy="10" rx="2.2" ry="2.7" />
+          </g></svg>
+        </span>
+        <span class="brand__name">Mochi</span>
+        <span class="brand__tag">beta</span>
+      </div>
+
+      <h1 class="form__title">Welcome back</h1>
+      <p class="form__sub">She kept your seat warm.</p>
+
+      <span class="rail" id="rail" aria-hidden="true"></span>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="username"
+               placeholder="you@example.com" spellcheck="false" />
+      </div>
+
+      <div class="field">
+        <label for="pw">Password</label>
+        <div class="field__wrap">
+          <input id="pw" name="password" type="password" autocomplete="current-password"
+                 placeholder="your secret" spellcheck="false" />
+          <button class="peek" id="peek" type="button" aria-pressed="false" aria-label="Show password">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="21" height="21">
+              <path id="peekEye" d="M2.6 12S6.4 5.6 12 5.6 21.4 12 21.4 12 17.6 18.4 12 18.4 2.6 12 2.6 12Z" />
+              <circle cx="12" cy="12" r="3.1" />
+              <path id="peekSlash" d="M4.4 4.4 19.6 19.6" />
+            </svg>
+          </button>
+        </div>
+        <p class="caps" id="caps" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="row">
+        <label class="check">
+          <input type="checkbox" id="remember" name="remember" />
+          <span class="check__box" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19 7" /></svg>
+          </span>
+          <span class="check__text">Remember me</span>
+        </label>
+        <a class="link" href="#forgot">Forgot password?</a>
+      </div>
+
+      <button class="submit" id="submit" type="submit">
+        <span class="submit__label" id="submitLabel">Sign in</span>
+        <svg class="submit__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.6 9.6 17.7 19.5 7.2" /></svg>
+      </button>
+
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+
+      <div class="divider"><span>or continue with</span></div>
+
+      <div class="oauth">
+        <button class="oauth__btn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+            <path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7C21.8 18.9 23 15.9 23 12.3Z"/>
+            <path fill="#34A853" d="M12 23.5c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.6-2-6.5-4.8H1.7v3C3.6 21 7.5 23.5 12 23.5Z"/>
+            <path fill="#FBBC05" d="M5.5 14.1a6.9 6.9 0 0 1 0-4.4v-3H1.7a11.5 11.5 0 0 0 0 10.4l3.8-3Z"/>
+            <path fill="#EA4335" d="M12 5c1.7 0 3.2.6 4.4 1.7l3.3-3.3C17.7 1.5 15.1.5 12 .5 7.5.5 3.6 3 1.7 6.7l3.8 3C6.4 7 9 5 12 5Z"/>
+          </svg>
+          <span>Google</span>
+        </button>
+        <button class="oauth__btn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+            <path fill="currentColor" d="M17.2 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.9-3.6.9-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.1.8s2.1-1.2 2.9-2.3c.9-1.3 1.3-2.6 1.3-2.7 0 0-2.5-1-2.6-3.9ZM14.9 5.3c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z"/>
+          </svg>
+          <span>Apple</span>
+        </button>
+      </div>
+
+      <p class="foot">New to Mochi? <a class="link" href="#join">Create account</a></p>
+      <p class="demo">Demo — the password is <b>mochi2024</b></p>
+    </form>
+
+    <!-- ── the guard ─────────────────────────────────────────────────────── -->
+    <div class="pet">
+      <span class="sheen" id="sheen" aria-hidden="true"></span>
+      <!-- Centred over her head with a tail pointing down at her, so it reads
+           as HER speech and not as a corner toast. Centred with left/right/
+           margin rather than translateX(-50%), because the pop animation
+           writes transform and the two would fight. -->
+      <p class="bubble" id="bubble" aria-hidden="true">
+        <!-- The cloud is one rounded body plus seven bumps, all painted in the
+             same --bubble-bg, so they merge into a single lumpy silhouette.
+             Built this way rather than as a fixed SVG because the text length
+             changes per line and a stretched SVG would flatten the bumps. -->
+        <span class="bubble__cloud" aria-hidden="true">
+          <i style="--x:12%;--y:-13px;--d:30px"></i>
+          <i style="--x:38%;--y:-18px;--d:38px"></i>
+          <i style="--x:68%;--y:-14px;--d:32px"></i>
+          <i style="--x:20%;--b:-12px;--d:28px"></i>
+          <i style="--x:60%;--b:-14px;--d:32px"></i>
+          <i style="--l:-13px;--y:22%;--d:30px"></i>
+          <i style="--r:-13px;--y:26%;--d:30px"></i>
+        </span>
+        <span class="bubble__text" id="bubbleText">hi!</span>
+        <svg class="bubble__tail" viewBox="0 0 32 96" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M3,0 C3,30 5,58 14,96 C17,58 25,30 29,0 Z" />
+        </svg>
+      </p>
+
+      <button class="pet__pat" id="pet" type="button" aria-label="Pet Mochi"></button>
+
+      <!-- One rig, driven entirely from app.js. Every part that moves is a
+           <g> with an id; nothing here carries a baked-in transform, because
+           JS writes the whole transform string each frame. -->
+      <svg class="cat" id="cat" viewBox="0 0 300 300" role="img"
+           aria-label="Mochi, a grey cat in a coral collar, sitting and watching the form">
+        <defs>
+          <!-- A cool grey-blue tabby, lifted a step for the dark panel: light
+               fur on a dark surface is what gives her a silhouette. The warm
+               collar is the one point of accent on her. -->
+          <linearGradient id="mFur" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D3E0EF" /><stop offset="1" stop-color="#9DB8D4" />
+          </linearGradient>
+          <linearGradient id="mCream" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFF8EF" /><stop offset="1" stop-color="#FFEBD8" />
+          </linearGradient>
+          <linearGradient id="mBell" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFDC7A" /><stop offset="1" stop-color="#F2A93B" />
+          </linearGradient>
+          <radialGradient id="mGlow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#FFC978" stop-opacity=".42" />
+            <stop offset="1" stop-color="#FFC978" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+
+        <ellipse id="glow" cx="150" cy="150" rx="150" ry="140" fill="url(#mGlow)" opacity="0" />
+        <ellipse class="cat__shadow" id="shadow" cx="150" cy="268" rx="84" ry="12" />
+
+        <!-- tail: the d is rebuilt every frame, so it swishes as one curve -->
+        <path id="tail" class="cat__tail" fill="none" stroke-linecap="round" />
+
+        <g id="bodyG">
+          <path class="cat__body" d="M150,120 C198,120 226,158 226,198 C226,236 196,256 150,256
+                                     C104,256 74,236 74,198 C74,158 102,120 150,120 Z" />
+          <path class="cat__belly" d="M150,158 C176,158 194,180 194,206 C194,232 174,248 150,248
+                                      C126,248 106,232 106,206 C106,180 124,158 150,158 Z" />
+          <path class="cat__stripe" d="M96,176 q10,7 20,3" />
+          <path class="cat__stripe" d="M204,176 q-10,7 -20,3" />
+        </g>
+
+        <g id="headG">
+          <g id="earL">
+            <path class="cat__body" d="M108,72 L86,16 L142,48 Z" />
+            <path class="cat__inner" d="M110,68 L98,38 L128,55 Z" />
+          </g>
+          <g id="earR">
+            <path class="cat__body" d="M192,72 L214,16 L158,48 Z" />
+            <path class="cat__inner" d="M190,68 L202,38 L172,55 Z" />
+          </g>
+
+          <path class="cat__head" d="M150,30 C198,30 226,58 226,98 C226,136 196,156 150,156
+                                     C104,156 74,136 74,98 C74,58 102,30 150,30 Z" />
+          <!-- a cowlick, because a perfectly smooth head reads as a logo -->
+          <path class="cat__tuft" d="M139,34 C141,17 150,20 150,30 C150,20 159,17 161,34 Z" />
+          <path class="cat__stripe" d="M150,38 v15" />
+          <path class="cat__stripe" d="M128,42 l4,14" />
+          <path class="cat__stripe" d="M172,42 l-4,14" />
+
+          <ellipse id="blushL" class="cat__blush" cx="100" cy="122" rx="14" ry="8" />
+          <ellipse id="blushR" class="cat__blush" cx="200" cy="122" rx="14" ry="8" />
+
+          <g id="eyeL">
+            <g id="eyeLopen">
+              <ellipse class="cat__eye" cx="0" cy="0" rx="16.5" ry="18.5" />
+              <g id="pupilL">
+                <circle class="cat__spark" cx="-5.4" cy="-6.6" r="6.2" />
+                <circle class="cat__spark cat__spark--sm" cx="6.4" cy="5.4" r="3.1" />
+              </g>
+            </g>
+            <path id="eyeLhappy" class="cat__eyeline" d="M-16,4 Q0,-16 16,4" />
+          </g>
+          <g id="eyeR">
+            <g id="eyeRopen">
+              <ellipse class="cat__eye" cx="0" cy="0" rx="16.5" ry="18.5" />
+              <g id="pupilR">
+                <circle class="cat__spark" cx="-5.4" cy="-6.6" r="6.2" />
+                <circle class="cat__spark cat__spark--sm" cx="6.4" cy="5.4" r="3.1" />
+              </g>
+            </g>
+            <path id="eyeRhappy" class="cat__eyeline" d="M-16,4 Q0,-16 16,4" />
+          </g>
+
+          <g class="cat__whiskers">
+            <path d="M104,124 L72,117" /><path d="M104,131 L70,131" /><path d="M104,138 L74,145" />
+            <path d="M196,124 L228,117" /><path d="M196,131 L230,131" /><path d="M196,138 L226,145" />
+          </g>
+
+          <ellipse class="cat__muzzle" cx="150" cy="128" rx="36" ry="24" />
+          <path class="cat__nose" d="M142,118 h16 a3.4,3.4 0 0 1 2.6,5.4 l-6.2,7 a4.6,4.6 0 0 1 -8.8,0 l-6.2,-7
+                                     A3.4,3.4 0 0 1 142,118 Z" />
+          <path id="mouth" class="cat__mouth" d="M150,131 q-9,12 -18,2 M150,131 q9,12 18,2" />
+          <path id="tongue" class="cat__tongue" d="M143,138 h14 a7,7 0 0 1 -14,0 Z" />
+        </g>
+
+        <!-- Collar + bell sit AFTER the head so the head's lower edge doesn't
+             cover them, and outside headG so they stay put on her neck while
+             the head bobs. The bell swings off the head shake. -->
+        <path class="cat__collar" d="M107,147 Q150,177 193,147" />
+        <g id="bell">
+          <path class="cat__collar-loop" d="M0,-4 v6" />
+          <circle class="cat__bell" cx="0" cy="10" r="10.5" />
+          <path class="cat__bell-line" d="M-9.6,8.4 h19.2" />
+          <path class="cat__bell-slit" d="M0,12 v6.5" />
+          <circle class="cat__bell-hi" cx="-3.6" cy="5.6" r="2.6" />
+        </g>
+
+        <!-- Arms last: they must sit in front of the face when they cover it.
+             Authored in a LOCAL frame — shoulder at (0,0), limb down +y, paw
+             centre at y=78 — so app.js can aim one with a single atan2. Both
+             ends are rounded: a flat cap shows as a hard step wherever the
+             limb crosses the body. -->
+        <g id="armL">
+          <path class="cat__body" d="M0,-10 C6.8,-10 11,-5 11,4 C11,26 10,50 8,66 L-8,66
+                                     C-10,50 -11,26 -11,4 C-11,-5 -6.8,-10 0,-10 Z" />
+          <ellipse class="cat__paw" cx="0" cy="78" rx="20" ry="18" />
+          <ellipse class="cat__bean" cx="0" cy="84" rx="6" ry="4.8" />
+          <ellipse class="cat__bean" cx="-10" cy="73" rx="3.6" ry="3.1" />
+          <ellipse class="cat__bean" cx="0" cy="70" rx="3.6" ry="3.1" />
+          <ellipse class="cat__bean" cx="10" cy="73" rx="3.6" ry="3.1" />
+        </g>
+        <g id="armR">
+          <path class="cat__body" d="M0,-10 C6.8,-10 11,-5 11,4 C11,26 10,50 8,66 L-8,66
+                                     C-10,50 -11,26 -11,4 C-11,-5 -6.8,-10 0,-10 Z" />
+          <ellipse class="cat__paw" cx="0" cy="78" rx="20" ry="18" />
+          <ellipse class="cat__bean" cx="0" cy="84" rx="6" ry="4.8" />
+          <ellipse class="cat__bean" cx="-10" cy="73" rx="3.6" ry="3.1" />
+          <ellipse class="cat__bean" cx="0" cy="70" rx="3.6" ry="3.1" />
+          <ellipse class="cat__bean" cx="10" cy="73" rx="3.6" ry="3.1" />
+        </g>
+
+        <g id="joy" class="cat__joy"></g>
+      </svg>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="https://demo.codeandchill.store/mochi/app.js"></script>
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=mochi&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Mochi template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/mochi/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:44 GMT -->
+</html>

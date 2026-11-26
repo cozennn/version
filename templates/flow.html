@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!-- Flow — Sign in — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<html lang="en">
+
+<!-- Mirrored from https://demo.codeandchill.store/flow/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:51 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Flow — a liquid sign-in. A living drop of light follows your cursor, every keystroke sends a ripple, and the button melts into a checkmark when you're in." />
+  <meta name="theme-color" content="#070b12" />
+  <title>Flow — Sign in</title>
+  <script>document.documentElement.className += ' js';</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://demo.codeandchill.store/flow/style.css" />
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+  <!-- shared SVG filters + gradients (referenced by id across every SVG below) -->
+  <svg class="defs" width="0" height="0" aria-hidden="true">
+    <defs>
+      <!-- the classic "goo": blur, then crush the alpha ramp so overlapping
+           shapes fuse into one liquid body -->
+      <filter id="goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b" />
+        <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+        <feBlend in="SourceGraphic" in2="goo" />
+      </filter>
+      <filter id="gooBtn">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b" />
+        <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" />
+      </filter>
+      <linearGradient id="liquid" x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0%" stop-color="#7cf0ff" />
+        <stop offset="52%" stop-color="#35b8ff" />
+        <stop offset="100%" stop-color="#2f6dff" />
+      </linearGradient>
+      <radialGradient id="gloss" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- ambient backdrop -->
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb--a"></span>
+    <span class="orb orb--b"></span>
+    <span class="grain"></span>
+  </div>
+
+  <!-- a liquid droplet that trails the cursor (desktop only) -->
+  <svg class="cursor-blob" aria-hidden="true" width="60" height="60" viewBox="0 0 60 60">
+    <g filter="url(#gooBtn)">
+      <circle class="cb cb--main" cx="30" cy="30" r="9" fill="url(#liquid)" />
+      <circle class="cb cb--tail" cx="30" cy="30" r="5" fill="url(#liquid)" />
+    </g>
+  </svg>
+
+  <main class="auth">
+    <!-- ===================== THE LIQUID HERO ===================== -->
+    <!-- A cluster of metaballs fused by the goo filter reads as one wobbling
+         drop of light. It breathes on its own and leans toward the cursor. -->
+    <div class="stage" aria-hidden="true">
+      <svg class="blob" viewBox="0 0 240 220">
+        <g class="blob__goo" filter="url(#goo)" fill="url(#liquid)">
+          <circle class="mb" cx="120" cy="104" r="34" />
+          <circle class="mb" cx="120" cy="104" r="24" />
+          <circle class="mb" cx="120" cy="104" r="22" />
+          <circle class="mb" cx="120" cy="104" r="20" />
+          <circle class="mb" cx="120" cy="104" r="18" />
+        </g>
+        <!-- wet sheen (outside the filter so it stays crisp) -->
+        <ellipse class="blob__sheen" cx="106" cy="84" rx="26" ry="16" fill="url(#gloss)" />
+        <circle class="blob__spark" cx="140" cy="80" r="4" fill="#fff" />
+      </svg>
+    </div>
+
+    <!-- ===================== THE CARD ===================== -->
+    <section class="card" aria-label="Sign in to Flow">
+      <span class="card__sheen" aria-hidden="true"></span>
+      <span class="card__fill" aria-hidden="true"></span>
+
+      <header class="card__head">
+        <h1 class="brand">Flow</h1>
+        <p class="sub">Good to see you. Dive back in.</p>
+        <button type="button" class="peek" id="peek" aria-expanded="false" aria-controls="loginform">
+          Log in
+          <svg class="peek__ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </header>
+
+      <div class="disclose" id="loginform">
+      <form class="form" action="#" method="post" novalidate autocomplete="on">
+        <div class="field">
+          <input id="email" name="email" type="email" placeholder=" "
+                 autocomplete="email" required maxlength="60" />
+          <label for="email">Email</label>
+          <span class="field__ink" aria-hidden="true"></span>
+          <span class="ripples" aria-hidden="true"></span>
+        </div>
+
+        <div class="field">
+          <input id="password" name="password" type="password" placeholder=" "
+                 autocomplete="current-password" required />
+          <label for="password">Password</label>
+          <span class="field__ink" aria-hidden="true"></span>
+          <span class="ripples" aria-hidden="true"></span>
+          <button type="button" class="reveal" aria-pressed="false" aria-label="Show password" title="Show password">
+            <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.2 6.3A17 17 0 0 0 2 12s3.6 7 10 7a9.6 9.6 0 0 0 4-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </button>
+        </div>
+
+        <div class="row">
+          <label class="check">
+            <input type="checkbox" name="remember" />
+            <span class="check__box" aria-hidden="true"></span>
+            Remember me
+          </label>
+          <a href="#" class="link">Forgot password?</a>
+        </div>
+
+        <!-- Sign in — a liquid pill. On submit its surface drips, the drops
+             fall away, and it reforms as a checkmark. -->
+        <button type="submit" class="btn" id="signin">
+          <svg class="btn__liquid" viewBox="0 0 320 64" preserveAspectRatio="none" aria-hidden="true">
+            <g filter="url(#gooBtn)" fill="url(#liquid)">
+              <rect class="btn__body" x="0" y="0" width="320" height="64" rx="32" />
+              <circle class="drip d1" cx="88"  cy="60" r="8" />
+              <circle class="drip d2" cx="164" cy="60" r="9" />
+              <circle class="drip d3" cx="238" cy="60" r="7" />
+            </g>
+          </svg>
+          <span class="btn__label">Sign in</span>
+          <svg class="btn__check" viewBox="0 0 40 40" aria-hidden="true">
+            <path d="M11 21 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <p class="status" role="status" aria-live="polite"></p>
+
+        <div class="divider"><span>or continue with</span></div>
+
+        <div class="socials">
+          <button type="button" class="social">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 3 29.3 1 24 1 11.8 1 2 10.8 2 23s9.8 22 22 22 22-9.8 22-22c0-1.5-.2-2.7-.4-4.5Z"/><path fill="#FF3D00" d="M4.3 14.7 11 19.6C12.7 15 18 11 24 11c3 0 5.8 1.1 7.9 3l5.7-5.7C34 3 29.3 1 24 1 15.5 1 8.1 5.8 4.3 14.7Z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-2 13.5-5.2l-6.2-5.3C29.2 35.9 26.7 37 24 37c-5.3 0-9.7-3.6-11.3-8.4l-6.6 5.1C9.8 40.1 16.4 45 24 45Z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.3C41.2 34.4 46 30 46 23c0-1.5-.2-2.7-.4-4.5Z"/></svg>
+            <span>Google</span>
+          </button>
+          <button type="button" class="social">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.9c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.5-.2-2.8.8-3.6.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 3 2.3 1.2-.1 1.6-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.5-1-2.5-3.9ZM14 5.9c.7-.8 1.1-2 1-3.1-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.9-1 3 1.1.1 2.2-.5 2.8-1.3Z"/></svg>
+            <span>Apple</span>
+          </button>
+        </div>
+
+        <p class="foot">New here? <a href="#" class="link">Create account</a></p>
+      </form>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="https://demo.codeandchill.store/flow/app.js"></script>
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=flow&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Flow template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/flow/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:19:51 GMT -->
+</html>
