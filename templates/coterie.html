@@ -1,0 +1,431 @@
+<!doctype html>
+<!-- COTERIE — a people-ops dashboard with motion that behaves — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<!--
+  COTERIE — a people-ops workspace that arrives like a film and then behaves
+  like a product.
+
+  The brief: the warm, bento-style HR dashboard (welcome line, a segmented
+  rail of hiring numbers, a profile card, a weekly progress chart, a time
+  tracker, onboarding tasks, a week calendar) re-built under a new name and
+  new copy, with far more motion — but motion that belongs to the product:
+  one load choreography, then only what a person sets off.
+
+  Three views are real: Overview, People (filter / search / select) and
+  Payroll (pick a person, the month and the profile re-cut). The tracker is
+  a real stopwatch, the tasks really tick off and the percentages follow.
+-->
+<html lang="en">
+
+<!-- Mirrored from https://demo.codeandchill.store/coterie/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:14 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>COTERIE — a people-ops dashboard with motion that behaves</title>
+  <meta name="description" content="A warm bento HR dashboard: hiring rail, weekly progress, a live time tracker, onboarding tasks, a week calendar, people and payroll views — one GSAP load choreography and transform-only interactions." />
+  <meta name="theme-color" content="#f3efe4" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="COTERIE — a people-ops dashboard with motion that behaves" />
+  <meta property="og:description" content="Overview, People and Payroll, arriving in one choreography." />
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+  <script>
+    document.documentElement.classList.add('js');
+    if (matchMedia('(pointer: coarse)').matches) document.documentElement.classList.add('coarse');
+  </script>
+  <script type="module" crossorigin src="https://demo.codeandchill.store/coterie/assets/index-CuzfoJNR.js"></script>
+  <link rel="stylesheet" crossorigin href="https://demo.codeandchill.store/coterie/assets/index-DdsANBB5.css">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+
+  <!-- Icon sprite: every glyph on the page is one of these. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow-ur" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5L8 5.5Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.5 6v12M15.5 6v12"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.1-5M5 4.5V8h3.5"/></symbol>
+    <symbol id="i-alarm" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M4.5 5.5 7 3.5M19.5 5.5 17 3.5"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M20.5 12h-2.2M5.7 12H3.5M18 6l-1.6 1.6M7.6 16.4 6 18M18 18l-1.6-1.6M7.6 7.6 6 6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5l1.5-1.5ZM10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.7 4-5.5 7.5-5.5s6.3 1.8 7.5 5.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.9-3 3.1-4.6 6-4.6s5.1 1.6 6 4.6M15.5 5.9a3.2 3.2 0 0 1 0 6.2M17.5 14.6c1.8.5 3 1.9 3.5 4.4"/></symbol>
+    <symbol id="i-user-plus" viewBox="0 0 24 24"><circle cx="10" cy="8.5" r="3.6"/><path d="M3.5 20c1-3.5 3.6-5.3 6.5-5.3 1.6 0 3 .5 4.2 1.4M18 13.5v6M15 16.5h6"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="10" rx="1.6"/><path d="M3 18.5h18"/></symbol>
+    <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m14 7-5 5 5 5"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m10 7 5 5-5 5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m6.5 12.5 3.5 3.5 7.5-8"/></symbol>
+    <symbol id="i-dots-v" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="18" r="1.2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.8"/><path d="M9.5 19.5h5M12 16v3.5"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10.5 21 19 10.5h-6L13 3Z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 17.5V7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5v6a2.5 2.5 0 0 1-2.5 2.5H9l-4 3.5v-2Z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 20.5V4.5M6 5h10.5l-2 4 2 4H6"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h6.5L18 8v12.5H7v-17Z"/><path d="M13 3.5V8.5h5M9.5 13h6M9.5 16.5h4"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="3.5"/><path d="m10.5 12.5 8-8M16 7l2.5 2.5M14 9l2 2"/></symbol>
+    <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4.5 20.5h15v-7h-15v7ZM4.5 16.5c2.5 1.5 5 1.5 7.5 0 2.5 1.5 5 1.5 7.5 0M12 13.5v-3M12 7.5c-.8-.8-.8-2 0-3 .8 1 .8 2.2 0 3Z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4.5 7 7.5 6 7.5-6"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 4.5h3l1.5 4-2 1.3a9 9 0 0 0 5.7 5.7l1.3-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A15 15 0 0 1 4.5 6.1 1.5 1.5 0 0 1 6 4.5Z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4.5v11M7.5 11 12 15.5l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  </svg>
+
+  <main class="stage">
+    <section class="app" id="app" data-view="overview" aria-label="Coterie workspace">
+
+      <!-- ============ Top bar ============ -->
+      <header class="top">
+        <a class="brand" href="#overview" data-view-link="overview"><span class="brand__dot" aria-hidden="true"></span>Coterie</a>
+
+        <nav class="tabs" aria-label="Sections">
+          <span class="tabs__pill" aria-hidden="true"><i class="tabs__cap tabs__cap--l"></i><i class="tabs__mid"></i><i class="tabs__cap tabs__cap--r"></i></span>
+          <button class="tab is-active" type="button" data-view="overview" aria-current="page">Overview</button>
+          <button class="tab" type="button" data-view="people">People</button>
+          <button class="tab" type="button" data-view="payroll">Payroll</button>
+        </nav>
+
+        <div class="top__tools">
+          <button class="chip-btn magnetic" type="button" id="settings"><svg class="ico ico--gear"><use href="#i-gear"/></svg><span>Settings</span></button>
+          <button class="round-btn magnetic" type="button" id="bell" aria-label="Notifications, 3 new"><svg class="ico ico--bell"><use href="#i-bell"/></svg><span class="round-btn__badge" id="bell-badge">3</span></button>
+          <button class="round-btn magnetic" type="button" aria-label="Your profile"><svg class="ico"><use href="#i-user"/></svg></button>
+        </div>
+      </header>
+
+      <!-- ============ VIEW 1 — Overview ============ -->
+      <div class="view is-active" id="view-overview" data-view-panel="overview">
+
+        <div class="hello">
+          <h1 class="hello__title" data-split>Good morning, Amara</h1>
+
+          <div class="hello__row">
+            <div class="rail" aria-label="Hiring pipeline this quarter">
+              <div class="seg seg--ink" style="--w:17">
+                <span class="seg__label">Interviews</span>
+                <span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num" data-count="17" data-suffix="%">17%</b></span>
+              </div>
+              <div class="seg seg--honey" style="--w:15">
+                <span class="seg__label">Hired</span>
+                <span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num" data-count="15" data-suffix="%">15%</b></span>
+              </div>
+              <div class="seg seg--hatch" style="--w:56">
+                <span class="seg__label">Project time</span>
+                <span class="seg__bar"><i class="seg__fill" data-fill><i class="seg__stripes"></i></i><b class="seg__num" data-count="56" data-suffix="%">56%</b></span>
+              </div>
+              <div class="seg seg--line" style="--w:12">
+                <span class="seg__label">Output</span>
+                <span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num" data-count="12" data-suffix="%">12%</b></span>
+              </div>
+            </div>
+
+            <dl class="stats">
+              <div class="stat"><dt class="stat__lab"><svg class="ico"><use href="#i-users"/></svg>Team</dt><dd class="stat__num" data-count="84">84</dd></div>
+              <div class="stat"><dt class="stat__lab"><svg class="ico"><use href="#i-user-plus"/></svg>Hiring</dt><dd class="stat__num" data-count="37">37</dd></div>
+              <div class="stat"><dt class="stat__lab"><svg class="ico"><use href="#i-laptop"/></svg>Projects</dt><dd class="stat__num" data-count="212">212</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="bento">
+
+          <!-- Profile -->
+          <article class="card card--profile" data-card data-tilt>
+            <div class="portrait" data-initials="MO">
+              <img class="portrait__img" src="https://demo.codeandchill.store/coterie/photos/coterie/mira.jpg" alt="Mira Okafor smiling by a studio window" width="880" height="1100" data-fallback />
+            </div>
+            <div class="profile__meta">
+              <div>
+                <h2 class="profile__name">Mira Okafor</h2>
+                <p class="profile__role">Product Designer</p>
+              </div>
+              <span class="glass-chip" data-count="4850" data-prefix="$">$4,850</span>
+            </div>
+          </article>
+
+          <!-- Weekly progress -->
+          <article class="card card--progress" data-card>
+            <header class="card__head">
+              <h2 class="card__title">Progress</h2>
+              <button class="icon-btn magnetic" type="button" aria-label="Open progress report"><svg class="ico"><use href="#i-arrow-ur"/></svg></button>
+            </header>
+            <p class="progress__sum"><span class="big" data-count="6.6" data-decimals="1" data-suffix=" h">6.6 h</span><span class="progress__cap">Avg. workday<br />last 7 days</span></p>
+            <div class="week" id="week" role="list" aria-label="Hours worked per day">
+              <span class="week__tip" id="week-tip" aria-live="polite">5h 42m</span>
+            </div>
+          </article>
+
+          <!-- Time tracker -->
+          <article class="card card--timer" data-card>
+            <header class="card__head">
+              <h2 class="card__title">Time tracker</h2>
+              <button class="icon-btn magnetic" type="button" aria-label="Open timesheet"><svg class="ico"><use href="#i-arrow-ur"/></svg></button>
+            </header>
+            <div class="dial" id="dial">
+              <svg class="dial__svg" viewBox="0 0 200 200" aria-hidden="true">
+                <g class="dial__ticks" id="ticks"></g>
+                <circle class="dial__track" cx="100" cy="100" r="66" />
+                <circle class="dial__arc" id="arc" cx="100" cy="100" r="66" pathLength="100" />
+                <g class="dial__sweep" id="sweep"><circle cx="100" cy="21" r="3.2" /></g>
+              </svg>
+              <div class="dial__read">
+                <p class="clock" id="clock" aria-label="Tracked today 02:35"></p>
+                <p class="dial__cap"><span class="dial__state" id="timer-state">Paused</span> · <span class="clock__sec" id="clock-sec"></span>s</p>
+              </div>
+            </div>
+            <div class="timer__ctrls">
+              <button class="ctrl-btn is-primary" type="button" id="timer-toggle" aria-label="Start timer" aria-pressed="false">
+                <svg class="ico ico--play"><use href="#i-play"/></svg><svg class="ico ico--pause"><use href="#i-pause"/></svg>
+              </button>
+              <button class="ctrl-btn" type="button" id="timer-reset" aria-label="Reset today"><svg class="ico"><use href="#i-reset"/></svg></button>
+              <button class="ctrl-btn ctrl-btn--dark magnetic" type="button" id="alarm" aria-label="Set a break reminder" aria-pressed="false"><svg class="ico ico--alarm"><use href="#i-alarm"/></svg></button>
+            </div>
+          </article>
+
+          <!-- Onboarding (tall) -->
+          <article class="card card--onboard" data-card>
+            <header class="card__head">
+              <h2 class="card__title">Onboarding</h2>
+              <span class="big big--pct"><span id="onb-pct">25</span>%</span>
+            </header>
+            <div class="phases" id="phases">
+              <div class="phase phase--honey"><span class="phase__pct" data-phase-pct>0%</span><span class="phase__bar"><i class="phase__fill"></i><span class="phase__name">Paperwork</span></span></div>
+              <div class="phase phase--ink"><span class="phase__pct" data-phase-pct>0%</span><span class="phase__bar"><i class="phase__fill"></i><span class="phase__name">Setup</span></span></div>
+              <div class="phase phase--grey"><span class="phase__pct" data-phase-pct>0%</span><span class="phase__bar"><i class="phase__fill"></i><span class="phase__name">Team</span></span></div>
+            </div>
+
+            <div class="tasks">
+              <div class="tasks__stack" aria-hidden="true"></div>
+              <div class="tasks__card">
+                <header class="tasks__head">
+                  <h3>Onboarding tasks</h3>
+                  <p class="tasks__count"><span class="roll" id="done-count">2</span>/<span id="task-total">8</span></p>
+                </header>
+                <ul class="tasks__list" id="tasks">
+                  <li><button class="task" type="button" aria-pressed="true" data-phase="0"><span class="task__ico"><svg class="ico"><use href="#i-monitor"/></svg></span><span class="task__txt"><span class="task__title">Intro interview<i class="task__strike"></i></span><span class="task__when">Sep 29, 08:30</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="true" data-phase="0"><span class="task__ico"><svg class="ico"><use href="#i-bolt"/></svg></span><span class="task__txt"><span class="task__title">Sign the offer<i class="task__strike"></i></span><span class="task__when">Sep 29, 10:30</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="0"><span class="task__ico"><svg class="ico"><use href="#i-doc"/></svg></span><span class="task__txt"><span class="task__title">Tax &amp; bank forms<i class="task__strike"></i></span><span class="task__when">Sep 29, 13:00</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="1"><span class="task__ico"><svg class="ico"><use href="#i-key"/></svg></span><span class="task__txt"><span class="task__title">Accounts &amp; access<i class="task__strike"></i></span><span class="task__when">Sep 30, 09:00</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="1"><span class="task__ico"><svg class="ico"><use href="#i-laptop"/></svg></span><span class="task__txt"><span class="task__title">Laptop hand-off<i class="task__strike"></i></span><span class="task__when">Sep 30, 11:15</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="1"><span class="task__ico"><svg class="ico"><use href="#i-flag"/></svg></span><span class="task__txt"><span class="task__title">Q4 goals draft<i class="task__strike"></i></span><span class="task__when">Oct 1, 14:45</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="2"><span class="task__ico"><svg class="ico"><use href="#i-chat"/></svg></span><span class="task__txt"><span class="task__title">Coffee with the team<i class="task__strike"></i></span><span class="task__when">Oct 2, 10:00</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                  <li><button class="task" type="button" aria-pressed="false" data-phase="2"><span class="task__ico"><svg class="ico"><use href="#i-link"/></svg></span><span class="task__txt"><span class="task__title">Handbook walkthrough<i class="task__strike"></i></span><span class="task__when">Oct 2, 16:30</span></span><span class="task__tick"><svg class="ico"><use href="#i-check"/></svg></span></button></li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- Accordion -->
+          <article class="card card--acc" data-card>
+            <div class="acc" id="acc">
+              <section class="acc__item">
+                <h3><button class="acc__head" type="button" aria-expanded="false">Pension plan<svg class="ico acc__chev"><use href="#i-chev-d"/></svg></button></h3>
+                <div class="acc__body" hidden><p class="acc__line"><span>Employer match</span><b>6%</b></p><p class="acc__line"><span>Balance</span><b>$18,240</b></p></div>
+              </section>
+              <section class="acc__item">
+                <h3><button class="acc__head" type="button" aria-expanded="true">Devices<svg class="ico acc__chev"><use href="#i-chev-d"/></svg></button></h3>
+                <div class="acc__body">
+                  <div class="device">
+                    <span class="device__img" aria-hidden="true"><svg class="ico device__ico"><use href="#i-laptop"/></svg></span>
+                    <span class="device__txt"><b>Studio laptop 14"</b><small>Issued Sep 29</small></span>
+                    <button class="icon-btn icon-btn--ghost" type="button" aria-label="Device options"><svg class="ico"><use href="#i-dots-v"/></svg></button>
+                  </div>
+                </div>
+              </section>
+              <section class="acc__item">
+                <h3><button class="acc__head" type="button" aria-expanded="false">Compensation<svg class="ico acc__chev"><use href="#i-chev-d"/></svg></button></h3>
+                <div class="acc__body" hidden><p class="acc__line"><span>Base, yearly</span><b>$58,200</b></p><p class="acc__line"><span>Next review</span><b>Jan 12</b></p></div>
+              </section>
+              <section class="acc__item">
+                <h3><button class="acc__head" type="button" aria-expanded="false">Benefits<svg class="ico acc__chev"><use href="#i-chev-d"/></svg></button></h3>
+                <div class="acc__body" hidden><p class="acc__line"><span>Health</span><b>Family plan</b></p><p class="acc__line"><span>Learning budget</span><b>$1,200</b></p></div>
+              </section>
+            </div>
+          </article>
+
+          <!-- Week calendar -->
+          <article class="card card--cal" data-card>
+            <header class="cal__head">
+              <button class="pill-btn" type="button" id="cal-prev"><svg class="ico"><use href="#i-chev-l"/></svg><span id="cal-prev-lab">Sep 21</span></button>
+              <h2 class="cal__title" id="cal-title">Sep 28 – Oct 3</h2>
+              <button class="pill-btn" type="button" id="cal-next"><span id="cal-next-lab">Oct 5</span><svg class="ico"><use href="#i-chev-r"/></svg></button>
+            </header>
+            <div class="cal" id="cal" aria-live="polite"></div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- ============ VIEW 2 — People ============ -->
+      <div class="view" id="view-people" data-view-panel="people" hidden>
+        <div class="view__head">
+          <h1 class="hello__title" data-split>People</h1>
+          <div class="toolbar">
+            <label class="search"><svg class="ico"><use href="#i-search"/></svg><input id="people-q" type="search" placeholder="Search by name or role" autocomplete="off" /></label>
+            <button class="dark-btn magnetic" type="button" id="add-member"><svg class="ico"><use href="#i-plus"/></svg>Add member</button>
+          </div>
+        </div>
+        <div class="filters" id="filters" role="group" aria-label="Filter by team">
+          <button class="filter is-on" type="button" data-team="all" aria-pressed="true">All <span class="filter__n"></span></button>
+          <button class="filter" type="button" data-team="Design" aria-pressed="false">Design <span class="filter__n"></span></button>
+          <button class="filter" type="button" data-team="Engineering" aria-pressed="false">Engineering <span class="filter__n"></span></button>
+          <button class="filter" type="button" data-team="Product" aria-pressed="false">Product <span class="filter__n"></span></button>
+          <button class="filter" type="button" data-team="Operations" aria-pressed="false">Operations <span class="filter__n"></span></button>
+        </div>
+        <div class="card card--table" data-card>
+          <div class="table" role="table" aria-label="Team members">
+            <div class="trow trow--head" role="row">
+              <span role="columnheader" class="c-check"></span><span role="columnheader" class="c-name">Name</span><span role="columnheader" class="c-role">Role</span><span role="columnheader" class="c-team">Team</span><span role="columnheader" class="c-city">Location</span><span role="columnheader" class="c-since">Started</span><span role="columnheader" class="c-status">Status</span>
+            </div>
+            <div class="tbody" id="people"></div>
+            <p class="table__empty" id="people-empty" hidden>Nobody matches that yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ VIEW 3 — Payroll ============ -->
+      <div class="view" id="view-payroll" data-view-panel="payroll" hidden>
+        <div class="payroll">
+          <aside class="card card--roster" data-card>
+            <h2 class="card__title">Team</h2>
+            <ul class="roster" id="roster" role="listbox" aria-label="Choose a person"></ul>
+          </aside>
+
+          <section class="card card--month" data-card>
+            <header class="month__head">
+              <p class="month__sum"><span class="big" id="pay-hours">164.0</span><span class="month__unit">hrs</span> / <span class="big" id="pay-amount">$2,647</span></p>
+              <span class="pill-btn pill-btn--static">September 2026</span>
+            </header>
+            <div class="rail rail--mini" id="pay-rail">
+              <div class="seg seg--honey" style="--w:62"><span class="seg__label">Work hours</span><span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num">62%</b></span></div>
+              <div class="seg seg--ink" style="--w:23"><span class="seg__label">Overtime</span><span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num">23%</b></span></div>
+              <div class="seg seg--grey" style="--w:15"><span class="seg__label">Leave</span><span class="seg__bar"><i class="seg__fill" data-fill></i><b class="seg__num">15%</b></span></div>
+            </div>
+            <div class="month" id="month"></div>
+          </section>
+
+          <aside class="card card--person" data-card id="person">
+            <div class="person__hero">
+              <span class="avatar avatar--xl" id="person-av"></span>
+              <h2 class="person__name" id="person-name"></h2>
+              <p class="person__role" id="person-role"></p>
+            </div>
+            <dl class="info" id="person-info"></dl>
+            <h3 class="person__sub">Documents</h3>
+            <div class="docs">
+              <button class="doc" type="button" data-doc="contract"><svg class="ico"><use href="#i-doc"/></svg><span>Contract.pdf</span><svg class="ico doc__dl"><use href="#i-download"/></svg></button>
+              <button class="doc" type="button" data-doc="payslip"><svg class="ico"><use href="#i-doc"/></svg><span>Payslip-09.pdf</span><svg class="ico doc__dl"><use href="#i-download"/></svg></button>
+            </div>
+            <h3 class="person__sub">This month</h3>
+            <div class="meters" id="person-meters"></div>
+          </aside>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Notification tray: a real popover that the bell opens. -->
+  <div class="tray" id="tray" role="dialog" aria-label="Notifications" hidden>
+    <header class="tray__head"><h2>Notifications</h2><button class="icon-btn icon-btn--ghost" type="button" id="tray-close" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button></header>
+    <ul class="tray__list">
+      <li><span class="avatar" data-person="1"></span><p><b>Jonah Reyes</b> accepted the offer<small>2 min ago</small></p></li>
+      <li><span class="avatar" data-person="2"></span><p><b>Lena Park</b> booked Friday off<small>1 h ago</small></p></li>
+      <li><span class="avatar" data-person="3"></span><p><b>Theo Brandt</b> finished access setup<small>3 h ago</small></p></li>
+    </ul>
+  </div>
+
+  <!-- Workspace settings: a real modal. Saved in this browser (localStorage). -->
+  <dialog class="modal" id="settings-dialog" aria-labelledby="settings-title">
+    <form class="modal__body" method="dialog" id="settings-form" novalidate>
+      <header class="modal__head">
+        <h2 id="settings-title">Workspace settings</h2>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+      </header>
+      <label class="field">
+        <span class="field__label">Your first name</span>
+        <input class="field__input" name="name" autocomplete="given-name" maxlength="24" required />
+        <span class="field__hint">Used in the greeting on Overview.</span>
+        <span class="field__error" aria-live="polite"></span>
+      </label>
+      <fieldset class="field">
+        <legend class="field__label">Working day</legend>
+        <div class="seg-choice" role="radiogroup" aria-label="Working day length">
+          <label><input type="radio" name="day" value="6" /><span>6 h</span></label>
+          <label><input type="radio" name="day" value="7" /><span>7 h</span></label>
+          <label><input type="radio" name="day" value="8" /><span>8 h</span></label>
+          <label><input type="radio" name="day" value="9" /><span>9 h</span></label>
+        </div>
+        <span class="field__hint">The time tracker's dial fills against this.</span>
+      </fieldset>
+      <footer class="modal__foot">
+        <button class="chip-btn" type="button" data-close>Cancel</button>
+        <button class="dark-btn" type="submit">Save changes</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Invite a teammate: validates, then adds them to People as Invited. -->
+  <dialog class="modal" id="invite-dialog" aria-labelledby="invite-title">
+    <form class="modal__body" method="dialog" id="invite-form" novalidate>
+      <header class="modal__head">
+        <h2 id="invite-title">Invite a teammate</h2>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+      </header>
+      <label class="field">
+        <span class="field__label">Full name</span>
+        <input class="field__input" name="name" autocomplete="name" maxlength="40" required />
+        <span class="field__error" aria-live="polite"></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Work email</span>
+        <input class="field__input" name="email" type="email" autocomplete="email" maxlength="80" required />
+        <span class="field__error" aria-live="polite"></span>
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span class="field__label">Role</span>
+          <input class="field__input" name="role" maxlength="40" placeholder="e.g. QA Engineer" required />
+          <span class="field__error" aria-live="polite"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Team</span>
+          <select class="field__input" name="team">
+            <option>Design</option><option selected>Engineering</option><option>Product</option><option>Operations</option>
+          </select>
+        </label>
+      </div>
+      <label class="field">
+        <span class="field__label">Based in <i>(optional)</i></span>
+        <input class="field__input" name="city" maxlength="40" placeholder="Remote" />
+      </label>
+      <footer class="modal__foot">
+        <button class="chip-btn" type="button" data-close>Cancel</button>
+        <button class="dark-btn" type="submit"><svg class="ico"><use href="#i-user-plus"/></svg>Send invite</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=coterie&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Coterie template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/coterie/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:14 GMT -->
+</html>

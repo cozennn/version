@@ -1,0 +1,645 @@
+<!doctype html>
+<!-- Coffer — invoicing and accounting that moves as one product — © 2026 Hasib (OVERSHOOT). All rights reserved. Licensed, not sold: see LICENSE.md. -->
+<html lang="en" data-theme="light">
+
+<!-- Mirrored from https://demo.codeandchill.store/coffer/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:11 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coffer — invoicing and accounting that moves as one product</title>
+  <meta name="description" content="Coffer is an invoicing and accounting dashboard for freelancers and small studios: cash flow, invoices with a live editor and a paid stamp, payments, expenses, clients, profit and loss, tax and aging reports, settings — light and dark, one product that moves as one." />
+  <meta name="theme-color" content="#f4f5f7" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Coffer — know who owes you, and get paid" />
+  <meta property="og:description" content="Invoices, payments, expenses, clients and reports in one clean, fast dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&amp;display=swap" rel="stylesheet" />
+  <script>
+    /* Before first paint: the saved theme and accent, so the page never
+       flashes the wrong colours. Light is the default. The shell is hidden
+       only under html.js; the failsafe shows it if the script never runs.
+       Under ?record the page waits for the rig and ignores saved choices. */
+    (function (d) {
+      d.classList.add('js');
+      var rec = /[?&]record\b/.test(location.search);
+      if (rec) d.classList.add('is-record');
+      try {
+        if (!rec) {
+          var t = JSON.parse(localStorage.getItem('coffer:theme') || '"light"');
+          d.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t;
+          var a = JSON.parse(localStorage.getItem('coffer:accent') || 'null');
+          if (a && a !== 'ink') d.dataset.accent = a;
+        }
+      } catch (e) {}
+      if (!rec) setTimeout(function () { d.classList.add('failsafe'); }, 4000);
+    })(document.documentElement);
+  </script>
+  <script type="module" crossorigin src="https://demo.codeandchill.store/coffer/assets/index-CEBClHio.js"></script>
+  <link rel="stylesheet" crossorigin href="https://demo.codeandchill.store/coffer/assets/index-SiDDPvr4.css">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://demo.codeandchill.store/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://demo.codeandchill.store/apple-touch-icon.png">
+<style>
+.cc-preview-pill{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:var(--cc-lift,max(16px,env(safe-area-inset-bottom)));z-index:2147483647;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;box-sizing:border-box;background:#ff5c3d;color:#161616;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid #fff;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+.cc-preview-pill:hover{background:#ff7a5f}
+.cc-preview-pill:focus-visible{outline:3px solid #161616;outline-offset:2px;box-shadow:0 0 0 7px #fff}
+.cc-preview-pill__short{display:none}
+@media (max-width:480px){.cc-preview-pill{right:max(10px,env(safe-area-inset-right));bottom:var(--cc-lift,max(10px,env(safe-area-inset-bottom)));padding:0 12px;font-size:11px}.cc-preview-pill__long{display:none}.cc-preview-pill__short{display:inline}}
+</style>
+<style id="cc-bridge-style">.cc-framed .cc-preview-pill{display:none!important}</style>
+<script id="cc-bridge">var b=["https://codeandchill.store"];(()=>{if(window.parent===window)return;const y=t=>b.includes(t)||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(t),s=document.documentElement,c=`/${location.pathname.split("/")[1]??""}/`;let l=null;const u=()=>{const t=s.dataset.theme;return t==="dark"||t==="light"?t:t==="system"||t==="auto"?matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":null},T=()=>s.hasAttribute("data-theme")||m()!==null,E=t=>t.getClientRects().length>0,h=t=>(t.getAttribute("aria-label")??t.getAttribute("title")??"").trim();function m(){for(const t of document.querySelectorAll('button, [role="button"], [role="switch"]'))if(!(t.closest(".cc-preview-pill")||!E(t))&&/\b(theme|dark|light)\b/i.test(h(t)))return t;return null}function L(t){s.dataset.theme=t;try{for(let e=0;e<localStorage.length;e++){const n=localStorage.key(e);if(!n||!/(^|[:._-])theme$/i.test(n))continue;const r=localStorage.getItem(n)??"";localStorage.setItem(n,r.startsWith('"')?JSON.stringify(t):t)}}catch{}}function d(t,e=2){if(u()===t)return;const n=e>0?m():null;if(!n)return L(t);n.click(),setTimeout(()=>d(t,e-1),350)}function w(t){if(t.target&&t.target!=="_self")return null;let e;try{e=new URL(t.href,location.href)}catch{return null}if(e.origin!==location.origin||!e.pathname.startsWith(c))return null;if(e.pathname===location.pathname&&e.search===location.search){const n=e.hash.slice(1);if(!n||n.startsWith("/")||n.startsWith("!"))return e;try{return document.getElementById(decodeURIComponent(n))?null:e}catch{return null}}return e}const S=t=>t.pathname+t.search+t.hash,_=t=>h(t)||(t.textContent??"").replace(/\s+/g," ").replace(/\s*\d+$/,"").trim();function f(){const t=new Set,e=[],n='nav, aside, header, [role="navigation"]';for(const r of document.querySelectorAll(`:is(${n}) :is(a[href], button[data-route])`)){if(r.closest(".cc-preview-pill"))continue;const i=r instanceof HTMLAnchorElement?w(r):null,a=i?S(i):r.dataset.route?`route:${r.dataset.route}`:null,p=_(r).slice(0,40);if(!(!a||!p||t.has(a))&&(t.add(a),e.push({id:a,label:p,el:r}),e.length===40))break}return e}function k(){if(!l)return;const t=f(),e=t.map(({id:i,label:a})=>({id:i,label:a})),n=location.pathname+location.search+location.hash,r=t.find(i=>i.id===n)?.id??t.find(i=>i.el.getAttribute("aria-current")==="page")?.id??t.find(i=>i.id===location.pathname)?.id??null;window.parent.postMessage({cc:1,type:"state",path:n,current:r,pages:e,theme:u(),themable:T()},l)}let g=0;const o=()=>{clearTimeout(g),g=window.setTimeout(k,120)};function v(t){const e=f().find(r=>r.id===t);if(e)return e.el.click();if(t.startsWith("route:"))return;const n=new URL(t,location.origin);n.origin===location.origin&&n.pathname.startsWith(c)&&location.assign(n.href)}function I(t){if(l)return o();l=t,s.classList.add("cc-framed");for(const e of["pushState","replaceState"]){const n=history[e];history[e]=function(...r){const i=n.apply(this,r);return o(),i}}addEventListener("popstate",o),addEventListener("hashchange",o),new MutationObserver(o).observe(s,{attributes:!0,attributeFilter:["data-theme"]}),o(),setTimeout(o,800)}addEventListener("message",t=>{if(t.source!==window.parent||!y(t.origin))return;const e=t.data;if(!(!e||typeof e!="object"||e.cc!==1)){if(e.type==="hello")return I(t.origin);if(t.origin===l){if(e.type==="theme"&&(e.theme==="light"||e.theme==="dark"))return d(e.theme);if(e.type==="navigate"&&typeof e.id=="string")return v(e.id)}}})})();</script>
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-logo" viewBox="0 0 32 32"><path d="M6 12.5h20v12a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3Z"/><path d="M4.5 9.5a2 2 0 0 1 2-2h19a2 2 0 0 1 2 2v3h-23Z"/><path d="M14 17.5h4v3.5h-4Z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19Z"/><path d="M9.5 20.5v-6h5v6"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h8.5l4 4v13H6Z"/><path d="M14 3.5V8h4.5M9 12h6M9 15.5h6M9 8.5h2.5"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4Z"/><path d="M9 8h6M9 11.5h6M9 15h3.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3A6 6 0 0 1 21 20"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="M7 16v-5M12 16V7M17 16v-8"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8l2 2.1 2.9-.4.7 2.8 2.6 1.4-1 2.8 1 2.8-2.6 1.4-.7 2.8-2.9-.4-2 2.1-2-2.1-2.9.4-.7-2.8-2.6-1.4 1-2.8-1-2.8 2.6-1.4.7-2.8 2.9.4Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6 8.5 12l6 6"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 11.5 20 4l-6.5 16-2.5-6.5Z"/><path d="m11 13.5 9-9.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5v5M17.5 9.5v5"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7Z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 7V4.5h4V7M6.5 7l1 13h9l1-13"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24"><path d="m20 11-8.2 8.2a5 5 0 0 1-7-7L13 4a3.3 3.3 0 0 1 4.7 4.7l-8.1 8.1a1.7 1.7 0 0 1-2.4-2.4L14.5 7"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M6.5 10.5 12 16l5.5-5.5M4.5 20h15"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/></symbol>
+  </svg>
+
+  <div id="app" class="app">
+
+    <!-- ============ sidebar (wide screens) ============ -->
+    <aside class="side" aria-label="Main">
+      <a class="brand" href="#overview" aria-label="Coffer, overview">
+        <svg class="brand__mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        <span class="brand__name">Coffer</span>
+      </a>
+      <a class="btn btn--primary btn--block magnetic side__new" href="#invoices/new"><svg aria-hidden="true"><use href="#i-plus"/></svg>New invoice <kbd>N</kbd></a>
+      <nav class="side__nav" data-nav>
+        <span class="side__pill" aria-hidden="true"></span>
+        <a class="nav" href="#overview" data-route="overview"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Overview</span></a>
+        <p class="side__group">Money in</p>
+        <a class="nav" href="#invoices" data-route="invoices"><svg aria-hidden="true"><use href="#i-doc"/></svg><span>Invoices</span><b class="nav__badge" data-overdue-badge hidden></b></a>
+        <a class="nav" href="#clients" data-route="clients"><svg aria-hidden="true"><use href="#i-users"/></svg><span>Clients</span></a>
+        <p class="side__group">Money out</p>
+        <a class="nav" href="#expenses" data-route="expenses"><svg aria-hidden="true"><use href="#i-receipt"/></svg><span>Expenses</span></a>
+        <p class="side__group">Books</p>
+        <a class="nav" href="#reports" data-route="reports"><svg aria-hidden="true"><use href="#i-chart"/></svg><span>Reports</span></a>
+        <a class="nav" href="#settings" data-route="settings"><svg aria-hidden="true"><use href="#i-gear"/></svg><span>Settings</span></a>
+      </nav>
+      <div class="side__foot">
+        <span class="avatar avatar--biz" aria-hidden="true">WP</span>
+        <span class="side__biz"><b data-biz-name>Wren &amp; Pike Studio</b><small data-biz-email>accounts@wrenpike.studio</small></span>
+      </div>
+    </aside>
+
+    <div class="main">
+      <!-- ============ top bar ============ -->
+      <header class="topbar">
+        <a class="brand brand--compact" href="#overview" aria-label="Coffer, overview"><svg class="brand__mark" aria-hidden="true"><use href="#i-logo"/></svg><span class="brand__name">Coffer</span></a>
+        <div class="find" role="search">
+          <label class="sr-only" for="find">Search invoices, clients and expenses</label>
+          <svg class="find__icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="find" class="find__input" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Search invoices, clients, expenses" role="combobox" aria-expanded="false"
+                 aria-controls="find-list" aria-autocomplete="list" />
+          <kbd class="find__kbd" aria-hidden="true">/</kbd>
+          <ul id="find-list" class="find__list" role="listbox" aria-label="Search results" hidden></ul>
+        </div>
+        <div class="topbar__actions">
+          <a class="icon-btn" href="#invoices?status=overdue" data-overdue-link aria-label="Overdue invoices">
+            <svg aria-hidden="true"><use href="#i-bell"/></svg><span class="icon-btn__dot" data-overdue-dot hidden></span>
+          </a>
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme">
+            <svg class="theme-ico theme-ico--sun" aria-hidden="true"><use href="#i-sun"/></svg>
+            <svg class="theme-ico theme-ico--moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          </button>
+          <a class="icon-btn icon-btn--phone" href="#settings" aria-label="Settings"><svg aria-hidden="true"><use href="#i-gear"/></svg></a>
+        </div>
+      </header>
+
+      <main id="main" class="board" tabindex="-1">
+
+        <!-- ============ OVERVIEW ============ -->
+        <section class="view" data-view="overview" aria-labelledby="t-overview" hidden>
+          <header class="head">
+            <p class="head__eyebrow" data-greet>Good morning</p>
+            <h1 class="head__title" id="t-overview" tabindex="-1">Overview</h1>
+            <p class="head__sub" data-ov-sub></p>
+            <div class="head__actions">
+              <button class="btn btn--ghost" type="button" data-open="dlg-expense"><svg aria-hidden="true"><use href="#i-receipt"/></svg>Add expense</button>
+              <a class="btn btn--primary magnetic" href="#invoices/new"><svg aria-hidden="true"><use href="#i-plus"/></svg>New invoice</a>
+            </div>
+          </header>
+
+          <div class="ov-grid">
+            <article class="card ov-owed" aria-labelledby="h-owed">
+              <div class="ov-owed__top">
+                <div>
+                  <h2 class="card__label" id="h-owed">Owed to you</h2>
+                  <p class="figure figure--xl" data-owed>$0</p>
+                  <p class="card__note" data-owed-note></p>
+                </div>
+                <div class="ov-owed__overdue">
+                  <span class="card__label">Overdue</span>
+                  <p class="figure figure--md figure--rose" data-overdue-sum>$0</p>
+                  <button class="btn btn--small btn--rose" type="button" data-remind-all>
+                    <svg aria-hidden="true"><use href="#i-send"/></svg><span>Remind all</span>
+                  </button>
+                </div>
+              </div>
+              <div class="aging" data-aging aria-hidden="true"></div>
+              <ul class="aging__legend" data-aging-legend></ul>
+            </article>
+
+            <article class="card kpi" data-lift><h2 class="card__label">Paid this month</h2><p class="figure figure--lg" data-k-in>$0</p><p class="delta" data-k-in-d></p></article>
+            <article class="card kpi" data-lift><h2 class="card__label">Spent this month</h2><p class="figure figure--lg" data-k-out>$0</p><p class="delta" data-k-out-d></p></article>
+            <article class="card kpi" data-lift><h2 class="card__label">Profit this month</h2><p class="figure figure--lg" data-k-net>$0</p><p class="delta" data-k-net-d></p></article>
+            <article class="card kpi" data-lift><h2 class="card__label">Average days to be paid</h2><p class="figure figure--lg" data-k-days>0</p><p class="delta" data-k-days-d></p></article>
+
+            <article class="card ov-flow" aria-labelledby="h-flow">
+              <div class="card__head">
+                <div>
+                  <h2 class="card__title" id="h-flow">Cash flow</h2>
+                  <p class="card__note">Money in above the line, money out below, tax left out.</p>
+                </div>
+                <div class="seg" data-flow-range role="group" aria-label="Range">
+                  <span class="seg__pill" aria-hidden="true"></span>
+                  <button class="seg__btn" type="button" data-value="6" aria-pressed="false">6M</button>
+                  <button class="seg__btn" type="button" data-value="12" aria-pressed="true">12M</button>
+                </div>
+              </div>
+              <ul class="legend"><li><i class="sw sw--in"></i>Money in</li><li><i class="sw sw--out"></i>Money out</li><li><i class="sw sw--net"></i>Net</li></ul>
+              <div class="chart chart--flow" data-flow></div>
+            </article>
+
+            <article class="card ov-due" aria-labelledby="h-due">
+              <div class="card__head"><h2 class="card__title" id="h-due">Needs chasing</h2><a class="link" href="#invoices?status=overdue">All overdue</a></div>
+              <ul class="duelist" data-duelist></ul>
+            </article>
+
+            <article class="card ov-activity" aria-labelledby="h-act">
+              <div class="card__head"><h2 class="card__title" id="h-act">Latest</h2></div>
+              <ol class="feed" data-feed></ol>
+            </article>
+
+            <article class="card ov-clients" aria-labelledby="h-top">
+              <div class="card__head"><h2 class="card__title" id="h-top">Top clients</h2><span class="card__note">Last 12 months</span></div>
+              <ol class="hbars" data-top-clients></ol>
+            </article>
+
+            <article class="card ov-spend" aria-labelledby="h-spend">
+              <div class="card__head"><h2 class="card__title" id="h-spend">Where it went</h2><span class="card__note">Last 90 days</span></div>
+              <div class="spend">
+                <div class="donut" data-spend-donut></div>
+                <ul class="spend__legend" data-spend-legend></ul>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ INVOICES ============ -->
+        <section class="view" data-view="invoices" aria-labelledby="t-invoices" hidden>
+          <header class="head">
+            <p class="head__eyebrow">Money in</p>
+            <h1 class="head__title" id="t-invoices" tabindex="-1">Invoices</h1>
+            <p class="head__sub" data-inv-sub></p>
+            <div class="head__actions">
+              <a class="btn btn--primary magnetic" href="#invoices/new"><svg aria-hidden="true"><use href="#i-plus"/></svg>New invoice</a>
+            </div>
+          </header>
+          <div class="sumrow" data-inv-sums></div>
+          <div class="card card--flush">
+            <div class="toolbar">
+              <div class="seg seg--wide" data-inv-filter role="group" aria-label="Show">
+                <span class="seg__pill" aria-hidden="true"></span>
+                <button class="seg__btn" type="button" data-value="all" aria-pressed="true">All</button>
+                <button class="seg__btn" type="button" data-value="open" aria-pressed="false">Open</button>
+                <button class="seg__btn" type="button" data-value="overdue" aria-pressed="false">Overdue</button>
+                <button class="seg__btn" type="button" data-value="paid" aria-pressed="false">Paid</button>
+                <button class="seg__btn" type="button" data-value="draft" aria-pressed="false">Drafts</button>
+              </div>
+              <label class="mini-search">
+                <span class="sr-only">Filter invoices</span>
+                <svg aria-hidden="true"><use href="#i-search"/></svg>
+                <input type="search" data-inv-q placeholder="Number or client" autocomplete="off" />
+              </label>
+            </div>
+            <div class="table-wrap">
+              <table class="table table--inv">
+                <caption class="sr-only" data-inv-caption>Invoices</caption>
+                <thead>
+                  <tr>
+                    <th scope="col"><button class="th-sort" type="button" data-sort="no">Invoice<svg aria-hidden="true"><use href="#i-sort"/></svg></button></th>
+                    <th scope="col">Client</th>
+                    <th scope="col"><button class="th-sort" type="button" data-sort="issued">Issued<svg aria-hidden="true"><use href="#i-sort"/></svg></button></th>
+                    <th scope="col"><button class="th-sort" type="button" data-sort="due">Due<svg aria-hidden="true"><use href="#i-sort"/></svg></button></th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="num"><button class="th-sort" type="button" data-sort="total">Amount<svg aria-hidden="true"><use href="#i-sort"/></svg></button></th>
+                    <th scope="col" class="num"><button class="th-sort" type="button" data-sort="balance">Balance<svg aria-hidden="true"><use href="#i-sort"/></svg></button></th>
+                  </tr>
+                </thead>
+                <tbody data-inv-rows></tbody>
+              </table>
+            </div>
+            <p class="empty" data-inv-empty hidden>No invoices match. <button class="link" type="button" data-inv-clear>Clear the filter</button></p>
+            <div class="table-foot"><span data-inv-count></span><button class="btn btn--ghost btn--small" type="button" data-inv-more hidden>Show more</button></div>
+          </div>
+        </section>
+
+        <!-- ============ ONE INVOICE ============ -->
+        <section class="view" data-view="invoice" aria-labelledby="t-invoice" hidden>
+          <header class="head head--detail">
+            <a class="back" href="#invoices"><svg aria-hidden="true"><use href="#i-back"/></svg>Invoices</a>
+            <h1 class="head__title" id="t-invoice" tabindex="-1">Invoice</h1>
+            <p class="head__sub" data-iv-sub></p>
+          </header>
+          <div class="iv-grid">
+            <div class="paper-wrap"><article class="paper" data-iv-paper aria-label="Invoice document"></article></div>
+            <aside class="iv-side">
+              <div class="card iv-due">
+                <span class="card__label" data-iv-due-label>Balance due</span>
+                <p class="figure figure--xl" data-iv-balance>$0</p>
+                <p class="card__note" data-iv-due-note></p>
+                <div class="meter" aria-hidden="true"><span class="meter__fill" data-iv-meter></span></div>
+                <div class="iv-actions" data-iv-actions></div>
+              </div>
+              <div class="card">
+                <h2 class="card__title">History</h2>
+                <ol class="timeline" data-iv-timeline></ol>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ EDITOR ============ -->
+        <section class="view" data-view="editor" aria-labelledby="t-editor" hidden>
+          <header class="head head--detail">
+            <a class="back" href="#invoices" data-ed-back><svg aria-hidden="true"><use href="#i-back"/></svg>Invoices</a>
+            <h1 class="head__title" id="t-editor" tabindex="-1">New invoice</h1>
+            <p class="head__sub" data-ed-sub></p>
+          </header>
+          <form class="ed-grid" data-ed-form novalidate>
+            <div class="card ed-form">
+              <div class="ed-row">
+                <label class="field field--grow">
+                  <span class="field__label">Client</span>
+                  <select name="client" required data-ed-client></select>
+                  <span class="field__error" data-err="client"></span>
+                </label>
+                <button class="btn btn--ghost btn--small ed-newclient" type="button" data-open="dlg-client"><svg aria-hidden="true"><use href="#i-plus"/></svg>New client</button>
+              </div>
+              <div class="ed-row ed-row--3">
+                <label class="field"><span class="field__label">Issue date</span><input type="date" name="issued" required data-ed-issued /></label>
+                <label class="field">
+                  <span class="field__label">Terms</span>
+                  <select name="terms" data-ed-terms>
+                    <option value="0">Due on receipt</option><option value="7">Net 7</option><option value="14">Net 14</option>
+                    <option value="30">Net 30</option><option value="45">Net 45</option><option value="60">Net 60</option>
+                  </select>
+                </label>
+                <label class="field"><span class="field__label">Due date</span><input type="date" name="due" required data-ed-due /></label>
+              </div>
+
+              <fieldset class="ed-lines">
+                <legend class="field__label">Items</legend>
+                <div class="ed-lines__head" aria-hidden="true"><span>Description</span><span>Qty</span><span>Rate</span><span>Tax %</span><span class="num">Amount</span><span></span></div>
+                <ol class="ed-lines__list" data-ed-lines></ol>
+                <button class="btn btn--ghost btn--small" type="button" data-ed-add><svg aria-hidden="true"><use href="#i-plus"/></svg>Add item</button>
+                <span class="field__error" data-err="lines"></span>
+              </fieldset>
+
+              <div class="ed-row ed-row--2">
+                <label class="field"><span class="field__label">Discount %</span><input type="number" name="discount" min="0" max="100" step="0.5" inputmode="decimal" value="0" data-ed-discount /></label>
+                <div class="ed-totals" aria-live="polite">
+                  <p><span>Subtotal</span><b data-ed-sub-total>$0.00</b></p>
+                  <p data-ed-disc-row hidden><span>Discount</span><b data-ed-disc>−$0.00</b></p>
+                  <p><span>Tax</span><b data-ed-tax>$0.00</b></p>
+                  <p class="ed-totals__total"><span>Total</span><b data-ed-total>$0.00</b></p>
+                </div>
+              </div>
+              <label class="field"><span class="field__label">Note to client</span><textarea name="notes" rows="2" maxlength="400" data-ed-notes placeholder="Thank you for the work together."></textarea></label>
+
+              <div class="ed-actions">
+                <button class="btn btn--ghost" type="submit" data-ed-save value="draft">Save draft</button>
+                <button class="btn btn--primary magnetic" type="submit" data-ed-send value="send"><svg aria-hidden="true"><use href="#i-send"/></svg>Save and send</button>
+              </div>
+            </div>
+            <div class="ed-preview" aria-hidden="true">
+              <p class="ed-preview__label">Preview</p>
+              <div class="paper paper--preview" data-ed-preview></div>
+            </div>
+          </form>
+        </section>
+
+        <!-- ============ EXPENSES ============ -->
+        <section class="view" data-view="expenses" aria-labelledby="t-expenses" hidden>
+          <header class="head">
+            <p class="head__eyebrow">Money out</p>
+            <h1 class="head__title" id="t-expenses" tabindex="-1">Expenses</h1>
+            <p class="head__sub" data-ex-sub></p>
+            <div class="head__actions">
+              <button class="btn btn--primary magnetic" type="button" data-open="dlg-expense"><svg aria-hidden="true"><use href="#i-plus"/></svg>Add expense</button>
+            </div>
+          </header>
+          <div class="ex-grid">
+            <article class="card kpi"><h2 class="card__label">This month</h2><p class="figure figure--lg" data-ex-month>$0</p><p class="delta" data-ex-month-d></p></article>
+            <article class="card kpi"><h2 class="card__label">This year</h2><p class="figure figure--lg" data-ex-year>$0</p><p class="delta" data-ex-year-d></p></article>
+            <article class="card kpi"><h2 class="card__label">Tax to reclaim</h2><p class="figure figure--lg" data-ex-tax>$0</p><p class="delta">On this year’s receipts</p></article>
+            <article class="card kpi"><h2 class="card__label">Missing receipts</h2><p class="figure figure--lg" data-ex-missing>0</p><p class="delta" data-ex-missing-d></p></article>
+            <article class="card ex-cats" aria-labelledby="h-cats">
+              <div class="card__head"><h2 class="card__title" id="h-cats">By category</h2><span class="card__note">This year</span></div>
+              <ol class="hbars" data-ex-cats></ol>
+            </article>
+            <article class="card card--flush ex-list" aria-labelledby="h-exlist">
+              <div class="toolbar">
+                <h2 class="card__title" id="h-exlist">All expenses</h2>
+                <label class="field field--inline">
+                  <span class="sr-only">Category</span>
+                  <select data-ex-cat><option value="">All categories</option></select>
+                </label>
+                <label class="mini-search">
+                  <span class="sr-only">Filter expenses</span>
+                  <svg aria-hidden="true"><use href="#i-search"/></svg>
+                  <input type="search" data-ex-q placeholder="Vendor" autocomplete="off" />
+                </label>
+              </div>
+              <div class="table-wrap">
+                <table class="table table--ex">
+                  <caption class="sr-only">Expenses, newest first</caption>
+                  <thead><tr><th scope="col">Date</th><th scope="col">Vendor</th><th scope="col">Category</th><th scope="col">Receipt</th><th scope="col" class="num">Amount</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+                  <tbody data-ex-rows></tbody>
+                </table>
+              </div>
+              <p class="empty" data-ex-empty hidden>Nothing here yet.</p>
+              <div class="table-foot"><span data-ex-count></span><button class="btn btn--ghost btn--small" type="button" data-ex-more hidden>Show more</button></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ CLIENTS ============ -->
+        <section class="view" data-view="clients" aria-labelledby="t-clients" hidden>
+          <header class="head">
+            <p class="head__eyebrow">Money in</p>
+            <h1 class="head__title" id="t-clients" tabindex="-1">Clients</h1>
+            <p class="head__sub" data-cl-sub></p>
+            <div class="head__actions">
+              <button class="btn btn--primary magnetic" type="button" data-open="dlg-client"><svg aria-hidden="true"><use href="#i-plus"/></svg>New client</button>
+            </div>
+          </header>
+          <div class="toolbar toolbar--bare">
+            <div class="seg" data-cl-sort role="group" aria-label="Sort clients by">
+              <span class="seg__pill" aria-hidden="true"></span>
+              <button class="seg__btn" type="button" data-value="billed" aria-pressed="true">Billed</button>
+              <button class="seg__btn" type="button" data-value="balance" aria-pressed="false">Owed</button>
+              <button class="seg__btn" type="button" data-value="speed" aria-pressed="false">Slowest</button>
+              <button class="seg__btn" type="button" data-value="name" aria-pressed="false">A–Z</button>
+            </div>
+          </div>
+          <ul class="cl-grid" data-cl-grid></ul>
+        </section>
+
+        <!-- ============ REPORTS ============ -->
+        <section class="view" data-view="reports" aria-labelledby="t-reports" hidden>
+          <header class="head">
+            <p class="head__eyebrow">Books</p>
+            <h1 class="head__title" id="t-reports" tabindex="-1">Reports</h1>
+            <p class="head__sub">Cash basis: income when it is paid, costs when they are paid, tax kept apart.</p>
+            <div class="head__actions">
+              <div class="seg" data-rp-range role="group" aria-label="Period">
+                <span class="seg__pill" aria-hidden="true"></span>
+                <button class="seg__btn" type="button" data-value="q" aria-pressed="false">3 months</button>
+                <button class="seg__btn" type="button" data-value="ytd" aria-pressed="false">Year to date</button>
+                <button class="seg__btn" type="button" data-value="12" aria-pressed="true">12 months</button>
+              </div>
+            </div>
+          </header>
+          <div class="rp-grid">
+            <article class="card kpi"><h2 class="card__label">Income</h2><p class="figure figure--lg" data-rp-in>$0</p></article>
+            <article class="card kpi"><h2 class="card__label">Expenses</h2><p class="figure figure--lg" data-rp-out>$0</p></article>
+            <article class="card kpi"><h2 class="card__label">Net profit</h2><p class="figure figure--lg" data-rp-net>$0</p></article>
+            <article class="card kpi"><h2 class="card__label">Margin</h2><p class="figure figure--lg" data-rp-margin>0%</p></article>
+            <div class="rp-left">
+            <article class="card rp-chart" aria-labelledby="h-rpc">
+              <div class="card__head"><h2 class="card__title" id="h-rpc">Income and expenses</h2><ul class="legend"><li><i class="sw sw--in"></i>Income</li><li><i class="sw sw--out"></i>Expenses</li></ul></div>
+              <div class="chart chart--lines" data-rp-chart></div>
+            </article>
+            <article class="card card--flush rp-tax" aria-labelledby="h-tax">
+              <div class="card__head card__head--pad"><h2 class="card__title" id="h-tax">Tax by quarter</h2><span class="card__note">Collected on payments, less tax on costs</span></div>
+              <div class="table-wrap"><table class="table table--stack"><caption class="sr-only">Tax by quarter</caption>
+                <thead><tr><th scope="col">Quarter</th><th scope="col" class="num">Collected</th><th scope="col" class="num">Reclaimable</th><th scope="col" class="num">To pay</th></tr></thead>
+                <tbody data-rp-tax></tbody></table></div>
+            </article>
+            </div>
+            <article class="card rp-pl" aria-labelledby="h-pl">
+              <div class="card__head"><h2 class="card__title" id="h-pl">Profit and loss</h2><span class="card__note" data-rp-period></span></div>
+              <div data-rp-statement></div>
+            </article>
+            <article class="card card--flush rp-aging" aria-labelledby="h-aging">
+              <div class="card__head card__head--pad"><h2 class="card__title" id="h-aging">Who owes what</h2><span class="card__note">Open balances by age</span></div>
+              <div class="table-wrap"><table class="table table--stack"><caption class="sr-only">Open balances by client and age</caption>
+                <thead><tr><th scope="col">Client</th><th scope="col" class="num">Not due</th><th scope="col" class="num">1–30</th><th scope="col" class="num">31–60</th><th scope="col" class="num">60+</th><th scope="col" class="num">Total</th></tr></thead>
+                <tbody data-rp-aging></tbody><tfoot data-rp-aging-foot></tfoot></table></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ SETTINGS ============ -->
+        <section class="view" data-view="settings" aria-labelledby="t-settings" hidden>
+          <header class="head">
+            <p class="head__eyebrow">Books</p>
+            <h1 class="head__title" id="t-settings" tabindex="-1">Settings</h1>
+            <p class="head__sub">What goes on every invoice, and how Coffer looks.</p>
+          </header>
+          <div class="st-grid">
+            <form class="card st-card" data-st-business>
+              <h2 class="card__title">Business</h2>
+              <p class="card__note">Printed at the top of every invoice.</p>
+              <label class="field"><span class="field__label">Name</span><input name="name" required maxlength="60" /></label>
+              <label class="field"><span class="field__label">Billing email</span><input name="email" type="email" required maxlength="80" /></label>
+              <label class="field"><span class="field__label">Address</span><textarea name="address" rows="2" maxlength="160"></textarea></label>
+              <label class="field"><span class="field__label">Tax number</span><input name="taxId" maxlength="40" /></label>
+              <div class="st-save"><button class="btn btn--primary" type="submit">Save</button></div>
+            </form>
+            <form class="card st-card" data-st-defaults>
+              <h2 class="card__title">Invoice defaults</h2>
+              <p class="card__note">Used for every new invoice; each one can still change them.</p>
+              <div class="ed-row ed-row--2">
+                <label class="field"><span class="field__label">Currency</span><select name="currency" data-st-currency></select></label>
+                <label class="field"><span class="field__label">Number prefix</span><input name="prefix" required maxlength="8" pattern="[A-Za-z0-9\-]+" /></label>
+              </div>
+              <div class="ed-row ed-row--2">
+                <label class="field"><span class="field__label">Payment terms (days)</span><input name="terms" type="number" min="0" max="120" required inputmode="numeric" /></label>
+                <label class="field"><span class="field__label">Tax rate %</span><input name="tax" type="number" min="0" max="50" step="0.5" required inputmode="decimal" /></label>
+              </div>
+              <label class="field"><span class="field__label">Payment details (footer)</span><textarea name="footer" rows="2" maxlength="200"></textarea></label>
+              <div class="st-save"><button class="btn btn--primary" type="submit">Save</button></div>
+            </form>
+            <div class="card st-card">
+              <h2 class="card__title">Appearance</h2>
+              <div class="field">
+                <span class="field__label" id="lbl-theme">Theme</span>
+                <div class="seg" data-st-theme role="group" aria-labelledby="lbl-theme">
+                  <span class="seg__pill" aria-hidden="true"></span>
+                  <button class="seg__btn" type="button" data-value="light" aria-pressed="true">Light</button>
+                  <button class="seg__btn" type="button" data-value="dark" aria-pressed="false">Dark</button>
+                  <button class="seg__btn" type="button" data-value="system" aria-pressed="false">System</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field__label" id="lbl-accent">Ink</span>
+                <div class="swatches" role="radiogroup" aria-labelledby="lbl-accent" data-st-accent>
+                  <button type="button" role="radio" class="swatch swatch--ink" data-accent="ink" aria-checked="true" aria-label="Ink black"></button>
+                  <button type="button" role="radio" class="swatch swatch--forest" data-accent="forest" aria-checked="false" aria-label="Forest green"></button>
+                  <button type="button" role="radio" class="swatch swatch--plum" data-accent="plum" aria-checked="false" aria-label="Plum"></button>
+                  <button type="button" role="radio" class="swatch swatch--rust" data-accent="rust" aria-checked="false" aria-label="Rust"></button>
+                </div>
+              </div>
+            </div>
+            <div class="card st-card">
+              <h2 class="card__title">Your data</h2>
+              <p class="card__note">The books live in this browser. Export them any time as JSON.</p>
+              <div class="st-data">
+                <button class="btn btn--ghost" type="button" data-st-export><svg aria-hidden="true"><use href="#i-down"/></svg>Export books</button>
+                <button class="btn btn--ghost btn--danger" type="button" data-open="dlg-reset">Reset demo data</button>
+              </div>
+              <dl class="st-keys">
+                <div><dt><kbd>N</kbd></dt><dd>New invoice</dd></div>
+                <div><dt><kbd>/</kbd></dt><dd>Search</dd></div>
+                <div><dt><kbd>G</kbd> then <kbd>O</kbd> <kbd>I</kbd> <kbd>C</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>S</kbd></dt><dd>Go to a page</dd></div>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- ============ tab bar (phones) ============ -->
+    <nav class="tabbar" aria-label="Main">
+      <a class="tab" href="#overview" data-route="overview"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Overview</span></a>
+      <a class="tab" href="#invoices" data-route="invoices"><svg aria-hidden="true"><use href="#i-doc"/></svg><span>Invoices</span></a>
+      <a class="tab tab--new" href="#invoices/new" aria-label="New invoice"><svg aria-hidden="true"><use href="#i-plus"/></svg></a>
+      <a class="tab" href="#expenses" data-route="expenses"><svg aria-hidden="true"><use href="#i-receipt"/></svg><span>Expenses</span></a>
+      <a class="tab" href="#reports" data-route="reports"><svg aria-hidden="true"><use href="#i-chart"/></svg><span>Reports</span></a>
+    </nav>
+  </div>
+
+  <!-- ============ side sheet (a client) ============ -->
+  <div id="sheet" class="sheet" role="dialog" aria-modal="true" hidden>
+    <div class="sheet__scrim"></div>
+    <div class="sheet__panel">
+      <button class="icon-btn sheet__close" type="button" aria-label="Close"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+      <div class="sheet__body"></div>
+    </div>
+  </div>
+
+  <!-- ============ dialogs ============ -->
+  <dialog class="dlg" id="dlg-payment" aria-labelledby="dlg-payment-t">
+    <form method="dialog">
+      <h2 class="dlg__title" id="dlg-payment-t">Record a payment</h2>
+      <p class="dlg__text" data-pay-for></p>
+      <div class="ed-row ed-row--2">
+        <label class="field"><span class="field__label">Amount</span><input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal" /></label>
+        <label class="field"><span class="field__label">Date</span><input name="date" type="date" required /></label>
+      </div>
+      <label class="field"><span class="field__label">Method</span><select name="method" data-pay-method></select></label>
+      <div class="dlg__row">
+        <button class="btn btn--ghost" type="button" data-cancel>Cancel</button>
+        <button class="btn btn--primary" type="submit"><svg aria-hidden="true"><use href="#i-check"/></svg>Record payment</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dlg" id="dlg-expense" aria-labelledby="dlg-expense-t">
+    <form method="dialog">
+      <h2 class="dlg__title" id="dlg-expense-t">Add an expense</h2>
+      <label class="field"><span class="field__label">Vendor</span><input name="vendor" required maxlength="60" autocomplete="off" /></label>
+      <div class="ed-row ed-row--2">
+        <label class="field"><span class="field__label">Amount, tax included</span><input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal" /></label>
+        <label class="field"><span class="field__label">Date</span><input name="date" type="date" required /></label>
+      </div>
+      <div class="ed-row ed-row--2">
+        <label class="field"><span class="field__label">Category</span><select name="category" data-x-cat></select></label>
+        <label class="field"><span class="field__label">Paid by</span><select name="method" data-x-method></select></label>
+      </div>
+      <label class="field"><span class="field__label">Bill it to a client (optional)</span><select name="client" data-x-client></select></label>
+      <label class="check"><input type="checkbox" name="taxed" checked /><span>Includes reclaimable tax</span></label>
+      <label class="check"><input type="checkbox" name="receipt" checked /><span>Receipt kept</span></label>
+      <div class="dlg__row">
+        <button class="btn btn--ghost" type="button" data-cancel>Cancel</button>
+        <button class="btn btn--primary" type="submit">Add expense</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dlg" id="dlg-client" aria-labelledby="dlg-client-t">
+    <form method="dialog">
+      <h2 class="dlg__title" id="dlg-client-t">New client</h2>
+      <label class="field"><span class="field__label">Company</span><input name="name" required maxlength="60" autocomplete="organization" /></label>
+      <div class="ed-row ed-row--2">
+        <label class="field"><span class="field__label">Contact</span><input name="contact" required maxlength="60" autocomplete="name" /></label>
+        <label class="field"><span class="field__label">Email</span><input name="email" type="email" required maxlength="80" autocomplete="email" /></label>
+      </div>
+      <div class="ed-row ed-row--3">
+        <label class="field"><span class="field__label">City</span><input name="city" maxlength="40" /></label>
+        <label class="field"><span class="field__label">Country</span><input name="country" maxlength="40" autocomplete="country-name" /></label>
+        <label class="field"><span class="field__label">Terms (days)</span><input name="terms" type="number" min="0" max="120" value="30" required inputmode="numeric" /></label>
+      </div>
+      <div class="dlg__row">
+        <button class="btn btn--ghost" type="button" data-cancel>Cancel</button>
+        <button class="btn btn--primary" type="submit">Add client</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dlg dlg--small" id="dlg-confirm" aria-labelledby="dlg-confirm-t">
+    <form method="dialog">
+      <h2 class="dlg__title" id="dlg-confirm-t" data-confirm-title>Are you sure?</h2>
+      <p class="dlg__text" data-confirm-text></p>
+      <div class="dlg__row">
+        <button class="btn btn--ghost" type="button" data-cancel>Keep it</button>
+        <button class="btn btn--danger-solid" type="submit" data-confirm-ok>Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dlg dlg--small" id="dlg-reset" aria-labelledby="dlg-reset-t">
+    <form method="dialog">
+      <h2 class="dlg__title" id="dlg-reset-t">Reset the demo books?</h2>
+      <p class="dlg__text">Every invoice, payment, expense and client you added goes, and the sample studio comes back.</p>
+      <div class="dlg__row">
+        <button class="btn btn--ghost" type="button" data-cancel>Keep my changes</button>
+        <button class="btn btn--danger-solid" type="submit">Reset</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+  <div id="tip" class="tip" aria-hidden="true"></div>
+
+<a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=coffer&amp;ref=preview" target="_top" rel="noopener" aria-label="Buy the Coffer template on Code and Chill"><span class="cc-preview-pill__long">Buy this template →</span><span class="cc-preview-pill__short">Buy it →</span></a>
+<script>(()=>{const p=document.querySelector('.cc-preview-pill');if(!p)return;const fit=()=>{p.style.removeProperty('--cc-lift');const a=p.getBoundingClientRect(),h=innerHeight;let top=h;for(const el of document.body.querySelectorAll('*')){if(el===p||p.contains(el))continue;const s=getComputedStyle(el);if((s.position!=='fixed'&&s.position!=='sticky')||s.display==='none'||s.visibility==='hidden'||s.opacity==='0')continue;const r=el.getBoundingClientRect();if(r.height&&r.height<200&&r.top>h/2&&r.bottom>=h-40&&r.left<a.right&&r.right>a.left)top=Math.min(top,r.top)}if(top<h)p.style.setProperty('--cc-lift',h-top+10+'px')};addEventListener('load',()=>{fit();setTimeout(fit,1500)});addEventListener('resize',fit)})()</script>
+</body>
+
+<!-- Mirrored from https://demo.codeandchill.store/coffer/ by HTTrack Website Copier/3.x [XR&CO], Thu, 26 Nov 2026 09:21:11 GMT -->
+</html>
