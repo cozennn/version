@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Geist+Mono:wght@400..700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261108-1">
+<link rel="stylesheet" href="assets/style.css?v=20261117-1">
 <link rel="stylesheet" href="assets/chat.css?v=20261108-1">
 <link rel="stylesheet" href="assets/refinement.css?v=20261117-1">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
@@ -54,9 +54,9 @@
 
 <main>
   <div class="page store-head">
-    <p class="eyebrow">Store</p>
-    <h1 class="h1">Templates</h1>
-    <p class="lead">Premium HTML templates for design studios. One-time purchase. delivery arranged after order confirmation.</p>
+    <p class="eyebrow">NORDA / Templates</p>
+    <h1 class="h1">Website templates</h1>
+    <p class="lead">Browse focused starting points for portfolios, studios and landing pages. Open a product to review its pages, features and included files.</p>
   </div>
 
   <div class="page">
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.innerHTML = list.map(p => `
       <article class="prod" data-id="${esc(p.id)}">
         <a class="prod__img" href="product.html?id=${encodeURIComponent(p.id)}">
-          <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">
+          <img src="${esc(p.image)}" alt="${esc(p.name)} preview" loading="lazy" decoding="async">
           ${p.subscription ? '<span class="prod__badge">Subscription</span>' : ''}
         </a>
         <div class="prod__body">
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="prod__price">${fmt(p.price)}</span>
           </div>
           <p class="prod__tagline">${esc(p.tagline)}</p>
-          <div class="prod__tags">${(p.tags || []).map(tag => `<span class="prod__tag">${esc(tag)}</span>`).join('')}</div>
+          <div class="prod__tags">${(p.tags || []).slice(0, 3).map(tag => `<span class="prod__tag">${esc(tag)}</span>`).join('')}</div>
           <div class="prod__actions">
             <a class="btn btn--ghost btn--sm" href="product.html?id=${encodeURIComponent(p.id)}">Details</a>
             ${p.paypal_url ? `<a class="btn btn--primary btn--sm" href="${esc(p.paypal_url)}" target="_blank" rel="noopener noreferrer">Pay with PayPal</a>` : `<button class="btn btn--primary btn--sm" data-add-to-cart="${esc(p.id)}">Add to bag</button>`}
